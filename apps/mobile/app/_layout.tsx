@@ -1,8 +1,12 @@
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { useTranslation } from 'react-i18next';
+
 import { requestNotificationPermissions } from '../src/notifications';
+import { PreferencesProvider, useTheme } from '../src/theme/PreferencesContext';
 
 // Side-effect import: initializes i18next before any screen renders.
 // NOTE: RTL languages (fa, ar — see src/i18n) only fully mirror the layout
@@ -10,18 +14,50 @@ import { requestNotificationPermissions } from '../src/notifications';
 // Track as a follow-up before shipping fa/ar as selectable languages.
 import '../src/i18n';
 
-export default function RootLayout() {
+function Navigation() {
+  const { t } = useTranslation();
+  const { colors, scheme } = useTheme();
+
   useEffect(() => {
     requestNotificationPermissions();
   }, []);
 
+  const headerOptions = {
+    headerShown: true,
+    headerStyle: { backgroundColor: colors.surface },
+    headerTintColor: colors.text,
+    headerShadowVisible: false,
+  };
+
+  return (
+    <>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.background },
+        }}
+      >
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="event/new" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="event/[id]/index" />
+        <Stack.Screen name="event/[id]/edit" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="preferences" options={{ ...headerOptions, title: t('preferences.title') }} />
+        <Stack.Screen name="upgrade" options={{ ...headerOptions, title: t('compare.title') }} />
+        <Stack.Screen name="privacy" options={{ ...headerOptions, title: t('settings.privacy') }} />
+        <Stack.Screen name="about" options={{ ...headerOptions, title: t('settings.about') }} />
+        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+      </Stack>
+    </>
+  );
+}
+
+export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: true }}>
-        <Stack.Screen name="index" options={{ title: 'PurEvents' }} />
-        <Stack.Screen name="event/new" options={{ title: 'New Event', presentation: 'modal' }} />
-        <Stack.Screen name="event/[id]" options={{ title: 'Event' }} />
-      </Stack>
+      <PreferencesProvider>
+        <Navigation />
+      </PreferencesProvider>
     </SafeAreaProvider>
   );
 }

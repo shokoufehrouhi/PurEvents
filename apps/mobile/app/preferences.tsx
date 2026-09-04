@@ -1,0 +1,115 @@
+import * as Localization from 'expo-localization';
+import { useTranslation } from 'react-i18next';
+import { ScrollView, Text, View } from 'react-native';
+
+import { EventHeroCard } from '../src/components/EventHeroCard';
+import { Row } from '../src/components/ui/Row';
+import { Section } from '../src/components/ui/Section';
+import { SegmentedControl } from '../src/components/ui/SegmentedControl';
+import i18n, { SUPPORTED_LANGUAGES } from '../src/i18n';
+import { usePreferences, useTheme } from '../src/theme/PreferencesContext';
+import type { PurEvent } from '../src/types/event';
+
+const LANGUAGE_NAMES: Record<string, string> = { en: 'English', fa: 'فارسی', ar: 'العربية', es: 'Español' };
+
+function cycleLanguage() {
+  const currentIndex = SUPPORTED_LANGUAGES.indexOf(i18n.language as (typeof SUPPORTED_LANGUAGES)[number]);
+  const next = SUPPORTED_LANGUAGES[(currentIndex + 1) % SUPPORTED_LANGUAGES.length];
+  i18n.changeLanguage(next);
+}
+
+// Static sample used only to render the live "Preview" card at the bottom,
+// matching the mockup — it does not read/write real event data.
+const PREVIEW_EVENT: PurEvent = {
+  id: 'preview',
+  title: 'Tokyo Trip',
+  dateTimeISO: new Date(Date.now() + 18 * 86400000 + 6 * 3600000 + 24 * 60000).toISOString(),
+  timezone: 'Asia/Tokyo',
+  category: 'travel',
+  accentColor: 'coral',
+  icon: '🗼',
+  repeat: 'none',
+  reminders: [],
+  createdAt: '',
+  updatedAt: '',
+};
+
+export default function PreferencesScreen() {
+  const { t } = useTranslation();
+  const { colors, spacing, typography } = useTheme();
+  const { prefs, setPrefs } = usePreferences();
+
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ padding: spacing.md }}>
+      <Section title={t('preferences.appearance')}>
+        <View style={{ padding: spacing.md }}>
+          <SegmentedControl
+            value={prefs.appearance}
+            onChange={(v) => setPrefs({ appearance: v })}
+            options={[
+              { value: 'system', label: t('preferences.system') },
+              { value: 'light', label: t('preferences.light') },
+              { value: 'dark', label: t('preferences.dark') },
+            ]}
+          />
+        </View>
+      </Section>
+
+      <Section>
+        <Row
+          icon="globe-outline"
+          label={t('preferences.language')}
+          value={LANGUAGE_NAMES[i18n.language] ?? i18n.language}
+          onPress={cycleLanguage}
+        />
+      </Section>
+
+      <Section title={t('preferences.calendar')}>
+        <View style={{ padding: spacing.md }}>
+          <SegmentedControl
+            value={prefs.calendar}
+            onChange={(v) => setPrefs({ calendar: v })}
+            options={[
+              { value: 'gregorian', label: t('preferences.gregorian') },
+              { value: 'persian', label: t('preferences.persian') },
+              { value: 'islamic', label: t('preferences.islamic') },
+            ]}
+          />
+        </View>
+        <Row
+          icon="calendar-outline"
+          label={t('preferences.firstDayOfWeek')}
+          value={t(prefs.firstDayOfWeek === 0 ? 'preferences.sunday' : 'preferences.monday')}
+          onPress={() => setPrefs({ firstDayOfWeek: prefs.firstDayOfWeek === 0 ? 1 : 0 })}
+        />
+      </Section>
+
+      <Section title={t('preferences.timeFormat')}>
+        <View style={{ padding: spacing.md }}>
+          <SegmentedControl
+            value={prefs.timeFormat}
+            onChange={(v) => setPrefs({ timeFormat: v })}
+            options={[
+              { value: '12h', label: t('preferences.12h') },
+              { value: '24h', label: t('preferences.24h') },
+            ]}
+          />
+        </View>
+      </Section>
+
+      <Section title={t('preferences.timezone')}>
+        <Row
+          type="switch"
+          icon="time-outline"
+          label={t('preferences.autoTimezone')}
+          value={prefs.autoTimezone}
+          onValueChange={(v) => setPrefs({ autoTimezone: v })}
+        />
+        <Row icon="location-outline" label={t('preferences.currentTimezone')} value={Localization.getCalendars()[0]?.timeZone ?? '—'} onPress={() => {}} />
+      </Section>
+
+      <Text style={[typography.label, { color: colors.secondary, marginBottom: spacing.sm }]}>Preview</Text>
+      <EventHeroCard event={PREVIEW_EVENT} height={140} />
+    </ScrollView>
+  );
+}

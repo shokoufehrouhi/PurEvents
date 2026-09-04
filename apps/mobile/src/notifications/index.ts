@@ -2,13 +2,6 @@ import * as Notifications from 'expo-notifications';
 
 import type { PurEvent } from '../types/event';
 
-// Reminder offsets in minutes-before-event. MVP default is a single
-// at-the-moment reminder ([0]); the Free/Pro reminder-count limit from
-// docs/PROJECT.md §6.1/6.2 (1 vs unlimited) is a business-logic gate to add
-// once subscription state (RevenueCat) exists — this layer itself supports
-// any number of offsets already.
-export const DEFAULT_REMINDER_OFFSETS_MIN = [0];
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
@@ -36,15 +29,14 @@ export async function cancelRemindersForEvent(eventId: string): Promise<void> {
 }
 
 export async function scheduleRemindersForEvent(
-  event: Pick<PurEvent, 'id' | 'title' | 'dateTimeISO'>,
-  offsetsMin: number[] = DEFAULT_REMINDER_OFFSETS_MIN
+  event: Pick<PurEvent, 'id' | 'title' | 'dateTimeISO' | 'reminders'>
 ): Promise<void> {
   await cancelRemindersForEvent(event.id);
 
   const eventTime = new Date(event.dateTimeISO).getTime();
   const now = Date.now();
 
-  for (const offsetMin of offsetsMin) {
+  for (const offsetMin of event.reminders) {
     const fireAt = eventTime - offsetMin * 60_000;
     if (fireAt <= now) continue; // don't schedule reminders in the past
 

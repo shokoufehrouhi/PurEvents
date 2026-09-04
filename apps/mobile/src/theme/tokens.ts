@@ -1,0 +1,93 @@
+// Design tokens distilled from the approved UI/UX mockups. Keep this file as
+// the single source of truth for color/spacing/radius/typography instead of
+// hardcoding values in screens.
+
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+  xxxl: 64,
+} as const;
+
+export const radius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  pill: 999,
+} as const;
+
+// Event accent colors (used on hero cards, widgets, chips). Shared across
+// light/dark — only the neutrals (background/surface/text/...) flip.
+export const accents = {
+  coral: '#FF6B6B',
+  amber: '#FFB020',
+  mint: '#22C58E',
+  violet: '#6558D9',
+} as const;
+
+export type AccentKey = keyof typeof accents;
+export const ACCENT_KEYS = Object.keys(accents) as AccentKey[];
+
+const shared = {
+  primary: '#6558D9',
+  onPrimary: '#FFFFFF',
+  danger: '#E5484D',
+  ...accents,
+};
+
+export const lightColors = {
+  ...shared,
+  background: '#F7F7FA',
+  surface: '#FFFFFF',
+  surfaceAlt: '#F0F0F4',
+  text: '#171821',
+  secondary: '#646672',
+  outline: '#DDDEE6',
+};
+
+export const darkColors = {
+  ...shared,
+  danger: '#FF6B6B',
+  background: '#0E0E14',
+  surface: '#1A1B24',
+  surfaceAlt: '#22232F',
+  text: '#F5F5F7',
+  secondary: '#9A9AA6',
+  outline: '#2A2B36',
+};
+
+export type ColorTokens = typeof lightColors;
+
+export const typography = {
+  title: { fontSize: 34, fontWeight: '600' as const },
+  headline: { fontSize: 22, fontWeight: '600' as const },
+  body: { fontSize: 17, fontWeight: '400' as const },
+  bodyStrong: { fontSize: 17, fontWeight: '600' as const },
+  label: { fontSize: 13, fontWeight: '500' as const },
+  caption: { fontSize: 13, fontWeight: '400' as const },
+  numbers: { fontSize: 34, fontWeight: '700' as const, fontVariant: ['tabular-nums'] as const },
+};
+
+export const elevation = {
+  e0: {},
+  e1: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  e2: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+} as const;
+
+// Minimum comfortable tap target from the design system callouts (44pt iOS / 48dp Android).
+export const minTapTarget = 44;

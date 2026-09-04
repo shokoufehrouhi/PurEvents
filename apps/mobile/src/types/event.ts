@@ -1,3 +1,5 @@
+import type { AccentKey } from '../theme/tokens';
+
 export type EventCategory = 'personal' | 'work' | 'travel' | 'finance' | 'health' | 'other';
 
 export type RepeatRule = 'none' | 'yearly' | 'monthly' | 'weekly';
@@ -10,8 +12,13 @@ export interface PurEvent {
   /** IANA timezone name the event was created/entered in (for display only in MVP). */
   timezone: string;
   category: EventCategory;
+  accentColor: AccentKey;
+  /** Emoji shown on the hero card / list row. */
+  icon: string;
   note?: string;
   repeat: RepeatRule;
+  /** Minutes-before-event offsets; [0] = "at time of event". */
+  reminders: number[];
   createdAt: string;
   updatedAt: string;
 }
