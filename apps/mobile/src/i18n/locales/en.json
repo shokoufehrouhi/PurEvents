@@ -1,0 +1,36 @@
+{
+  "appName": "PurEvents",
+  "events": {
+    "listTitle": "Your Events",
+    "empty": "No events yet. Add your first countdown!",
+    "add": "Add Event",
+    "titleLabel": "Title",
+    "dateLabel": "Date & Time",
+    "categoryLabel": "Category",
+    "noteLabel": "Note (optional)",
+    "repeatLabel": "Repeat",
+    "save": "Save",
+    "delete": "Delete",
+    "category": {
+      "personal": "Personal",
+      "work": "Work",
+      "travel": "Travel",
+      "finance": "Finance",
+      "health": "Health",
+      "other": "Other"
+    },
+    "repeat": {
+      "none": "Does not repeat",
+      "yearly": "Yearly",
+      "monthly": "Monthly",
+      "weekly": "Weekly"
+    }
+  },
+  "countdown": {
+    "days": "{{count}}d",
+    "hours": "{{count}}h",
+    "minutes": "{{count}}m",
+    "seconds": "{{count}}s",
+    "past": "Happened"
+  }
+}

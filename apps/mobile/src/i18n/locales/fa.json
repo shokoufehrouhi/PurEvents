@@ -1,0 +1,36 @@
+{
+  "appName": "پیورویدنتس",
+  "events": {
+    "listTitle": "رویدادهای شما",
+    "empty": "هنوز رویدادی اضافه نکرده‌اید. اولین شمارش معکوس را بسازید!",
+    "add": "افزودن رویداد",
+    "titleLabel": "عنوان",
+    "dateLabel": "تاریخ و ساعت",
+    "categoryLabel": "دسته‌بندی",
+    "noteLabel": "یادداشت (اختیاری)",
+    "repeatLabel": "تکرار",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "category": {
+      "personal": "شخصی",
+      "work": "کاری",
+      "travel": "سفر",
+      "finance": "مالی",
+      "health": "سلامت",
+      "other": "سایر"
+    },
+    "repeat": {
+      "none": "تکرار نمی‌شود",
+      "yearly": "سالانه",
+      "monthly": "ماهانه",
+      "weekly": "هفتگی"
+    }
+  },
+  "countdown": {
+    "days": "{{count}} روز",
+    "hours": "{{count}} ساعت",
+    "minutes": "{{count}} دقیقه",
+    "seconds": "{{count}} ثانیه",
+    "past": "برگزار شد"
+  }
+}

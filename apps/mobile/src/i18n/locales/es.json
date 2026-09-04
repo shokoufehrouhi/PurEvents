@@ -1,0 +1,36 @@
+{
+  "appName": "PurEvents",
+  "events": {
+    "listTitle": "Tus eventos",
+    "empty": "Aún no hay eventos. ¡Agrega tu primera cuenta regresiva!",
+    "add": "Agregar evento",
+    "titleLabel": "Título",
+    "dateLabel": "Fecha y hora",
+    "categoryLabel": "Categoría",
+    "noteLabel": "Nota (opcional)",
+    "repeatLabel": "Repetir",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "category": {
+      "personal": "Personal",
+      "work": "Trabajo",
+      "travel": "Viaje",
+      "finance": "Finanzas",
+      "health": "Salud",
+      "other": "Otro"
+    },
+    "repeat": {
+      "none": "No se repite",
+      "yearly": "Anual",
+      "monthly": "Mensual",
+      "weekly": "Semanal"
+    }
+  },
+  "countdown": {
+    "days": "{{count}}d",
+    "hours": "{{count}}h",
+    "minutes": "{{count}}m",
+    "seconds": "{{count}}s",
+    "past": "Ya ocurrió"
+  }
+}

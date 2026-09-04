@@ -1,0 +1,36 @@
+{
+  "appName": "بيور إيفنتس",
+  "events": {
+    "listTitle": "أحداثك",
+    "empty": "لا توجد أحداث بعد. أضف أول عدّاد تنازلي!",
+    "add": "إضافة حدث",
+    "titleLabel": "العنوان",
+    "dateLabel": "التاريخ والوقت",
+    "categoryLabel": "الفئة",
+    "noteLabel": "ملاحظة (اختياري)",
+    "repeatLabel": "التكرار",
+    "save": "حفظ",
+    "delete": "حذف",
+    "category": {
+      "personal": "شخصي",
+      "work": "عمل",
+      "travel": "سفر",
+      "finance": "مالي",
+      "health": "صحة",
+      "other": "أخرى"
+    },
+    "repeat": {
+      "none": "لا يتكرر",
+      "yearly": "سنويًا",
+      "monthly": "شهريًا",
+      "weekly": "أسبوعيًا"
+    }
+  },
+  "countdown": {
+    "days": "{{count}} يوم",
+    "hours": "{{count}} ساعة",
+    "minutes": "{{count}} دقيقة",
+    "seconds": "{{count}} ثانية",
+    "past": "انتهى"
+  }
+}
