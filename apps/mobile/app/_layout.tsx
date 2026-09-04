@@ -1,5 +1,8 @@
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { requestNotificationPermissions } from '../src/notifications';
 
 // Side-effect import: initializes i18next before any screen renders.
 // NOTE: RTL languages (fa, ar — see src/i18n) only fully mirror the layout
@@ -8,6 +11,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import '../src/i18n';
 
 export default function RootLayout() {
+  useEffect(() => {
+    requestNotificationPermissions();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <Stack screenOptions={{ headerShown: true }}>

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { scheduleRemindersForEvent } from '../../src/notifications';
 import { createEvent } from '../../src/storage/events';
 import type { EventCategory, RepeatRule } from '../../src/types/event';
 
@@ -26,7 +27,7 @@ export default function NewEventScreen() {
   async function handleSave() {
     if (!canSave) return;
     setSaving(true);
-    await createEvent({
+    const event = await createEvent({
       title: title.trim(),
       dateTimeISO: date.toISOString(),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -34,6 +35,7 @@ export default function NewEventScreen() {
       repeat,
       note: note.trim() || undefined,
     });
+    await scheduleRemindersForEvent(event);
     router.back();
   }
 
