@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { EventHeroCard } from '../components/EventHeroCard';
 import { EventIcon } from '../components/EventIcon';
@@ -175,11 +175,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const advancedSummary = note.trim() ? `${t(`events.repeat.${repeat}`)}, note added` : t(`events.repeat.${repeat}`);
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.background }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
-    >
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[styles.header, { padding: spacing.md }]}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Ionicons name="close" size={24} color={colors.text} />
@@ -366,7 +362,7 @@ export function EventWizard({ mode, eventId }: Props) {
       <View style={{ padding: spacing.md }}>
         <Button label={mode === 'create' ? t('events.createEvent') : t('events.save')} onPress={handleSave} disabled={!canSave} />
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
