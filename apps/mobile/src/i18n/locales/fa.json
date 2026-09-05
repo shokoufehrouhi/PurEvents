@@ -17,6 +17,7 @@
     "noteLabel": "یادداشت (اختیاری)",
     "repeatLabel": "تکرار",
     "remindersLabel": "یادآورها",
+    "noReminders": "بدون یادآور",
     "reminderAdd": "افزودن",
     "reminderAtTime": "لحظه‌ی وقوع رویداد",
     "reminder1Hour": "۱ ساعت قبل",
@@ -33,6 +34,7 @@
     "stepSchedule": "زمان‌بندی",
     "stepReminders": "یادآورها",
     "stepAppearance": "ظاهر",
+    "stepAdvanced": "تنظیمات بیشتر",
     "category": {
       "personal": "شخصی",
       "work": "کاری",

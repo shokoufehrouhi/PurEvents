@@ -17,6 +17,7 @@
     "noteLabel": "Nota (opcional)",
     "repeatLabel": "Repetir",
     "remindersLabel": "Recordatorios",
+    "noReminders": "Sin recordatorios",
     "reminderAdd": "Agregar",
     "reminderAtTime": "En el momento del evento",
     "reminder1Hour": "1 hora antes",
@@ -33,6 +34,7 @@
     "stepSchedule": "Horario",
     "stepReminders": "Recordatorios",
     "stepAppearance": "Apariencia",
+    "stepAdvanced": "Avanzado",
     "category": {
       "personal": "Personal",
       "work": "Trabajo",

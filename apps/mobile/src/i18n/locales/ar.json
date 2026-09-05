@@ -17,6 +17,7 @@
     "noteLabel": "ملاحظة (اختياري)",
     "repeatLabel": "التكرار",
     "remindersLabel": "التذكيرات",
+    "noReminders": "لا توجد تذكيرات",
     "reminderAdd": "إضافة",
     "reminderAtTime": "عند وقوع الحدث",
     "reminder1Hour": "قبل ساعة واحدة",
@@ -33,6 +34,7 @@
     "stepSchedule": "الجدولة",
     "stepReminders": "التذكيرات",
     "stepAppearance": "المظهر",
+    "stepAdvanced": "إعدادات متقدمة",
     "category": {
       "personal": "شخصي",
       "work": "عمل",
