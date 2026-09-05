@@ -39,15 +39,15 @@ function Navigation() {
         }}
       >
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="event/new" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="event/new" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="event/category-picker" />
         <Stack.Screen name="event/[id]/index" />
-        <Stack.Screen name="event/[id]/edit" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="event/[id]/edit" options={{ presentation: 'fullScreenModal' }} />
         <Stack.Screen name="preferences" options={{ ...headerOptions, title: t('preferences.title') }} />
         <Stack.Screen name="upgrade" options={{ ...headerOptions, title: t('compare.title') }} />
         <Stack.Screen name="privacy" options={{ ...headerOptions, title: t('settings.privacy') }} />
         <Stack.Screen name="about" options={{ ...headerOptions, title: t('settings.about') }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>
   );
