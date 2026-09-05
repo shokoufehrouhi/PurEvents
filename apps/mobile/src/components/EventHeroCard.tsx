@@ -1,12 +1,11 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '../theme/PreferencesContext';
 import { accents } from '../theme/tokens';
-import { getEventIcon } from '../theme/icons';
 import { darken } from '../utils/color';
 import type { PurEvent } from '../types/event';
+import { EventIcon } from './EventIcon';
 import { HeroCountdown } from './HeroCountdown';
 
 interface Props {
@@ -20,7 +19,6 @@ interface Props {
 export function EventHeroCard({ event, height = 180 }: Props) {
   const { radius, spacing } = useTheme();
   const base = accents[event.accentColor] ?? accents.violet;
-  const icon = getEventIcon(event.icon);
 
   return (
     <LinearGradient
@@ -29,7 +27,7 @@ export function EventHeroCard({ event, height = 180 }: Props) {
       end={{ x: 1, y: 1 }}
       style={[styles.card, { borderRadius: radius.lg, height, padding: spacing.md }]}
     >
-      <MaterialCommunityIcons name={icon.name} size={28} color="#fff" />
+      <EventIcon iconKey={event.icon} size={40} />
       <View style={styles.bottom}>
         <Text style={styles.title} numberOfLines={1}>
           {event.title}

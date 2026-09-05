@@ -1,4 +1,4 @@
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import dayjs from 'dayjs';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,7 +14,7 @@ import { cancelRemindersForEvent } from '../../../src/notifications';
 import { deleteEvent, getEvent } from '../../../src/storage/events';
 import { useTheme } from '../../../src/theme/PreferencesContext';
 import { accents } from '../../../src/theme/tokens';
-import { getEventIcon } from '../../../src/theme/icons';
+import { EventIcon } from '../../../src/components/EventIcon';
 import type { PurEvent } from '../../../src/types/event';
 import { darken } from '../../../src/utils/color';
 import { reminderLabel } from '../../../src/utils/reminders';
@@ -76,7 +76,7 @@ export default function EventDetailScreen() {
           </View>
         </SafeAreaView>
         <View style={[styles.heroBody, { padding: spacing.md }]}>
-          <MaterialCommunityIcons name={getEventIcon(event.icon).name} size={28} color="#fff" />
+          <EventIcon iconKey={event.icon} size={40} />
           <Text style={styles.heroTitle}>{event.title}</Text>
           <HeroCountdown targetISO={event.dateTimeISO} />
         </View>

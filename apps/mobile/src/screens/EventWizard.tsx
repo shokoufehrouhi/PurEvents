@@ -38,7 +38,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const [date, setDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000));
   const [category, setCategory] = useState<EventCategory>('personal');
   const [accentColor, setAccentColor] = useState<AccentKey>('coral');
-  const [icon, setIcon] = useState(DEFAULT_EVENT_ICON);
+  const [icon, setIcon] = useState<string>(DEFAULT_EVENT_ICON);
   const [repeat, setRepeat] = useState<RepeatRule>('none');
   const [reminders, setReminders] = useState<number[]>(prefs.defaultReminderOffsets);
   const [note, setNote] = useState('');
@@ -201,11 +201,6 @@ export function EventWizard({ mode, eventId }: Props) {
                     style={({ pressed }) => [styles.iconChipWrap, elevation.e1, { opacity: pressed ? 0.7 : 1 }]}
                   >
                     <EventIcon iconKey={opt.key} variant={selected ? 'solid' : 'pastel'} />
-                    {selected ? (
-                      <View style={[styles.checkBadge, { backgroundColor: colors.surface }]}>
-                        <Ionicons name="checkmark-circle" size={18} color={opt.color} />
-                      </View>
-                    ) : null}
                   </Pressable>
                 );
               })}
@@ -322,7 +317,6 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 8 },
   iconChipWrap: { borderRadius: Math.round(52 * 0.3) },
-  checkBadge: { position: 'absolute', top: -4, right: -4, borderRadius: 10 },
   swatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   reminderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   addReminder: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, padding: 12, borderStyle: 'dashed' },
