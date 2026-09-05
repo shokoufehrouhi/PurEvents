@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '../src/components/ui/Button';
 import { useTheme } from '../src/theme/PreferencesContext';
@@ -37,8 +36,7 @@ export default function PaywallScreen() {
   }
 
   return (
-    <SafeAreaView edges={['top']} style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md }}>
+    <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ padding: spacing.md }}>
       <Pressable onPress={() => router.back()} style={styles.close} hitSlop={12}>
         <Ionicons name="close" size={20} color={colors.text} />
       </Pressable>
@@ -116,8 +114,7 @@ export default function PaywallScreen() {
           {t('paywall.privacyLink')}
         </Text>
       </View>
-      </ScrollView>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 

@@ -5,7 +5,6 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EventHeroCard } from '../components/EventHeroCard';
 import { EventIcon } from '../components/EventIcon';
@@ -177,8 +176,7 @@ export function EventWizard({ mode, eventId }: Props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <SafeAreaView edges={['top']} style={{ backgroundColor: colors.background }}>
-        <View style={[styles.header, { padding: spacing.md }]}>
+      <View style={[styles.header, { padding: spacing.md }]}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Ionicons name="close" size={24} color={colors.text} />
         </Pressable>
@@ -186,8 +184,7 @@ export function EventWizard({ mode, eventId }: Props) {
           {mode === 'create' ? t('events.newEventTitle') : t('events.editEventTitle')}
         </Text>
         <View style={{ width: 24 }} />
-        </View>
-      </SafeAreaView>
+      </View>
 
       <View style={[styles.stepper, { paddingHorizontal: spacing.md, marginBottom: spacing.sm }]}>
         <View style={[styles.stepperLine, { backgroundColor: colors.outline }]} />
