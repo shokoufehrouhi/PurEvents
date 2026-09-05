@@ -19,7 +19,7 @@ export function EventIcon({ category, size = 52 }: Props) {
 
   return (
     <View style={[styles.base, { width: size, height: size, borderRadius: radius }]}>
-      <Image source={image} style={{ width: size * 0.68, height: size * 0.68 }} resizeMode="contain" />
+      <Image source={image} style={{ width: size * 0.82, height: size * 0.82 }} resizeMode="contain" />
     </View>
   );
 }
