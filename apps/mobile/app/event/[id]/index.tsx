@@ -76,7 +76,7 @@ export default function EventDetailScreen() {
           </View>
         </SafeAreaView>
         <View style={[styles.heroBody, { padding: spacing.md }]}>
-          <EventIcon iconKey={event.icon} size={40} />
+          <EventIcon category={event.category} size={40} />
           <Text style={styles.heroTitle}>{event.title}</Text>
           <HeroCountdown targetISO={event.dateTimeISO} />
         </View>

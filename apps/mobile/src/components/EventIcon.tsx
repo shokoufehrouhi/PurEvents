@@ -1,33 +1,29 @@
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 
-import { getEventIcon } from '../theme/icons';
+import { getCategoryIcon } from '../theme/icons';
+import type { EventCategory } from '../types/event';
 
 interface Props {
-  iconKey: string;
+  category: EventCategory;
   size?: number;
-  /** 'pastel' = default badge (own tinted background, baked into the asset).
-   *  'solid' = saturated badge with the checkmark baked in — used for the
-   *  selected state in the picker, or standalone elsewhere. */
-  variant?: 'pastel' | 'solid';
 }
 
-// Icon badge sourced directly from the approved icon-system mockup (cropped
-// illustrated artwork, not a vector-font substitute) — see src/theme/icons.ts
-// and assets/icons/. Used everywhere an event's icon appears: the picker,
-// list rows, hero cards, detail header.
-export function EventIcon({ iconKey, size = 52, variant = 'pastel' }: Props) {
-  const icon = getEventIcon(iconKey);
-  const source = variant === 'solid' ? icon.selected : icon.default;
+// Icon badge for an event: a white squircle (reads clearly on any surface —
+// gradient hero cards, colored category chips, plain list rows) with the
+// category's icon artwork (cropped from the approved mockup, see
+// src/theme/icons.ts) centered on top. Category and icon are the same
+// choice now — no separate icon picker (see UI feedback).
+export function EventIcon({ category, size = 52 }: Props) {
+  const { image } = getCategoryIcon(category);
+  const radius = Math.round(size * 0.3);
 
   return (
-    <Image
-      source={source}
-      style={[styles.image, { width: size, height: size, borderRadius: Math.round(size * 0.3) }]}
-      resizeMode="cover"
-    />
+    <View style={[styles.base, { width: size, height: size, borderRadius: radius }]}>
+      <Image source={image} style={{ width: size * 0.6, height: size * 0.6 }} resizeMode="contain" />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  image: { overflow: 'hidden' },
+  base: { alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.92)' },
 });

@@ -27,7 +27,7 @@ export function EventHeroCard({ event, height = 180 }: Props) {
       end={{ x: 1, y: 1 }}
       style={[styles.card, { borderRadius: radius.lg, height, padding: spacing.md }]}
     >
-      <EventIcon iconKey={event.icon} size={40} />
+      <EventIcon category={event.category} size={40} />
       <View style={styles.bottom}>
         <Text style={styles.title} numberOfLines={1}>
           {event.title}

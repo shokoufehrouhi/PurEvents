@@ -11,10 +11,9 @@ export interface PurEvent {
   dateTimeISO: string;
   /** IANA timezone name the event was created/entered in (for display only in MVP). */
   timezone: string;
+  /** Also drives the icon shown on the hero card / list row / detail header — see src/theme/icons.ts. */
   category: EventCategory;
   accentColor: AccentKey;
-  /** Emoji shown on the hero card / list row. */
-  icon: string;
   note?: string;
   repeat: RepeatRule;
   /** Minutes-before-event offsets; [0] = "at time of event". */

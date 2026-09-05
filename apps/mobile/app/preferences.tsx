@@ -27,7 +27,6 @@ const PREVIEW_EVENT: PurEvent = {
   timezone: 'Asia/Tokyo',
   category: 'travel',
   accentColor: 'coral',
-  icon: 'travel',
   repeat: 'none',
   reminders: [],
   createdAt: '',

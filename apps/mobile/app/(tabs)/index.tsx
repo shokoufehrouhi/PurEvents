@@ -29,7 +29,7 @@ function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) 
         { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.sm + 4, opacity: pressed ? 0.7 : 1 },
       ]}
     >
-      <EventIcon iconKey={event.icon} size={44} />
+      <EventIcon category={event.category} size={44} />
       <View style={styles.rowMiddle}>
         <Text style={[typography.bodyStrong, { color: colors.text }]} numberOfLines={1}>
           {event.title}

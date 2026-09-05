@@ -13,7 +13,7 @@ import { createEvent, getEvent, listEvents, updateEvent } from '../storage/event
 import { usePro, FREE_LIMITS } from '../subscription';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
-import { DEFAULT_EVENT_ICON, EVENT_ICONS } from '../theme/icons';
+import { getCategoryIcon } from '../theme/icons';
 import type { EventCategory, PurEvent, RepeatRule } from '../types/event';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
@@ -38,7 +38,6 @@ export function EventWizard({ mode, eventId }: Props) {
   const [date, setDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000));
   const [category, setCategory] = useState<EventCategory>('personal');
   const [accentColor, setAccentColor] = useState<AccentKey>('coral');
-  const [icon, setIcon] = useState<string>(DEFAULT_EVENT_ICON);
   const [repeat, setRepeat] = useState<RepeatRule>('none');
   const [reminders, setReminders] = useState<number[]>(prefs.defaultReminderOffsets);
   const [note, setNote] = useState('');
@@ -52,7 +51,6 @@ export function EventWizard({ mode, eventId }: Props) {
         setDate(new Date(e.dateTimeISO));
         setCategory(e.category);
         setAccentColor(e.accentColor);
-        setIcon(e.icon);
         setRepeat(e.repeat);
         setReminders(e.reminders);
         setNote(e.note ?? '');
@@ -68,7 +66,6 @@ export function EventWizard({ mode, eventId }: Props) {
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     category,
     accentColor,
-    icon,
     repeat,
     reminders,
     note: note.trim() || undefined,
@@ -111,7 +108,6 @@ export function EventWizard({ mode, eventId }: Props) {
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       category,
       accentColor,
-      icon,
       repeat,
       reminders,
       note: note.trim() || undefined,
@@ -190,33 +186,39 @@ export function EventWizard({ mode, eventId }: Props) {
               })}
             </View>
 
-            <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.iconLabel')}</Text>
-            <View style={styles.chipRow}>
-              {EVENT_ICONS.map((opt) => {
-                const selected = icon === opt.key;
+            <View style={styles.categoryHeader}>
+              <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
+              <Text style={[typography.caption, { color: colors.secondary, marginTop: 20 }]}>{t('events.chooseOne')}</Text>
+            </View>
+            <View style={styles.categoryGrid}>
+              {CATEGORIES.map((c) => {
+                const selected = category === c;
+                const { color } = getCategoryIcon(c);
                 return (
                   <Pressable
-                    key={opt.key}
-                    onPress={() => setIcon(opt.key)}
-                    style={({ pressed }) => [styles.iconChipWrap, elevation.e1, { opacity: pressed ? 0.7 : 1 }]}
+                    key={c}
+                    onPress={() => setCategory(c)}
+                    style={({ pressed }) => [
+                      styles.categoryChip,
+                      elevation.e1,
+                      {
+                        backgroundColor: selected ? colors.primary : `${color}1F`,
+                        borderRadius: radius.md,
+                        opacity: pressed ? 0.8 : 1,
+                      },
+                    ]}
                   >
-                    <EventIcon iconKey={opt.key} variant={selected ? 'solid' : 'pastel'} />
+                    <EventIcon category={c} size={32} />
+                    <Text
+                      style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}
+                      numberOfLines={1}
+                    >
+                      {t(`events.category.${c}`)}
+                    </Text>
+                    {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.onPrimary} /> : null}
                   </Pressable>
                 );
               })}
-            </View>
-
-            <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
-            <View style={styles.chipRow}>
-              {CATEGORIES.map((c) => (
-                <Pressable
-                  key={c}
-                  onPress={() => setCategory(c)}
-                  style={[styles.chip, { backgroundColor: category === c ? colors.primary : colors.surfaceAlt, borderRadius: radius.pill }]}
-                >
-                  <Text style={{ color: category === c ? colors.onPrimary : colors.text }}>{t(`events.category.${c}`)}</Text>
-                </Pressable>
-              ))}
             </View>
           </>
         )}
@@ -316,8 +318,16 @@ const styles = StyleSheet.create({
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 8 },
-  iconChipWrap: { borderRadius: Math.round(52 * 0.3) },
   swatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
+  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  categoryChip: {
+    width: '47%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+  },
   reminderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   addReminder: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, padding: 12, borderStyle: 'dashed' },
   proNote: { flexDirection: 'row', alignItems: 'center', padding: 10, marginTop: 12 },

@@ -11,6 +11,7 @@
     "eventNameLabel": "Nombre del evento",
     "dateLabel": "Fecha y hora",
     "categoryLabel": "Categoría",
+    "chooseOne": "Elige una",
     "accentColorLabel": "Color de acento",
     "iconLabel": "Ícono",
     "noteLabel": "Nota (opcional)",
