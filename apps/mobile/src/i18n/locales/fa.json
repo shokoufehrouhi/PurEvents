@@ -1,6 +1,10 @@
 {
   "appName": "پیورویدنتس",
-  "tabs": { "events": "رویدادها", "widgets": "ویجت‌ها", "settings": "تنظیمات" },
+  "tabs": {
+    "events": "رویدادها",
+    "widgets": "ویجت‌ها",
+    "settings": "تنظیمات"
+  },
   "events": {
     "listTitle": "رویدادهای شما",
     "upcoming": "پیش‌رو",
@@ -48,7 +52,10 @@
       "yearly": "سالانه",
       "monthly": "ماهانه",
       "weekly": "هفتگی"
-    }
+    },
+    "newEventTitle": "رویداد جدید",
+    "editEventTitle": "ویرایش رویداد",
+    "basicsHeading": "اطلاعات پایه"
   },
   "countdown": {
     "days": "{{count}} روز",

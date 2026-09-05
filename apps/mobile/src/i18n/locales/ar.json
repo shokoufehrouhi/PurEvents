@@ -1,6 +1,10 @@
 {
   "appName": "بيور إيفنتس",
-  "tabs": { "events": "الأحداث", "widgets": "الودجات", "settings": "الإعدادات" },
+  "tabs": {
+    "events": "الأحداث",
+    "widgets": "الودجات",
+    "settings": "الإعدادات"
+  },
   "events": {
     "listTitle": "أحداثك",
     "upcoming": "القادمة",
@@ -48,7 +52,10 @@
       "yearly": "سنويًا",
       "monthly": "شهريًا",
       "weekly": "أسبوعيًا"
-    }
+    },
+    "newEventTitle": "حدث جديد",
+    "editEventTitle": "تعديل الحدث",
+    "basicsHeading": "الأساسيات"
   },
   "countdown": {
     "days": "{{count}} يوم",

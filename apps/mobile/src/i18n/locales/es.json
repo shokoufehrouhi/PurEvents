@@ -1,6 +1,10 @@
 {
   "appName": "PurEvents",
-  "tabs": { "events": "Eventos", "widgets": "Widgets", "settings": "Ajustes" },
+  "tabs": {
+    "events": "Eventos",
+    "widgets": "Widgets",
+    "settings": "Ajustes"
+  },
   "events": {
     "listTitle": "Tus eventos",
     "upcoming": "Próximos",
@@ -48,7 +52,10 @@
       "yearly": "Anual",
       "monthly": "Mensual",
       "weekly": "Semanal"
-    }
+    },
+    "newEventTitle": "Nuevo evento",
+    "editEventTitle": "Editar evento",
+    "basicsHeading": "Datos básicos"
   },
   "countdown": {
     "days": "{{count}}d",

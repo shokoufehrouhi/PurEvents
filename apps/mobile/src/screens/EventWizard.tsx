@@ -9,6 +9,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } fr
 import { EventHeroCard } from '../components/EventHeroCard';
 import { EventIcon } from '../components/EventIcon';
 import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
 import { Section } from '../components/ui/Section';
 import { scheduleRemindersForEvent } from '../notifications';
 import { createEvent, getEvent, listEvents, updateEvent } from '../storage/events';
@@ -76,6 +77,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const { isPro } = usePro();
 
   const [expanded, setExpanded] = useState<SectionKey | null>(null);
+  const [accentOpen, setAccentOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000));
   const [category, setCategory] = useState<EventCategory>('personal');
@@ -174,12 +176,13 @@ export function EventWizard({ mode, eventId }: Props) {
           <Ionicons name="close" size={24} color={colors.text} />
         </Pressable>
         <Text style={[typography.bodyStrong, { color: colors.text }]}>
-          {mode === 'create' ? t('events.add') : t('events.save')}
+          {mode === 'create' ? t('events.newEventTitle') : t('events.editEventTitle')}
         </Text>
         <View style={{ width: 24 }} />
       </View>
 
       <View style={[styles.stepper, { paddingHorizontal: spacing.md, marginBottom: spacing.sm }]}>
+        <View style={[styles.stepperLine, { backgroundColor: colors.outline }]} />
         {STEPS.map((key, i) => {
           const sectionKey = (['schedule', 'reminders', 'appearance'][i - 1] ?? null) as SectionKey | null;
           const active = i === 0 ? expanded === null : expanded === sectionKey;
@@ -198,65 +201,84 @@ export function EventWizard({ mode, eventId }: Props) {
 
       <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: 48 }}>
         {/* Basics — always visible, matches the approved layout */}
-        <Text style={[typography.label, { color: colors.secondary, marginBottom: 8 }]}>{t('events.eventNameLabel')}</Text>
-        <TextInput
-          style={[styles.input, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
-          value={title}
-          onChangeText={setTitle}
-          autoFocus
-          placeholderTextColor={colors.secondary}
-        />
+        <Card>
+          <Text style={[typography.bodyStrong, { color: colors.text, marginBottom: spacing.md }]}>{t('events.basicsHeading')}</Text>
 
-        <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.accentColorLabel')}</Text>
-        <View style={styles.chipRow}>
-          {ACCENT_KEYS.map((key) => {
-            const selected = accentColor === key;
-            return (
-              <Pressable
-                key={key}
-                onPress={() => setAccentColor(key)}
-                style={[
-                  styles.swatch,
-                  elevation.e1,
-                  { backgroundColor: accents[key], borderWidth: selected ? 3 : 0, borderColor: colors.surface },
-                ]}
-              >
-                {selected ? <Ionicons name="checkmark" size={18} color="#fff" /> : null}
-              </Pressable>
-            );
-          })}
-        </View>
+          <Text style={[typography.label, { color: colors.secondary, marginBottom: 8 }]}>{t('events.eventNameLabel')}</Text>
+          <TextInput
+            style={[styles.input, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
+            value={title}
+            onChangeText={setTitle}
+            autoFocus
+            placeholderTextColor={colors.secondary}
+          />
 
-        <View style={styles.categoryHeader}>
-          <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
-          <Text style={[typography.caption, { color: colors.secondary, marginTop: 20 }]}>{t('events.chooseOne')}</Text>
-        </View>
-        <View style={styles.categoryGrid}>
-          {CATEGORIES.map((c) => {
-            const selected = category === c;
-            const { color } = getCategoryIcon(c);
-            return (
-              <Pressable
-                key={c}
-                onPress={() => setCategory(c)}
-                style={({ pressed }) => [
-                  styles.categoryChip,
-                  elevation.e1,
-                  { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.md, opacity: pressed ? 0.8 : 1 },
-                ]}
-              >
-                <EventIcon category={c} size={52} />
-                <Text
-                  style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}
-                  numberOfLines={1}
+          <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.accentColorLabel')}</Text>
+          <Pressable
+            onPress={() => setAccentOpen((v) => !v)}
+            style={[styles.dropdownField, { borderColor: colors.outline, borderRadius: radius.md }]}
+          >
+            <View style={[styles.dot, { backgroundColor: accents[accentColor] }]} />
+            <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: 10, textTransform: 'capitalize' }]}>
+              {accentColor}
+            </Text>
+            <Ionicons name={accentOpen ? 'chevron-up' : 'chevron-down'} size={18} color={colors.secondary} />
+          </Pressable>
+          {accentOpen ? (
+            <View style={[styles.chipRow, { marginTop: 12 }]}>
+              {ACCENT_KEYS.map((key) => {
+                const selected = accentColor === key;
+                return (
+                  <Pressable
+                    key={key}
+                    onPress={() => {
+                      setAccentColor(key);
+                      setAccentOpen(false);
+                    }}
+                    style={[
+                      styles.swatch,
+                      elevation.e1,
+                      { backgroundColor: accents[key], borderWidth: selected ? 3 : 0, borderColor: colors.surface },
+                    ]}
+                  >
+                    {selected ? <Ionicons name="checkmark" size={18} color="#fff" /> : null}
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : null}
+
+          <View style={styles.categoryHeader}>
+            <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
+            <Text style={[typography.caption, { color: colors.secondary, marginTop: 20 }]}>{t('events.chooseOne')}</Text>
+          </View>
+          <View style={styles.categoryGrid}>
+            {CATEGORIES.map((c) => {
+              const selected = category === c;
+              const { color } = getCategoryIcon(c);
+              return (
+                <Pressable
+                  key={c}
+                  onPress={() => setCategory(c)}
+                  style={({ pressed }) => [
+                    styles.categoryChip,
+                    elevation.e1,
+                    { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.md, opacity: pressed ? 0.8 : 1 },
+                  ]}
                 >
-                  {t(`events.category.${c}`)}
-                </Text>
-                {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.onPrimary} /> : null}
-              </Pressable>
-            );
-          })}
-        </View>
+                  <EventIcon category={c} size={52} />
+                  <Text
+                    style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}
+                    numberOfLines={1}
+                  >
+                    {t(`events.category.${c}`)}
+                  </Text>
+                  {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.onPrimary} /> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        </Card>
 
         {/* Schedule / Reminders / Appearance / Advanced — grouped accordion card */}
         <View style={{ marginTop: spacing.lg }}>
@@ -362,7 +384,8 @@ export function EventWizard({ mode, eventId }: Props) {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  stepper: { flexDirection: 'row', justifyContent: 'space-between' },
+  stepper: { flexDirection: 'row', justifyContent: 'space-between', position: 'relative' },
+  stepperLine: { position: 'absolute', top: 13, left: '12.5%', right: '12.5%', height: 2, zIndex: -1 },
   stepItem: { alignItems: 'center', flex: 1 },
   stepCircle: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
   input: { borderWidth: 1, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16 },
@@ -370,6 +393,14 @@ const styles = StyleSheet.create({
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 8 },
   swatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  dropdownField: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  dot: { width: 14, height: 14, borderRadius: 7 },
   categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
   categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
   categoryChip: { width: '47%', flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10 },
