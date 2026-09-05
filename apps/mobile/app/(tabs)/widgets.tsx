@@ -15,6 +15,7 @@ import { useTheme } from '../../src/theme/PreferencesContext';
 import { accents } from '../../src/theme/tokens';
 import type { PurEvent } from '../../src/types/event';
 import { darken } from '../../src/utils/color';
+import { getNextOccurrence } from '../../src/utils/recurrence';
 
 const SAMPLE_EVENT: PurEvent = {
   id: 'sample',
@@ -40,7 +41,8 @@ const THEME_SWATCHES: { key: string; colors: [string, string]; locked: boolean }
 function MiniWidget({ event, size }: { event: PurEvent; size: 'small' | 'medium' | 'large' }) {
   const { radius } = useTheme();
   const base = accents[event.accentColor] ?? accents.violet;
-  const days = Math.max(0, Math.ceil(dayjs(event.dateTimeISO).diff(dayjs(), 'hour') / 24));
+  const nextOccurrence = getNextOccurrence(event.dateTimeISO, event.repeat);
+  const days = Math.max(0, Math.ceil(nextOccurrence.diff(dayjs(), 'hour') / 24));
   const dims = size === 'small' ? { width: 84, height: 84 } : size === 'medium' ? { width: 170, height: 84 } : { width: 170, height: 170 };
 
   return (
@@ -65,7 +67,7 @@ export default function WidgetsScreen() {
   useFocusEffect(
     useCallback(() => {
       listEvents().then((events) => {
-        const upcoming = events.find((e) => dayjs(e.dateTimeISO).isAfter(dayjs()));
+        const upcoming = events.find((e) => e.repeat !== 'none' || dayjs(e.dateTimeISO).isAfter(dayjs()));
         if (upcoming) setSample(upcoming);
       });
     }, [])

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { NewEventInput, PurEvent } from '../types/event';
+import { getNextOccurrenceISO } from '../utils/recurrence';
 
 // MVP is offline-first: everything lives on-device. Cloud sync (Pro) comes in
 // a later phase and will layer on top of this same read/write API rather
@@ -23,7 +24,12 @@ async function writeAll(events: PurEvent[]): Promise<void> {
 
 export async function listEvents(): Promise<PurEvent[]> {
   const events = await readAll();
-  return events.sort((a, b) => a.dateTimeISO.localeCompare(b.dateTimeISO));
+  // Sort by *next* occurrence, not the raw stored date — a weekly/monthly/
+  // yearly event whose original date already passed should sort (and
+  // count down) based on when it next actually happens.
+  return events.sort((a, b) =>
+    getNextOccurrenceISO(a.dateTimeISO, a.repeat).localeCompare(getNextOccurrenceISO(b.dateTimeISO, b.repeat))
+  );
 }
 
 export async function getEvent(id: string): Promise<PurEvent | undefined> {

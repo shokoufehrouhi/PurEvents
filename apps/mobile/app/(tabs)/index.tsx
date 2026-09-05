@@ -12,6 +12,7 @@ import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { listEvents } from '../../src/storage/events';
 import { useTheme } from '../../src/theme/PreferencesContext';
 import type { PurEvent } from '../../src/types/event';
+import { getNextOccurrence } from '../../src/utils/recurrence';
 
 function daysUntil(iso: string): number {
   return Math.ceil(dayjs(iso).diff(dayjs(), 'hour') / 24);
@@ -19,7 +20,8 @@ function daysUntil(iso: string): number {
 
 function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) {
   const { colors, spacing, radius, typography } = useTheme();
-  const days = daysUntil(event.dateTimeISO);
+  const nextOccurrence = getNextOccurrence(event.dateTimeISO, event.repeat);
+  const days = daysUntil(nextOccurrence.toISOString());
 
   return (
     <Pressable
@@ -34,9 +36,7 @@ function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) 
         <Text style={[typography.bodyStrong, { color: colors.text }]} numberOfLines={1}>
           {event.title}
         </Text>
-        <Text style={[typography.caption, { color: colors.secondary }]}>
-          {dayjs(event.dateTimeISO).format('MMM D, YYYY')}
-        </Text>
+        <Text style={[typography.caption, { color: colors.secondary }]}>{nextOccurrence.format('MMM D, YYYY')}</Text>
       </View>
       <View style={styles.rowRight}>
         <View style={styles.rowIcons}>
@@ -73,8 +73,11 @@ export default function EventListScreen() {
 
   const { hero, rest, pastList } = useMemo(() => {
     const now = dayjs();
-    const upcoming = events.filter((e) => dayjs(e.dateTimeISO).isAfter(now));
-    const past = events.filter((e) => !dayjs(e.dateTimeISO).isAfter(now)).reverse();
+    // A repeating event's *next* occurrence is always upcoming by
+    // definition — only a one-time (repeat: 'none') event can be "past".
+    const isPast = (e: PurEvent) => e.repeat === 'none' && !dayjs(e.dateTimeISO).isAfter(now);
+    const upcoming = events.filter((e) => !isPast(e));
+    const past = events.filter(isPast).reverse();
     return { hero: upcoming[0], rest: upcoming.slice(1), pastList: past };
   }, [events]);
 

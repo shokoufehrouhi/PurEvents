@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import dayjs from 'dayjs';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +16,7 @@ import { accents } from '../../../src/theme/tokens';
 import { EventIcon } from '../../../src/components/EventIcon';
 import type { PurEvent } from '../../../src/types/event';
 import { darken } from '../../../src/utils/color';
+import { getNextOccurrence } from '../../../src/utils/recurrence';
 import { reminderLabel } from '../../../src/utils/reminders';
 
 export default function EventDetailScreen() {
@@ -51,11 +51,12 @@ export default function EventDetailScreen() {
 
   async function handleShare() {
     await Share.share({
-      message: `${event!.title} — ${dayjs(event!.dateTimeISO).format('YYYY-MM-DD HH:mm')}`,
+      message: `${event!.title} — ${getNextOccurrence(event!.dateTimeISO, event!.repeat).format('YYYY-MM-DD HH:mm')}`,
     });
   }
 
   const base = accents[event.accentColor] ?? accents.violet;
+  const nextOccurrence = getNextOccurrence(event.dateTimeISO, event.repeat);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -78,7 +79,7 @@ export default function EventDetailScreen() {
         <View style={[styles.heroBody, { padding: spacing.md }]}>
           <EventIcon category={event.category} size={40} />
           <Text style={styles.heroTitle}>{event.title}</Text>
-          <HeroCountdown targetISO={event.dateTimeISO} />
+          <HeroCountdown targetISO={nextOccurrence.toISOString()} />
         </View>
       </LinearGradient>
 
@@ -87,7 +88,7 @@ export default function EventDetailScreen() {
           <View style={[styles.infoRow, { padding: spacing.md }]}>
             <Ionicons name="calendar-outline" size={18} color={colors.secondary} />
             <Text style={[typography.body, { color: colors.text, marginLeft: 10 }]}>
-              {dayjs(event.dateTimeISO).format('MMM D, YYYY (ddd)')}
+              {nextOccurrence.format('MMM D, YYYY (ddd)')}
             </Text>
           </View>
           <View style={[styles.infoRow, { padding: spacing.md }]}>
