@@ -208,7 +208,7 @@ export function EventWizard({ mode, eventId }: Props) {
                       },
                     ]}
                   >
-                    <EventIcon category={c} size={32} />
+                    <EventIcon category={c} size={44} />
                     <Text
                       style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}
                       numberOfLines={1}
