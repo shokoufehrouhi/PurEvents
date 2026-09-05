@@ -55,7 +55,13 @@
     },
     "newEventTitle": "Nuevo evento",
     "editEventTitle": "Editar evento",
-    "basicsHeading": "Datos básicos"
+    "basicsHeading": "Datos básicos",
+    "cardThemeLabel": "Tema",
+    "cardTheme": {
+      "clean": "Limpio",
+      "color": "Color",
+      "dark": "Oscuro"
+    }
   },
   "countdown": {
     "days": "{{count}}d",

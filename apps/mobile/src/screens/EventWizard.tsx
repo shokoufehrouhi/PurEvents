@@ -15,9 +15,10 @@ import { Section } from '../components/ui/Section';
 import { scheduleRemindersForEvent } from '../notifications';
 import { createEvent, getEvent, listEvents, updateEvent } from '../storage/events';
 import { usePro, FREE_LIMITS } from '../subscription';
+import { CARD_THEME_KEYS, CARD_THEMES } from '../theme/cardThemes';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
-import type { EventCategory, PurEvent, RepeatRule } from '../types/event';
+import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/event';
 import { awaitPick } from '../utils/pickerBridge';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
@@ -83,6 +84,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const [date, setDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000));
   const [category, setCategory] = useState<EventCategory>('personal');
   const [accentColor, setAccentColor] = useState<AccentKey>('coral');
+  const [cardTheme, setCardTheme] = useState<CardTheme>('color');
   const [repeat, setRepeat] = useState<RepeatRule>('none');
   const [reminders, setReminders] = useState<number[]>(prefs.defaultReminderOffsets);
   const [note, setNote] = useState('');
@@ -96,6 +98,7 @@ export function EventWizard({ mode, eventId }: Props) {
         setDate(new Date(e.dateTimeISO));
         setCategory(e.category);
         setAccentColor(e.accentColor);
+        setCardTheme(e.cardTheme);
         setRepeat(e.repeat);
         setReminders(e.reminders);
         setNote(e.note ?? '');
@@ -112,6 +115,7 @@ export function EventWizard({ mode, eventId }: Props) {
     timezone,
     category,
     accentColor,
+    cardTheme,
     repeat,
     reminders,
     note: note.trim() || undefined,
@@ -160,6 +164,7 @@ export function EventWizard({ mode, eventId }: Props) {
       timezone,
       category,
       accentColor,
+      cardTheme,
       repeat,
       reminders,
       note: note.trim() || undefined,
@@ -173,7 +178,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const scheduleSummary = `${dayjs(date).format('MMM D, YYYY • h:mm A')} • ${timezoneAbbrev(timezone)}`;
   const remindersSummary =
     reminders.length === 0 ? t('events.noReminders') : `${reminders.length} ${t('events.remindersLabel').toLowerCase()}`;
-  const appearanceSummary = `${t(`events.category.${category}`)} • ${accentColor}`;
+  const appearanceSummary = t(`events.cardTheme.${cardTheme}`);
   const advancedSummary = note.trim() ? `${t(`events.repeat.${repeat}`)}, note added` : t(`events.repeat.${repeat}`);
 
   return (
@@ -317,10 +322,48 @@ export function EventWizard({ mode, eventId }: Props) {
               onPress={() => toggle('appearance')}
             >
               <EventHeroCard event={draftEvent} height={140} />
+
+              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>
+                {t('events.cardThemeLabel')}
+              </Text>
+              <View style={styles.themeRow}>
+                {CARD_THEME_KEYS.map((key) => {
+                  const preset = CARD_THEMES[key];
+                  const selected = cardTheme === key;
+                  return (
+                    <Pressable key={key} style={styles.themeOption} onPress={() => setCardTheme(key)}>
+                      <View
+                        style={[
+                          styles.themeSwatch,
+                          elevation.e1,
+                          {
+                            backgroundColor: preset.background ?? accents[accentColor],
+                            borderRadius: radius.md,
+                            borderWidth: selected ? 2 : 0,
+                            borderColor: colors.primary,
+                          },
+                        ]}
+                      >
+                        <EventIcon category={category} size={22} variant={preset.iconVariant} />
+                        <Text style={{ color: preset.text, fontSize: 11, fontWeight: '600', marginTop: 4 }} numberOfLines={1}>
+                          {title.trim() || 'Event'}
+                        </Text>
+                      </View>
+                      <Text style={[typography.caption, { color: selected ? colors.primary : colors.secondary, marginTop: 6, fontWeight: selected ? '700' : '400' }]}>
+                        {t(`events.cardTheme.${key}`)}
+                      </Text>
+                      <View style={[styles.radio, { borderColor: selected ? colors.primary : colors.outline }]}>
+                        {selected ? <View style={[styles.radioDot, { backgroundColor: colors.primary }]} /> : null}
+                      </View>
+                    </Pressable>
+                  );
+                })}
+              </View>
+
               {!isPro ? (
                 <Pressable
                   onPress={() => router.push('/upgrade')}
-                  style={[styles.proNote, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}
+                  style={[styles.proNote, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, marginTop: 16 }]}
                 >
                   <Ionicons name="lock-closed" size={14} color={colors.secondary} />
                   <Text style={[typography.caption, { color: colors.secondary, marginLeft: 6 }]}>{t('widgets.proNote')}</Text>
@@ -391,4 +434,17 @@ const styles = StyleSheet.create({
   reminderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   addReminder: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, padding: 12, borderStyle: 'dashed' },
   proNote: { flexDirection: 'row', alignItems: 'center', padding: 10, marginTop: 12 },
+  themeRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 10 },
+  themeOption: { flex: 1, alignItems: 'center' },
+  themeSwatch: { width: '100%', aspectRatio: 1.1, alignItems: 'center', justifyContent: 'center' },
+  radio: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 2,
+    marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radioDot: { width: 10, height: 10, borderRadius: 5 },
 });

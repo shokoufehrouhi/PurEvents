@@ -23,6 +23,7 @@ const SAMPLE_EVENT: PurEvent = {
   timezone: 'Asia/Tokyo',
   category: 'travel',
   accentColor: 'coral',
+  cardTheme: 'color',
   repeat: 'none',
   reminders: [],
   createdAt: '',

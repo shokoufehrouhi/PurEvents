@@ -4,6 +4,9 @@ export type EventCategory = 'personal' | 'work' | 'travel' | 'finance' | 'health
 
 export type RepeatRule = 'none' | 'yearly' | 'monthly' | 'weekly';
 
+/** Free-tier hero card presets (see src/theme/cardThemes.ts). Pro adds more. */
+export type CardTheme = 'clean' | 'color' | 'dark';
+
 export interface PurEvent {
   id: string;
   title: string;
@@ -14,6 +17,7 @@ export interface PurEvent {
   /** Also drives the icon shown on the hero card / list row / detail header — see src/theme/icons.ts. */
   category: EventCategory;
   accentColor: AccentKey;
+  cardTheme: CardTheme;
   note?: string;
   repeat: RepeatRule;
   /** Minutes-before-event offsets; [0] = "at time of event". */

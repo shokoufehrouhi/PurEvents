@@ -55,7 +55,13 @@
     },
     "newEventTitle": "رویداد جدید",
     "editEventTitle": "ویرایش رویداد",
-    "basicsHeading": "اطلاعات پایه"
+    "basicsHeading": "اطلاعات پایه",
+    "cardThemeLabel": "تم",
+    "cardTheme": {
+      "clean": "ساده",
+      "color": "رنگی",
+      "dark": "تیره"
+    }
   },
   "countdown": {
     "days": "{{count}} روز",

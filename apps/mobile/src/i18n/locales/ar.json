@@ -55,7 +55,13 @@
     },
     "newEventTitle": "حدث جديد",
     "editEventTitle": "تعديل الحدث",
-    "basicsHeading": "الأساسيات"
+    "basicsHeading": "الأساسيات",
+    "cardThemeLabel": "السمة",
+    "cardTheme": {
+      "clean": "بسيط",
+      "color": "ملوّن",
+      "dark": "داكن"
+    }
   },
   "countdown": {
     "days": "{{count}} يوم",
