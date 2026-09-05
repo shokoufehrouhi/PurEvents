@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import dayjs from 'dayjs';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,6 +14,7 @@ import { cancelRemindersForEvent } from '../../../src/notifications';
 import { deleteEvent, getEvent } from '../../../src/storage/events';
 import { useTheme } from '../../../src/theme/PreferencesContext';
 import { accents } from '../../../src/theme/tokens';
+import { getEventIcon } from '../../../src/theme/icons';
 import type { PurEvent } from '../../../src/types/event';
 import { darken } from '../../../src/utils/color';
 import { reminderLabel } from '../../../src/utils/reminders';
@@ -75,7 +76,7 @@ export default function EventDetailScreen() {
           </View>
         </SafeAreaView>
         <View style={[styles.heroBody, { padding: spacing.md }]}>
-          <Text style={styles.heroIcon}>{event.icon}</Text>
+          <MaterialCommunityIcons name={getEventIcon(event.icon).name} size={28} color="#fff" />
           <Text style={styles.heroTitle}>{event.title}</Text>
           <HeroCountdown targetISO={event.dateTimeISO} />
         </View>
@@ -143,7 +144,6 @@ const styles = StyleSheet.create({
   heroHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   heroHeaderRight: { flexDirection: 'row', alignItems: 'center' },
   heroBody: { marginTop: 8, gap: 10 },
-  heroIcon: { fontSize: 28 },
   heroTitle: { color: '#fff', fontSize: 26, fontWeight: '700' },
   infoRow: { flexDirection: 'row', alignItems: 'center' },
   buttonRow: { flexDirection: 'row', marginTop: 8 },

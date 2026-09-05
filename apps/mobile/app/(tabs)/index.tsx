@@ -7,10 +7,10 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { EventHeroCard } from '../../src/components/EventHeroCard';
+import { EventIcon } from '../../src/components/EventIcon';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { listEvents } from '../../src/storage/events';
 import { useTheme } from '../../src/theme/PreferencesContext';
-import { accents } from '../../src/theme/tokens';
 import type { PurEvent } from '../../src/types/event';
 
 function daysUntil(iso: string): number {
@@ -20,7 +20,6 @@ function daysUntil(iso: string): number {
 function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) {
   const { colors, spacing, radius, typography } = useTheme();
   const days = daysUntil(event.dateTimeISO);
-  const accentColor = accents[event.accentColor] ?? accents.violet;
 
   return (
     <Pressable
@@ -30,9 +29,7 @@ function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) 
         { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.sm + 4, opacity: pressed ? 0.7 : 1 },
       ]}
     >
-      <View style={[styles.iconCircle, { backgroundColor: `${accentColor}22` }]}>
-        <Text style={styles.iconEmoji}>{event.icon}</Text>
-      </View>
+      <EventIcon iconKey={event.icon} size={44} />
       <View style={styles.rowMiddle}>
         <Text style={[typography.bodyStrong, { color: colors.text }]} numberOfLines={1}>
           {event.title}
@@ -128,8 +125,6 @@ export default function EventListScreen() {
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 },
   row: { flexDirection: 'row', alignItems: 'center' },
-  iconCircle: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  iconEmoji: { fontSize: 20 },
   rowMiddle: { flex: 1, marginLeft: 12, gap: 2 },
   rowRight: { alignItems: 'flex-end' },
   rowIcons: { flexDirection: 'row', marginBottom: 4 },

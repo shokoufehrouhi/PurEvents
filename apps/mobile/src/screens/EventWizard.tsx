@@ -6,18 +6,19 @@ import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { EventHeroCard } from '../components/EventHeroCard';
+import { EventIcon } from '../components/EventIcon';
 import { Button } from '../components/ui/Button';
 import { scheduleRemindersForEvent } from '../notifications';
 import { createEvent, getEvent, listEvents, updateEvent } from '../storage/events';
 import { usePro, FREE_LIMITS } from '../subscription';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
-import { ACCENT_KEYS, accents, type AccentKey } from '../theme/tokens';
+import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
+import { DEFAULT_EVENT_ICON, EVENT_ICONS } from '../theme/icons';
 import type { EventCategory, PurEvent, RepeatRule } from '../types/event';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
 const CATEGORIES: EventCategory[] = ['personal', 'work', 'travel', 'finance', 'health', 'other'];
 const REPEATS: RepeatRule[] = ['none', 'yearly', 'monthly', 'weekly'];
-const ICONS = ['🎉', '🎂', '✈️', '💼', '💰', '❤️', '🎓', '💍', '🚀', '📌'];
 const STEPS = ['stepBasics', 'stepSchedule', 'stepReminders', 'stepAppearance'] as const;
 
 interface Props {
@@ -37,7 +38,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const [date, setDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000));
   const [category, setCategory] = useState<EventCategory>('personal');
   const [accentColor, setAccentColor] = useState<AccentKey>('coral');
-  const [icon, setIcon] = useState(ICONS[0]);
+  const [icon, setIcon] = useState(DEFAULT_EVENT_ICON);
   const [repeat, setRepeat] = useState<RepeatRule>('none');
   const [reminders, setReminders] = useState<number[]>(prefs.defaultReminderOffsets);
   const [note, setNote] = useState('');
@@ -167,29 +168,47 @@ export function EventWizard({ mode, eventId }: Props) {
 
             <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.accentColorLabel')}</Text>
             <View style={styles.chipRow}>
-              {ACCENT_KEYS.map((key) => (
-                <Pressable
-                  key={key}
-                  onPress={() => setAccentColor(key)}
-                  style={[
-                    styles.swatch,
-                    { backgroundColor: accents[key], borderWidth: accentColor === key ? 3 : 0, borderColor: colors.text },
-                  ]}
-                />
-              ))}
+              {ACCENT_KEYS.map((key) => {
+                const selected = accentColor === key;
+                return (
+                  <Pressable
+                    key={key}
+                    onPress={() => setAccentColor(key)}
+                    style={[
+                      styles.swatch,
+                      elevation.e1,
+                      {
+                        backgroundColor: accents[key],
+                        borderWidth: selected ? 3 : 0,
+                        borderColor: colors.surface,
+                      },
+                    ]}
+                  >
+                    {selected ? <Ionicons name="checkmark" size={18} color="#fff" /> : null}
+                  </Pressable>
+                );
+              })}
             </View>
 
             <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.iconLabel')}</Text>
             <View style={styles.chipRow}>
-              {ICONS.map((e) => (
-                <Pressable
-                  key={e}
-                  onPress={() => setIcon(e)}
-                  style={[styles.iconChip, { backgroundColor: icon === e ? colors.primary : colors.surfaceAlt, borderRadius: radius.md }]}
-                >
-                  <Text style={{ fontSize: 18 }}>{e}</Text>
-                </Pressable>
-              ))}
+              {EVENT_ICONS.map((opt) => {
+                const selected = icon === opt.key;
+                return (
+                  <Pressable
+                    key={opt.key}
+                    onPress={() => setIcon(opt.key)}
+                    style={({ pressed }) => [styles.iconChipWrap, elevation.e1, { opacity: pressed ? 0.7 : 1 }]}
+                  >
+                    <EventIcon iconKey={opt.key} variant={selected ? 'solid' : 'pastel'} />
+                    {selected ? (
+                      <View style={[styles.checkBadge, { backgroundColor: colors.surface }]}>
+                        <Ionicons name="checkmark-circle" size={18} color={opt.color} />
+                      </View>
+                    ) : null}
+                  </Pressable>
+                );
+              })}
             </View>
 
             <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
@@ -302,8 +321,9 @@ const styles = StyleSheet.create({
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingHorizontal: 14, paddingVertical: 8 },
-  iconChip: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  swatch: { width: 32, height: 32, borderRadius: 16 },
+  iconChipWrap: { borderRadius: Math.round(52 * 0.3) },
+  checkBadge: { position: 'absolute', top: -4, right: -4, borderRadius: 10 },
+  swatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   reminderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   addReminder: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, padding: 12, borderStyle: 'dashed' },
   proNote: { flexDirection: 'row', alignItems: 'center', padding: 10, marginTop: 12 },
