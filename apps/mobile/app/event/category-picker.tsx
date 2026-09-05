@@ -36,7 +36,7 @@ export default function CategoryPickerScreen() {
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md }}>
-        <View style={styles.grid}>
+        <View style={styles.list}>
           {CATEGORIES.map((c) => {
             const selected = current === c;
             const { color } = getCategoryIcon(c);
@@ -45,15 +45,15 @@ export default function CategoryPickerScreen() {
                 key={c}
                 onPress={() => pick(c)}
                 style={({ pressed }) => [
-                  styles.chip,
+                  styles.row,
                   { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.md, opacity: pressed ? 0.8 : 1 },
                 ]}
               >
-                <EventIcon category={c} size={52} />
-                <Text style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}>
+                <EventIcon category={c} size={56} />
+                <Text style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 14, fontSize: 18 }]}>
                   {t(`events.category.${c}`)}
                 </Text>
-                {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.onPrimary} /> : null}
+                {selected ? <Ionicons name="checkmark-circle" size={24} color={colors.onPrimary} /> : null}
               </Pressable>
             );
           })}
@@ -65,6 +65,6 @@ export default function CategoryPickerScreen() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  chip: { width: '47%', flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10 },
+  list: { gap: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 14 },
 });
