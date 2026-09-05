@@ -276,7 +276,7 @@ export function EventWizard({ mode, eventId }: Props) {
               <DateTimePicker
                 value={date}
                 mode="datetime"
-                display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                display={Platform.OS === 'ios' ? 'compact' : 'default'}
                 onChange={(_, selected) => selected && setDate(selected)}
               />
             </AccordionRow>
