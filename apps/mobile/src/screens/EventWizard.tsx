@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EventHeroCard } from '../components/EventHeroCard';
 import { EventIcon } from '../components/EventIcon';
@@ -72,6 +73,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors, spacing, radius, typography } = useTheme();
+  const insets = useSafeAreaInsets();
   const { prefs } = usePreferences();
   const { isPro } = usePro();
 
@@ -176,7 +178,7 @@ export function EventWizard({ mode, eventId }: Props) {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[styles.header, { padding: spacing.md }]}>
+      <View style={[styles.header, { padding: spacing.md, paddingTop: insets.top + spacing.md }]}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Ionicons name="close" size={24} color={colors.text} />
         </Pressable>
