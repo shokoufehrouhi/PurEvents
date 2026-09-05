@@ -40,6 +40,7 @@ function Navigation() {
       >
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="event/new" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="event/category-picker" />
         <Stack.Screen name="event/[id]/index" />
         <Stack.Screen name="event/[id]/edit" options={{ presentation: 'modal' }} />
         <Stack.Screen name="preferences" options={{ ...headerOptions, title: t('preferences.title') }} />

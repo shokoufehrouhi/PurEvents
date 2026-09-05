@@ -16,11 +16,10 @@ import { createEvent, getEvent, listEvents, updateEvent } from '../storage/event
 import { usePro, FREE_LIMITS } from '../subscription';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
-import { getCategoryIcon } from '../theme/icons';
 import type { EventCategory, PurEvent, RepeatRule } from '../types/event';
+import { awaitPick } from '../utils/pickerBridge';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
-const CATEGORIES: EventCategory[] = ['personal', 'work', 'travel', 'finance', 'health', 'other'];
 const REPEATS: RepeatRule[] = ['none', 'yearly', 'monthly', 'weekly'];
 const STEPS = ['stepBasics', 'stepSchedule', 'stepReminders', 'stepAppearance'] as const;
 type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced';
@@ -120,6 +119,12 @@ export function EventWizard({ mode, eventId }: Props) {
 
   function toggle(key: SectionKey) {
     setExpanded((prev) => (prev === key ? null : key));
+  }
+
+  async function openCategoryPicker() {
+    router.push({ pathname: '/event/category-picker', params: { current: category } });
+    const picked = await awaitPick();
+    setCategory(picked as EventCategory);
   }
 
   function addReminder() {
@@ -248,36 +253,15 @@ export function EventWizard({ mode, eventId }: Props) {
             </View>
           ) : null}
 
-          <View style={styles.categoryHeader}>
-            <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
-            <Text style={[typography.caption, { color: colors.secondary, marginTop: 20 }]}>{t('events.chooseOne')}</Text>
-          </View>
-          <View style={styles.categoryGrid}>
-            {CATEGORIES.map((c) => {
-              const selected = category === c;
-              const { color } = getCategoryIcon(c);
-              return (
-                <Pressable
-                  key={c}
-                  onPress={() => setCategory(c)}
-                  style={({ pressed }) => [
-                    styles.categoryChip,
-                    elevation.e1,
-                    { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.md, opacity: pressed ? 0.8 : 1 },
-                  ]}
-                >
-                  <EventIcon category={c} size={52} />
-                  <Text
-                    style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}
-                    numberOfLines={1}
-                  >
-                    {t(`events.category.${c}`)}
-                  </Text>
-                  {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.onPrimary} /> : null}
-                </Pressable>
-              );
-            })}
-          </View>
+          <Text style={[typography.label, { color: colors.secondary, marginTop: 20, marginBottom: 8 }]}>{t('events.categoryLabel')}</Text>
+          <Pressable
+            onPress={openCategoryPicker}
+            style={[styles.dropdownField, { borderColor: colors.outline, borderRadius: radius.md }]}
+          >
+            <EventIcon category={category} size={28} />
+            <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: 10 }]}>{t(`events.category.${category}`)}</Text>
+            <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+          </Pressable>
         </Card>
 
         {/* Schedule / Reminders / Appearance / Advanced — grouped accordion card */}
@@ -401,9 +385,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   dot: { width: 14, height: 14, borderRadius: 7 },
-  categoryHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' },
-  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  categoryChip: { width: '47%', flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10 },
   accordionHeader: { flexDirection: 'row', alignItems: 'center' },
   reminderRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   addReminder: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, padding: 12, borderStyle: 'dashed' },

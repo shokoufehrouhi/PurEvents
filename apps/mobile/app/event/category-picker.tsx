@@ -1,0 +1,70 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { EventIcon } from '../../src/components/EventIcon';
+import { getCategoryIcon } from '../../src/theme/icons';
+import { useTheme } from '../../src/theme/PreferencesContext';
+import type { EventCategory } from '../../src/types/event';
+import { resolvePick } from '../../src/utils/pickerBridge';
+
+const CATEGORIES: EventCategory[] = ['personal', 'work', 'travel', 'finance', 'health', 'other'];
+
+// Full-screen category picker, opened from the "Category" row in the New
+// Event Basics card (tap → this screen → tap a category → back). Category
+// doubles as the icon — see src/theme/icons.ts.
+export default function CategoryPickerScreen() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const { colors, spacing, radius, typography } = useTheme();
+  const { current } = useLocalSearchParams<{ current?: string }>();
+
+  function pick(category: EventCategory) {
+    resolvePick(category);
+    router.back();
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
+      <View style={[styles.header, { padding: spacing.md }]}>
+        <Pressable onPress={() => router.back()} hitSlop={12}>
+          <Ionicons name="chevron-back" size={24} color={colors.text} />
+        </Pressable>
+        <Text style={[typography.bodyStrong, { color: colors.text }]}>{t('events.categoryLabel')}</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      <ScrollView contentContainerStyle={{ padding: spacing.md }}>
+        <View style={styles.grid}>
+          {CATEGORIES.map((c) => {
+            const selected = current === c;
+            const { color } = getCategoryIcon(c);
+            return (
+              <Pressable
+                key={c}
+                onPress={() => pick(c)}
+                style={({ pressed }) => [
+                  styles.chip,
+                  { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.md, opacity: pressed ? 0.8 : 1 },
+                ]}
+              >
+                <EventIcon category={c} size={52} />
+                <Text style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 10 }]}>
+                  {t(`events.category.${c}`)}
+                </Text>
+                {selected ? <Ionicons name="checkmark-circle" size={20} color={colors.onPrimary} /> : null}
+              </Pressable>
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
+  chip: { width: '47%', flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10 },
+});
