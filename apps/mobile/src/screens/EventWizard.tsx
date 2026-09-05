@@ -22,7 +22,6 @@ import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/ev
 import { awaitPick } from '../utils/pickerBridge';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
-const REPEATS: RepeatRule[] = ['none', 'yearly', 'monthly', 'weekly'];
 const STEPS = ['stepBasics', 'stepSchedule', 'stepReminders', 'stepAppearance'] as const;
 type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced';
 
@@ -146,6 +145,12 @@ export function EventWizard({ mode, eventId }: Props) {
     router.push({ pathname: '/event/category-picker', params: { current: category } });
     const picked = await awaitPick();
     setCategory(picked as EventCategory);
+  }
+
+  async function openRepeatPicker() {
+    router.push({ pathname: '/event/repeat-picker', params: { current: repeat } });
+    const picked = await awaitPick();
+    setRepeat(picked as RepeatRule);
   }
 
   function addReminder() {
@@ -393,17 +398,14 @@ export function EventWizard({ mode, eventId }: Props) {
               onPress={() => toggle('advanced')}
             >
               <Text style={[typography.label, { color: colors.secondary, marginBottom: 8 }]}>{t('events.repeatLabel')}</Text>
-              <View style={styles.chipRow}>
-                {REPEATS.map((r) => (
-                  <Pressable
-                    key={r}
-                    onPress={() => setRepeat(r)}
-                    style={[styles.chip, { backgroundColor: repeat === r ? colors.primary : colors.surfaceAlt, borderRadius: radius.pill }]}
-                  >
-                    <Text style={{ color: repeat === r ? colors.onPrimary : colors.text }}>{t(`events.repeat.${r}`)}</Text>
-                  </Pressable>
-                ))}
-              </View>
+              <Pressable
+                onPress={openRepeatPicker}
+                style={[styles.dropdownField, { borderColor: colors.outline, borderRadius: radius.md }]}
+              >
+                <Ionicons name="repeat" size={18} color={colors.secondary} />
+                <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: 10 }]}>{t(`events.repeat.${repeat}`)}</Text>
+                <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+              </Pressable>
 
               <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>{t('events.noteLabel')}</Text>
               <TextInput
@@ -435,7 +437,6 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16 },
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 14, paddingVertical: 8 },
   swatch: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
   dropdownField: {
     flexDirection: 'row',
