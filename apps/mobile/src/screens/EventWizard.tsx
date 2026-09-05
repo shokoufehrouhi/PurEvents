@@ -4,7 +4,7 @@ import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { EventHeroCard } from '../components/EventHeroCard';
 import { EventIcon } from '../components/EventIcon';
@@ -175,7 +175,11 @@ export function EventWizard({ mode, eventId }: Props) {
   const advancedSummary = note.trim() ? `${t(`events.repeat.${repeat}`)}, note added` : t(`events.repeat.${repeat}`);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.background }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
       <View style={[styles.header, { padding: spacing.md }]}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <Ionicons name="close" size={24} color={colors.text} />
@@ -204,7 +208,7 @@ export function EventWizard({ mode, eventId }: Props) {
         })}
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: 48 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
         {/* Basics — always visible, matches the approved layout */}
         <Card>
           <Text style={[typography.bodyStrong, { color: colors.text, marginBottom: spacing.md }]}>{t('events.basicsHeading')}</Text>
@@ -362,7 +366,7 @@ export function EventWizard({ mode, eventId }: Props) {
       <View style={{ padding: spacing.md }}>
         <Button label={mode === 'create' ? t('events.createEvent') : t('events.save')} onPress={handleSave} disabled={!canSave} />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

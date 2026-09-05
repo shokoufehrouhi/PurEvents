@@ -35,7 +35,7 @@ export default function CategoryPickerScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.md }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md }}>
         <View style={styles.grid}>
           {CATEGORIES.map((c) => {
             const selected = current === c;

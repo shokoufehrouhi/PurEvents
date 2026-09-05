@@ -72,7 +72,7 @@ export default function WidgetsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
-      <ScrollView contentContainerStyle={{ padding: spacing.md }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md }}>
         <Text style={[typography.title, { color: colors.text, marginBottom: spacing.lg }]}>{t('widgets.title')}</Text>
 
         <Text style={[typography.label, { color: colors.secondary, marginBottom: spacing.sm }]}>{t('widgets.widgetPreview')}</Text>

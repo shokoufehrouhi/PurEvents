@@ -82,7 +82,7 @@ export default function EventDetailScreen() {
         </View>
       </LinearGradient>
 
-      <ScrollView contentContainerStyle={{ padding: spacing.md }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md }}>
         <Section>
           <View style={[styles.infoRow, { padding: spacing.md }]}>
             <Ionicons name="calendar-outline" size={18} color={colors.secondary} />
