@@ -122,7 +122,8 @@
     "timezone": "منطقه‌ی زمانی",
     "autoTimezone": "منطقه‌ی زمانی خودکار",
     "autoTimezoneHint": "استفاده از منطقه‌ی زمانی دستگاه در صورت امکان",
-    "currentTimezone": "منطقه‌ی زمانی فعلی"
+    "currentTimezone": "منطقه‌ی زمانی فعلی",
+    "saturday": "شنبه"
   },
   "paywall": {
     "title": "هر لحظه را به‌یادماندنی کن",

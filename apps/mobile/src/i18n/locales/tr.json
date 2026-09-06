@@ -1,6 +1,10 @@
 {
   "appName": "PurEvents",
-  "tabs": { "events": "Etkinlikler", "widgets": "Widget'lar", "settings": "Ayarlar" },
+  "tabs": {
+    "events": "Etkinlikler",
+    "widgets": "Widget'lar",
+    "settings": "Ayarlar"
+  },
   "events": {
     "listTitle": "Etkinliklerin",
     "upcoming": "Yaklaşan",
@@ -118,7 +122,8 @@
     "timezone": "Saat dilimi",
     "autoTimezone": "Otomatik saat dilimi",
     "autoTimezoneHint": "Mümkün olduğunda cihaz saat dilimini kullan",
-    "currentTimezone": "Geçerli saat dilimi"
+    "currentTimezone": "Geçerli saat dilimi",
+    "saturday": "Cumartesi"
   },
   "paywall": {
     "title": "Her anı değerli kıl",

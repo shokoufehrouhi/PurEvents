@@ -122,7 +122,8 @@
     "timezone": "Zona horaria",
     "autoTimezone": "Zona horaria automática",
     "autoTimezoneHint": "Usar la zona horaria del dispositivo cuando esté disponible",
-    "currentTimezone": "Zona horaria actual"
+    "currentTimezone": "Zona horaria actual",
+    "saturday": "Sábado"
   },
   "paywall": {
     "title": "Haz que cada momento cuente",

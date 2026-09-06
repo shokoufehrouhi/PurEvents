@@ -1,6 +1,10 @@
 {
   "appName": "PurEvents",
-  "tabs": { "events": "Ereignisse", "widgets": "Widgets", "settings": "Einstellungen" },
+  "tabs": {
+    "events": "Ereignisse",
+    "widgets": "Widgets",
+    "settings": "Einstellungen"
+  },
   "events": {
     "listTitle": "Deine Ereignisse",
     "upcoming": "Bevorstehend",
@@ -118,7 +122,8 @@
     "timezone": "Zeitzone",
     "autoTimezone": "Automatische Zeitzone",
     "autoTimezoneHint": "Geräte-Zeitzone verwenden, falls verfügbar",
-    "currentTimezone": "Aktuelle Zeitzone"
+    "currentTimezone": "Aktuelle Zeitzone",
+    "saturday": "Samstag"
   },
   "paywall": {
     "title": "Mach jeden Moment zählen",

@@ -122,7 +122,8 @@
     "timezone": "Time zone",
     "autoTimezone": "Automatic time zone",
     "autoTimezoneHint": "Use device time zone when available",
-    "currentTimezone": "Current time zone"
+    "currentTimezone": "Current time zone",
+    "saturday": "Saturday"
   },
   "paywall": {
     "title": "Make every moment count",

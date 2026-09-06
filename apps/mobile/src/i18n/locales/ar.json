@@ -122,7 +122,8 @@
     "timezone": "المنطقة الزمنية",
     "autoTimezone": "منطقة زمنية تلقائية",
     "autoTimezoneHint": "استخدام المنطقة الزمنية للجهاز عند توفرها",
-    "currentTimezone": "المنطقة الزمنية الحالية"
+    "currentTimezone": "المنطقة الزمنية الحالية",
+    "saturday": "السبت"
   },
   "paywall": {
     "title": "اجعل كل لحظة مهمة",

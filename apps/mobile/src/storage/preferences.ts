@@ -11,7 +11,7 @@ export interface Preferences {
   // setting is stored and surfaced in UI ahead of that work landing.
   calendar: CalendarSystem;
   timeFormat: TimeFormat;
-  firstDayOfWeek: 0 | 1; // 0 = Sunday, 1 = Monday
+  firstDayOfWeek: 0 | 1 | 6; // 0 = Sunday, 1 = Monday, 6 = Saturday (dayjs convention)
   notificationsEnabled: boolean;
   soundsHapticsEnabled: boolean;
   autoTimezone: boolean;

@@ -3,18 +3,18 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../../theme/PreferencesContext';
 import { minTapTarget } from '../../theme/tokens';
 
-interface Option<T extends string> {
+interface Option<T extends string | number> {
   value: T;
   label: string;
 }
 
-interface Props<T extends string> {
+interface Props<T extends string | number> {
   options: Option<T>[];
   value: T;
   onChange: (value: T) => void;
 }
 
-export function SegmentedControl<T extends string>({ options, value, onChange }: Props<T>) {
+export function SegmentedControl<T extends string | number>({ options, value, onChange }: Props<T>) {
   const { colors, radius, spacing, typography } = useTheme();
 
   return (

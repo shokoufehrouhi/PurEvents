@@ -79,12 +79,18 @@ export default function PreferencesScreen() {
             ]}
           />
         </View>
-        <Row
-          icon="calendar-outline"
-          label={t('preferences.firstDayOfWeek')}
-          value={t(prefs.firstDayOfWeek === 0 ? 'preferences.sunday' : 'preferences.monday')}
-          onPress={() => setPrefs({ firstDayOfWeek: prefs.firstDayOfWeek === 0 ? 1 : 0 })}
-        />
+        <View style={{ padding: spacing.md }}>
+          <Text style={[typography.label, { color: colors.secondary, marginBottom: 8 }]}>{t('preferences.firstDayOfWeek')}</Text>
+          <SegmentedControl
+            value={prefs.firstDayOfWeek}
+            onChange={(v) => setPrefs({ firstDayOfWeek: v })}
+            options={[
+              { value: 6, label: t('preferences.saturday') },
+              { value: 0, label: t('preferences.sunday') },
+              { value: 1, label: t('preferences.monday') },
+            ]}
+          />
+        </View>
       </Section>
 
       <Section title={t('preferences.timeFormat')}>
