@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { jalaaliMonthLength, jalaaliToDateObject, toJalaali } from 'jalaali-js';
 import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { I18nManager, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { fromPersianDigits, PERSIAN_MONTHS, PERSIAN_WEEKDAYS_BY_JS_DAY, toPersianDigits } from '../utils/calendars';
@@ -10,6 +10,15 @@ interface Props {
   value: Date;
   onChange: (date: Date) => void;
 }
+
+// A calendar's day/month order is a fixed chronological sequence, not
+// something that should mirror with the UI language — Persian readers still
+// expect Saturday-through-Friday left-to-right, same as a Gregorian
+// calendar reads Sunday-through-Saturday left-to-right in an English app.
+// React Native auto-mirrors `flexDirection: 'row'` when I18nManager.isRTL
+// is on (Farsi/Arabic), so every row here has to counter-mirror back to a
+// true left-to-right order.
+const ROW = I18nManager.isRTL ? 'row-reverse' : 'row';
 
 // The native DateTimePicker only knows the Gregorian calendar (see UI
 // feedback — locale='...@calendar=persian' changes the picker's language
@@ -152,15 +161,15 @@ export function JalaliDatePicker({ value, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  monthField: { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
+  header: { flexDirection: ROW, gap: 8, marginBottom: 10 },
+  monthField: { flex: 2, flexDirection: ROW, alignItems: 'center', justifyContent: 'center', gap: 6 },
   yearField: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  weekdayRow: { flexDirection: 'row', marginBottom: 4 },
-  weekRow: { flexDirection: 'row' },
+  weekdayRow: { flexDirection: ROW, marginBottom: 4 },
+  weekRow: { flexDirection: ROW },
   dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
   dayButton: { width: '78%', aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
   backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center', padding: 24 },
   monthSheet: { width: '100%', maxWidth: 360 },
-  monthGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  monthGrid: { flexDirection: ROW, flexWrap: 'wrap', gap: 8 },
   monthCell: { width: '30.5%', paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
 });
