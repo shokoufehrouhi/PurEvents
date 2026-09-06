@@ -40,6 +40,11 @@ interface CalendarAdapter {
   monthMeta: MonthMeta[];
   weekdayLabels: string[];
   sheetTitle: string;
+  // Present only for calendars whose month-sheet mockup includes a bottom
+  // "Done" button (currently just Islamic) — tapping a month already
+  // selects and closes the sheet, so this is an optional extra affordance,
+  // not required to confirm a choice.
+  doneLabel?: string;
   // The Persian/Shamsi and Islamic/Hijri calendars are conventionally read
   // right-to-left regardless of the device's system language (month 1 at
   // the right of the month grid, first weekday at the right); Gregorian
@@ -73,23 +78,23 @@ const PERSIAN_MONTH_META: MonthMeta[] = [
 // Icon + pastel chip background per Hijri month (index 0 = Muharram) —
 // tied to what each month is culturally/religiously known for rather than
 // season (a lunar calendar drifts through all seasons over ~33 years, so
-// seasonal icons wouldn't stay meaningful): the crescent moon as the
-// default, swapped for something more specific on the months with their
-// own well-known occasion (Mawlid, Isra & Mi'raj, Ramadan, the two Eids,
-// Hajj).
+// seasonal icons wouldn't stay meaningful): Mawlid, Isra & Mi'raj, Ramadan,
+// the two Eids, and Hajj each get their own icon; the rest get a distinct
+// accent (star/sparkle/leaf/gem) so all twelve read apart at a glance,
+// per the approved month-picker mockup.
 const ISLAMIC_MONTH_META: MonthMeta[] = [
-  { icon: '🌙', bg: '#E8EAF6' }, // Muharram — Islamic New Year
-  { icon: '🌙', bg: '#ECEFF1' }, // Safar
-  { icon: '🕌', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
-  { icon: '🌙', bg: '#E3F2FD' }, // Rabi' al-Thani
-  { icon: '🌙', bg: '#E0F2F1' }, // Jumada al-Awwal
-  { icon: '🌙', bg: '#F1F8E9' }, // Jumada al-Thani
-  { icon: '✨', bg: '#F3E5F5' }, // Rajab — Isra & Mi'raj
-  { icon: '🌙', bg: '#EDE7F6' }, // Sha'ban
-  { icon: '🌙', bg: '#FFF8E1' }, // Ramadan
+  { icon: '🌟', bg: '#EDE7F6' }, // Muharram — Islamic New Year
+  { icon: '🔷', bg: '#E0F2F1' }, // Safar
+  { icon: '🌱', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
+  { icon: '🍃', bg: '#F1F8E9' }, // Rabi' al-Thani
+  { icon: '✨', bg: '#FFF8E1' }, // Jumada al-Awwal
+  { icon: '✳️', bg: '#E3F2FD' }, // Jumada al-Thani
+  { icon: '🌌', bg: '#FCE4EC' }, // Rajab — Isra & Mi'raj
+  { icon: '🔮', bg: '#F3E5F5' }, // Sha'ban
+  { icon: '🏮', bg: '#FFECB3' }, // Ramadan
   { icon: '🎉', bg: '#FCE4EC' }, // Shawwal — Eid al-Fitr
-  { icon: '🕋', bg: '#EFEBE9' }, // Dhu al-Qi'dah
-  { icon: '🕋', bg: '#FFECB3' }, // Dhu al-Hijjah — Hajj / Eid al-Adha
+  { icon: '🪙', bg: '#EFEBE9' }, // Dhu al-Qi'dah
+  { icon: '🕋', bg: '#FFE0B2' }, // Dhu al-Hijjah — Hajj / Eid al-Adha
 ];
 
 // Icon + pastel chip background per Gregorian month (index 0 = January),
@@ -139,6 +144,7 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
       monthMeta: ISLAMIC_MONTH_META,
       weekdayLabels: ARABIC_WEEKDAYS_BY_JS_DAY,
       sheetTitle: 'اختيار الشهر',
+      doneLabel: 'تم',
       rtl: true,
       toCivil: (date) => toHijri(date),
       toDate: (year, month, day, hour, minute, second) => hijriToDateObject(year, month, day, hour, minute, second),
@@ -352,23 +358,31 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
                     onPress={() => selectMonth(monthIndex1)}
                     style={[styles.monthCell, { borderRadius: radius.lg, backgroundColor: isSelected ? colors.primary : meta.bg }]}
                   >
-                    {isSelected ? (
-                      <View style={styles.checkBadge}>
-                        <Ionicons name="checkmark" size={14} color={colors.primary} />
-                      </View>
-                    ) : (
-                      <Text style={styles.monthEmoji}>{meta.icon}</Text>
-                    )}
+                    <Text style={styles.monthEmoji}>{meta.icon}</Text>
                     <Text
                       style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text, marginTop: 6 }]}
                       numberOfLines={1}
                     >
                       {name}
                     </Text>
+                    {isSelected && (
+                      <View style={styles.checkBadge}>
+                        <Ionicons name="checkmark" size={12} color={colors.primary} />
+                      </View>
+                    )}
                   </Pressable>
                 );
               })}
             </View>
+
+            {adapter.doneLabel && (
+              <Pressable
+                onPress={() => setMonthPickerOpen(false)}
+                style={[styles.doneButton, { backgroundColor: colors.primary, borderRadius: radius.lg, marginTop: spacing.md }]}
+              >
+                <Text style={[typography.bodyStrong, { color: '#FFFFFF' }]}>{adapter.doneLabel}</Text>
+              </Pressable>
+            )}
           </Pressable>
         </Pressable>
       </Modal>
@@ -391,7 +405,18 @@ const styles = StyleSheet.create({
   sheet: { width: '100%' },
   sheetHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 14 },
   monthGrid: { flexWrap: 'wrap', gap: 10 },
-  monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
+  monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center', position: 'relative' },
   monthEmoji: { fontSize: 22 },
-  checkBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
+  checkBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  doneButton: { paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
 });
