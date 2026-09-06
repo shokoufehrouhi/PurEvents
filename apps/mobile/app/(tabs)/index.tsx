@@ -11,6 +11,7 @@ import { EventIcon } from '../../src/components/EventIcon';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { listEvents } from '../../src/storage/events';
 import { usePreferences, useTheme } from '../../src/theme/PreferencesContext';
+import { accents } from '../../src/theme/tokens';
 import type { PurEvent } from '../../src/types/event';
 import { formatCivilDateFull, shouldUseFarsiDigits } from '../../src/utils/calendars';
 import { fetchLocationPhotoUrl } from '../../src/utils/locationPhoto';
@@ -20,21 +21,75 @@ function daysUntil(iso: string): number {
   return Math.ceil(dayjs(iso).diff(dayjs(), 'hour') / 24);
 }
 
-// Bordered placeholder card for an empty Upcoming/Past list — a plain
-// centered line of text read as an afterthought floating on the
-// background, so this wraps it in a dashed, rounded "holder" (icon +
-// message) matching the app's card language (radius.lg, colors.outline).
-function EmptyState({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: string }) {
+interface EmptyStateAction {
+  kind: 'button' | 'link';
+  label: string;
+  onPress: () => void;
+}
+
+// Placeholder card for an empty Upcoming/Past list, per the "Compact
+// holder" mockup: a soft primary-tinted card with a two-layer icon
+// illustration (a big soft-circle badge + a small solid corner badge),
+// bold title, secondary subtitle, and a next-step action (a "Create
+// event" button for Upcoming, a "View upcoming events" link for Past).
+// Built from theme tokens/Ionicons rather than cropped mockup art so it
+// stays theme-aware (light/dark) and mirrors correctly under RTL — the
+// mockup's own callouts ("RTL ready", "Light + Dark ready") point the
+// same direction a static raster illustration couldn't follow.
+function EmptyState({
+  icon,
+  badgeIcon,
+  badgeColor,
+  title,
+  subtitle,
+  action,
+}: {
+  icon: keyof typeof Ionicons.glyphMap;
+  badgeIcon: keyof typeof Ionicons.glyphMap;
+  badgeColor: string;
+  title: string;
+  subtitle: string;
+  action: EmptyStateAction;
+}) {
   const { colors, spacing, radius, typography } = useTheme();
   return (
     <View
       style={[
         styles.emptyBox,
-        { borderColor: colors.outline, backgroundColor: colors.surfaceAlt, borderRadius: radius.lg, padding: spacing.xl },
+        {
+          backgroundColor: `${colors.primary}0D`,
+          borderColor: `${colors.primary}33`,
+          borderRadius: radius.lg,
+          padding: spacing.xl,
+        },
       ]}
     >
-      <Ionicons name={icon} size={30} color={colors.secondary} style={{ marginBottom: 10 }} />
-      <Text style={[typography.body, styles.emptyText, { color: colors.secondary }]}>{text}</Text>
+      <View style={styles.emptyIllustration}>
+        <View style={[styles.emptyIconCircle, { backgroundColor: `${colors.primary}1F` }]}>
+          <Ionicons name={icon} size={38} color={colors.primary} />
+        </View>
+        <View style={[styles.emptyBadge, { backgroundColor: badgeColor, borderColor: colors.background }]}>
+          <Ionicons name={badgeIcon} size={15} color="#FFFFFF" />
+        </View>
+      </View>
+      <Text style={[typography.bodyStrong, styles.emptyTitle, { color: colors.text }]}>{title}</Text>
+      <Text style={[typography.caption, styles.emptySubtitle, { color: colors.secondary }]}>{subtitle}</Text>
+      {action.kind === 'button' ? (
+        <Pressable
+          onPress={action.onPress}
+          style={({ pressed }) => [
+            styles.emptyButton,
+            { backgroundColor: colors.primary, borderRadius: radius.pill, opacity: pressed ? 0.85 : 1 },
+          ]}
+        >
+          <Ionicons name="add" size={16} color="#FFFFFF" />
+          <Text style={styles.emptyButtonText}>{action.label}</Text>
+        </Pressable>
+      ) : (
+        <Pressable onPress={action.onPress} hitSlop={8} style={{ marginTop: spacing.sm }}>
+          <Text style={[typography.bodyStrong, { color: colors.primary }]}>{action.label}</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -171,9 +226,25 @@ export default function EventListScreen() {
           // itself, with its own message (no "add your first countdown"
           // CTA — that action belongs to the Upcoming/global empty state).
           tab === 'upcoming' ? (
-            !hero ? <EmptyState icon="calendar-outline" text={t('events.empty')} /> : null
+            !hero ? (
+              <EmptyState
+                icon="calendar-outline"
+                badgeIcon="time"
+                badgeColor={colors.primary}
+                title={t('events.emptyTitle')}
+                subtitle={t('events.emptySubtitle')}
+                action={{ kind: 'button', label: t('events.createEvent'), onPress: () => router.push('/event/new') }}
+              />
+            ) : null
           ) : pastList.length === 0 ? (
-            <EmptyState icon="time-outline" text={t('events.emptyPast')} />
+            <EmptyState
+              icon="mail-open-outline"
+              badgeIcon="checkmark"
+              badgeColor={accents.mint}
+              title={t('events.emptyPastTitle')}
+              subtitle={t('events.emptyPastSubtitle')}
+              action={{ kind: 'link', label: t('events.viewUpcoming'), onPress: () => setTab('upcoming') }}
+            />
           ) : null
         }
         renderItem={({ item }) => <EventRow event={item} onPress={() => router.push(`/event/${item.id}`)} />}
@@ -188,6 +259,28 @@ const styles = StyleSheet.create({
   rowMiddle: { flex: 1, marginLeft: 12, gap: 2 },
   rowRight: { alignItems: 'flex-end' },
   rowIcons: { flexDirection: 'row', marginBottom: 4 },
-  emptyBox: { alignItems: 'center', borderWidth: 1, borderStyle: 'dashed', marginTop: 40 },
-  emptyText: { textAlign: 'center' },
+  emptyBox: { alignItems: 'center', borderWidth: 1, marginTop: 32 },
+  emptyIllustration: { marginBottom: 16 },
+  emptyIconCircle: { width: 84, height: 84, borderRadius: 42, alignItems: 'center', justifyContent: 'center' },
+  emptyBadge: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: { fontSize: 18, fontWeight: '700', textAlign: 'center', marginBottom: 4 },
+  emptySubtitle: { textAlign: 'center', marginBottom: 16, paddingHorizontal: 8 },
+  emptyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+  },
+  emptyButtonText: { color: '#FFFFFF', fontSize: 15, fontWeight: '700' },
 });
