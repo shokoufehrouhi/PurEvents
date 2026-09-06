@@ -12,6 +12,7 @@
     "upcoming": "Upcoming",
     "past": "Past",
     "empty": "No events yet. Add your first countdown!",
+    "emptyPast": "No past events.",
     "add": "Add Event",
     "titleLabel": "Title",
     "eventNameLabel": "Event Name",

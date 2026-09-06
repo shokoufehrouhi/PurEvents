@@ -145,8 +145,18 @@ export default function EventListScreen() {
           ) : null
         }
         ListEmptyComponent={
-          !hero ? (
-            <Text style={[typography.body, styles.empty, { color: colors.secondary }]}>{t('events.empty')}</Text>
+          // Upcoming: only empty if there's truly no event at all (hero
+          // covers the first one, so an empty `rest` with a hero present
+          // isn't "empty" — that one event is just shown above). Past:
+          // independent of Upcoming's hero, just checks the past list
+          // itself, with its own message (no "add your first countdown"
+          // CTA — that action belongs to the Upcoming/global empty state).
+          tab === 'upcoming' ? (
+            !hero ? (
+              <Text style={[typography.body, styles.empty, { color: colors.secondary }]}>{t('events.empty')}</Text>
+            ) : null
+          ) : pastList.length === 0 ? (
+            <Text style={[typography.body, styles.empty, { color: colors.secondary }]}>{t('events.emptyPast')}</Text>
           ) : null
         }
         renderItem={({ item }) => <EventRow event={item} onPress={() => router.push(`/event/${item.id}`)} />}

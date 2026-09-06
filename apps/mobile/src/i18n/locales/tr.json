@@ -12,6 +12,7 @@
     "upcoming": "Yaklaşan",
     "past": "Geçmiş",
     "empty": "Henüz etkinlik yok. İlk geri sayımını ekle!",
+    "emptyPast": "Geçmiş etkinlik yok.",
     "add": "Etkinlik Ekle",
     "titleLabel": "Başlık",
     "eventNameLabel": "Etkinlik Adı",

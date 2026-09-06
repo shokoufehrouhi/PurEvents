@@ -12,6 +12,7 @@
     "upcoming": "Próximos",
     "past": "Pasados",
     "empty": "Aún no hay eventos. ¡Agrega tu primera cuenta regresiva!",
+    "emptyPast": "No hay eventos pasados.",
     "add": "Agregar evento",
     "titleLabel": "Título",
     "eventNameLabel": "Nombre del evento",

@@ -12,6 +12,7 @@
     "upcoming": "Bevorstehend",
     "past": "Vergangen",
     "empty": "Noch keine Ereignisse. Füge deinen ersten Countdown hinzu!",
+    "emptyPast": "Keine vergangenen Ereignisse.",
     "add": "Ereignis hinzufügen",
     "titleLabel": "Titel",
     "eventNameLabel": "Ereignisname",
