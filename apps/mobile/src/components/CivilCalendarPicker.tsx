@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { jalaaliMonthLength, jalaaliToDateObject, toJalaali } from 'jalaali-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { I18nManager, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { I18nManager, Image, Modal, Pressable, StyleSheet, Text, TextInput, View, type ImageSourcePropType } from 'react-native';
 
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import {
@@ -31,18 +31,21 @@ interface Props {
 }
 
 interface MonthMeta {
-  icon: string;
+  // Exactly one of `icon` / `image` is set.
+  icon?: string;
   // When set, `icon` is an Ionicons glyph name drawn in `iconColor` instead
-  // of an emoji glyph — used for the shared Islamic crescent-moon base, so
-  // it can be tinted purple/blue like the approved mockup instead of
-  // rendering as the emoji's built-in (yellow) moon color.
+  // of an emoji glyph.
   iconIsVector?: boolean;
   iconColor?: string;
   // Small badge layered on the icon's top-right corner (e.g. a crescent
-  // moon base with a leaf/star/sparkle accent) — omit for months that get
-  // one fully custom icon on its own instead (see Islamic's Ramadan/
-  // Dhu al-Qi'dah/Dhu al-Hijjah).
+  // moon base with a leaf/star/sparkle accent) — only used alongside
+  // `icon`, not `image`.
   accent?: string;
+  // A pre-composed icon asset (e.g. cropped straight from the approved
+  // mockup) — takes priority over `icon`/`accent` when set. Used for
+  // Islamic's month icons: the mockup's crescent is a genuine gradient
+  // graphic no emoji/vector-icon substitute reproduced convincingly.
+  image?: ImageSourcePropType;
   bg: string;
 }
 
@@ -86,33 +89,26 @@ const PERSIAN_MONTH_META: MonthMeta[] = [
   { icon: '🐟', bg: '#E0F7FA' },
 ];
 
-// Icon + pastel chip background per Hijri month (index 0 = Muharram), per
-// the approved month-picker mockup: a shared crescent-moon base with a
-// small accent badge (star/sparkle/leaf/gem) distinguishing most months,
-// swapped for one fully custom icon on its own for the three months with a
-// well-known occasion — Ramadan (lantern), Dhu al-Qi'dah (a plain
-// coin/token — pre-Hajj, no major event of its own), Dhu al-Hijjah (Kaaba,
-// Hajj/Eid al-Adha). No seasonal icons, since a lunar calendar drifts
-// through all seasons over ~33 years.
-// Ionicons "moon" tinted to match the mockup's periwinkle-purple crescent —
-// an emoji 🌙 renders as a realistic yellow moon regardless of styling, so
-// the shared base needs to be a colorable vector icon instead.
-const CRESCENT_COLOR = '#7C6FE8';
-const crescent = { icon: 'moon', iconIsVector: true, iconColor: CRESCENT_COLOR } as const;
-
+// Icon + pastel chip background per Hijri month (index 0 = Muharram) —
+// icons are cropped directly from the approved mockup's reference panel
+// (not emoji/vector approximations: the mockup's crescent is a genuine
+// gradient graphic, and its accent badges are specific colors/shapes no
+// emoji reliably reproduces — e.g. the built-in 🌙 emoji is a fixed
+// realistic yellow, not the mockup's periwinkle-purple). Cropped, chroma-
+// keyed to transparent PNGs at apps/mobile/assets/icons/islamic-months/.
 const ISLAMIC_MONTH_META: MonthMeta[] = [
-  { ...crescent, accent: '⭐', bg: '#EDE7F6' }, // Muharram — Islamic New Year
-  { ...crescent, accent: '⚛️', bg: '#E0F2F1' }, // Safar
-  { ...crescent, accent: '🌱', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
-  { ...crescent, accent: '🍃', bg: '#F1F8E9' }, // Rabi' al-Thani
-  { ...crescent, accent: '✨', bg: '#FFF8E1' }, // Jumada al-Awwal
-  { ...crescent, accent: '✳️', bg: '#E3F2FD' }, // Jumada al-Thani
-  { ...crescent, accent: '✴️', bg: '#FCE4EC' }, // Rajab — Isra & Mi'raj
-  { ...crescent, accent: '🔹', bg: '#F3E5F5' }, // Sha'ban
-  { icon: '🏮', bg: '#FFECB3' }, // Ramadan
-  { ...crescent, accent: '💫', bg: '#FCE4EC' }, // Shawwal — Eid al-Fitr
-  { icon: '🪙', bg: '#EFEBE9' }, // Dhu al-Qi'dah
-  { icon: '🕋', bg: '#FFE0B2' }, // Dhu al-Hijjah — Hajj / Eid al-Adha
+  { image: require('../../assets/icons/islamic-months/muharram.png'), bg: '#EDE7F6' },
+  { image: require('../../assets/icons/islamic-months/safar.png'), bg: '#E0F2F1' },
+  { image: require('../../assets/icons/islamic-months/rabi-al-awwal.png'), bg: '#E8F5E9' }, // Mawlid
+  { image: require('../../assets/icons/islamic-months/rabi-al-thani.png'), bg: '#F1F8E9' },
+  { image: require('../../assets/icons/islamic-months/jumada-al-awwal.png'), bg: '#FFF8E1' },
+  { image: require('../../assets/icons/islamic-months/jumada-al-thani.png'), bg: '#E3F2FD' },
+  { image: require('../../assets/icons/islamic-months/rajab.png'), bg: '#FCE4EC' }, // Isra & Mi'raj
+  { image: require('../../assets/icons/islamic-months/shaban.png'), bg: '#F3E5F5' },
+  { image: require('../../assets/icons/islamic-months/ramadan.png'), bg: '#FFECB3' },
+  { image: require('../../assets/icons/islamic-months/shawwal.png'), bg: '#FCE4EC' }, // Eid al-Fitr
+  { image: require('../../assets/icons/islamic-months/dhu-al-qidah.png'), bg: '#EFEBE9' },
+  { image: require('../../assets/icons/islamic-months/dhu-al-hijjah.png'), bg: '#FFE0B2' }, // Hajj / Eid al-Adha
 ];
 
 // Icon + pastel chip background per Gregorian month (index 0 = January),
@@ -377,7 +373,9 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
                     style={[styles.monthCell, { borderRadius: radius.lg, backgroundColor: isSelected ? colors.primary : meta.bg }]}
                   >
                     <View style={styles.iconWrap}>
-                      {meta.iconIsVector ? (
+                      {meta.image ? (
+                        <Image source={meta.image} style={styles.monthImage} resizeMode="contain" />
+                      ) : meta.iconIsVector ? (
                         <Ionicons name={meta.icon as keyof typeof Ionicons.glyphMap} size={24} color={meta.iconColor} />
                       ) : (
                         <Text style={styles.monthEmoji}>{meta.icon}</Text>
@@ -433,6 +431,7 @@ const styles = StyleSheet.create({
   monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center', position: 'relative' },
   iconWrap: { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   monthEmoji: { fontSize: 22 },
+  monthImage: { width: 34, height: 34 },
   iconAccent: { position: 'absolute', top: -4, right: -10, fontSize: 12 },
   checkBadge: {
     position: 'absolute',
