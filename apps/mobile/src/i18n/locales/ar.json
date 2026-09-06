@@ -8,6 +8,7 @@
   "events": {
     "listTitle": "أحداثك",
     "heroCaption": "Today Trips",
+    "todayTitle": "اليوم",
     "upcoming": "القادمة",
     "past": "السابقة",
     "empty": "لا توجد أحداث بعد. أضف أول عدّاد تنازلي!",

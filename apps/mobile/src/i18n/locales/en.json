@@ -8,6 +8,7 @@
   "events": {
     "listTitle": "Your Events",
     "heroCaption": "Today Trips",
+    "todayTitle": "Today",
     "upcoming": "Upcoming",
     "past": "Past",
     "empty": "No events yet. Add your first countdown!",

@@ -5,13 +5,16 @@ import { usePreferences } from '../theme/PreferencesContext';
 import { CARD_THEMES } from '../theme/cardThemes';
 import { accents } from '../theme/tokens';
 import type { PurEvent } from '../types/event';
-import { formatEventDateLine } from '../utils/eventDate';
+import { formatEventDateLine, formatTodayLine } from '../utils/eventDate';
 import { getNextOccurrenceISO } from '../utils/recurrence';
 import { EventIcon } from './EventIcon';
 import { HeroCountdown } from './HeroCountdown';
 
 interface Props {
-  event: PurEvent;
+  // Optional so the top-of-Events-tab banner can render even with zero
+  // events (falls back to a generic "Today" caption/date, no
+  // title/category/countdown — see the no-event branch below).
+  event?: PurEvent;
   height?: number;
   // When set, renders a photo background (with a dark scrim for text
   // legibility) instead of the event's own Clean/Color/Dark theme — used
@@ -29,45 +32,63 @@ interface Props {
 export function EventHeroCard({ event, height = 170, photoUri }: Props) {
   const { t, i18n } = useTranslation();
   const { radius, spacing, prefs } = usePreferences();
-  const preset = CARD_THEMES[event.cardTheme] ?? CARD_THEMES.color;
-  const background = preset.background ?? accents[event.accentColor] ?? accents.violet;
-  const nextOccurrenceISO = getNextOccurrenceISO(event.dateTimeISO, event.repeat);
+  const preset = event ? CARD_THEMES[event.cardTheme] ?? CARD_THEMES.color : CARD_THEMES.color;
+  const background = preset.background ?? accents[event?.accentColor ?? 'violet'] ?? accents.violet;
+  const nextOccurrenceISO = event ? getNextOccurrenceISO(event.dateTimeISO, event.repeat) : null;
 
   // A photo's own brightness varies, so force legible white-on-scrim text
   // instead of trusting whatever the event's own theme picked.
   const textColor = photoUri ? '#FFFFFF' : preset.text;
   const secondaryColor = photoUri ? 'rgba(255,255,255,0.85)' : preset.secondary;
 
-  const content = (
-    <>
-      {photoUri ? (
-        <Text style={styles.heroCaption} numberOfLines={1}>
-          {t('events.heroCaption')}
-        </Text>
-      ) : null}
-      <View style={styles.metaRow}>
-        <View style={styles.categoryRow}>
-          <EventIcon category={event.category} size={22} variant={photoUri ? 'white' : preset.iconVariant} />
-          <Text style={[styles.categoryText, { color: textColor }]} numberOfLines={1}>
-            {t(`events.category.${event.category}`)}
+  const caption = photoUri ? (
+    <Text style={styles.heroCaption} numberOfLines={1}>
+      {t('events.heroCaption')}
+    </Text>
+  ) : null;
+
+  const content =
+    event && nextOccurrenceISO ? (
+      <>
+        {caption}
+        <View style={styles.metaRow}>
+          <View style={styles.categoryRow}>
+            <EventIcon category={event.category} size={22} variant={photoUri ? 'white' : preset.iconVariant} />
+            <Text style={[styles.categoryText, { color: textColor }]} numberOfLines={1}>
+              {t(`events.category.${event.category}`)}
+            </Text>
+          </View>
+          <Text style={[styles.repeatText, { color: secondaryColor }]} numberOfLines={1}>
+            {t(`events.repeat.${event.repeat}`)}
           </Text>
         </View>
-        <Text style={[styles.repeatText, { color: secondaryColor }]} numberOfLines={1}>
-          {t(`events.repeat.${event.repeat}`)}
-        </Text>
-      </View>
 
-      <View style={styles.bottom}>
-        <Text style={[styles.title, { color: textColor }]} numberOfLines={1}>
-          {event.title}
-        </Text>
-        <Text style={[styles.dateLine, { color: secondaryColor }]} numberOfLines={1}>
-          {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar, i18n.language)}
-        </Text>
-        <HeroCountdown targetISO={nextOccurrenceISO} textColor={textColor} labelColor={secondaryColor} />
-      </View>
-    </>
-  );
+        <View style={styles.bottom}>
+          <Text style={[styles.title, { color: textColor }]} numberOfLines={1}>
+            {event.title}
+          </Text>
+          <Text style={[styles.dateLine, { color: secondaryColor }]} numberOfLines={1}>
+            {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar, i18n.language)}
+          </Text>
+          <HeroCountdown targetISO={nextOccurrenceISO} textColor={textColor} labelColor={secondaryColor} />
+        </View>
+      </>
+    ) : (
+      // No events yet — still show the "Today" banner (photo/caption/real
+      // current date+weekday+time), just without a title/countdown since
+      // there's no event to count down to.
+      <>
+        {caption}
+        <View style={styles.bottom}>
+          <Text style={[styles.title, { color: textColor }]} numberOfLines={1}>
+            {t('events.todayTitle')}
+          </Text>
+          <Text style={[styles.dateLine, { color: secondaryColor }]} numberOfLines={1}>
+            {formatTodayLine(prefs.calendar, i18n.language)}
+          </Text>
+        </View>
+      </>
+    );
 
   if (photoUri) {
     return (

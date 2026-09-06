@@ -79,10 +79,10 @@ export default function EventListScreen() {
   );
 
   // Random photo of the device's current city/country — only for the top
-  // "next event" hero card, fetched once per screen mount (cached ~24h
-  // inside fetchLocationPhotoUrl, so this isn't a fresh network hit every
-  // focus). Failure (offline, no API key, no results) just leaves it null
-  // and the hero card falls back to its normal flat theme color.
+  // hero banner, fetched once per app launch (mount, not per-focus — a new
+  // one is wanted per run, not per tab visit). Failure (offline, no API
+  // key, no results) just leaves it null and the hero card falls back to
+  // its normal flat theme color.
   useEffect(() => {
     let cancelled = false;
     fetchLocationPhotoUrl().then((url) => {
@@ -130,10 +130,18 @@ export default function EventListScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
         ListHeaderComponent={
-          tab === 'upcoming' && hero ? (
-            <Pressable onPress={() => router.push(`/event/${hero.id}`)} style={{ marginBottom: spacing.sm }}>
-              <EventHeroCard event={hero} photoUri={heroPhotoUri ?? undefined} />
-            </Pressable>
+          tab === 'upcoming' ? (
+            hero ? (
+              <Pressable onPress={() => router.push(`/event/${hero.id}`)} style={{ marginBottom: spacing.sm }}>
+                <EventHeroCard event={hero} photoUri={heroPhotoUri ?? undefined} />
+              </Pressable>
+            ) : (
+              // No events yet — still show the "Today" banner (see
+              // EventHeroCard's no-event fallback), just not pressable.
+              <View style={{ marginBottom: spacing.sm }}>
+                <EventHeroCard photoUri={heroPhotoUri ?? undefined} />
+              </View>
+            )
           ) : null
         }
         ListEmptyComponent={

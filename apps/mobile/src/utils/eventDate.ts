@@ -34,3 +34,10 @@ export function formatEventDateLine(
       return `${weekday}${comma} ${formatCivilDateFull(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
   }
 }
+
+// Same "weekday, full date · HH:mm" shape as the 'none'-repeat case above,
+// but for *right now* rather than an event — used by the hero card's
+// no-events-yet fallback (generic "Today" banner, see EventHeroCard).
+export function formatTodayLine(calendar: CalendarSystem, language: string): string {
+  return formatEventDateLine(new Date().toISOString(), 'none', calendar, language);
+}
