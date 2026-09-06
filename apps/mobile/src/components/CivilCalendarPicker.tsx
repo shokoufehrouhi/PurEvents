@@ -178,7 +178,6 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
       monthMeta: GREGORIAN_MONTH_META,
       weekdayLabels: GREGORIAN_WEEKDAYS_BY_LANGUAGE[i18n.language] ?? GREGORIAN_WEEKDAYS_BY_LANGUAGE.en,
       sheetTitle: t('events.chooseMonth'),
-      doneLabel: t('events.done'),
       rtl: false,
       toCivil: (date) => ({ year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() }),
       toDate: (year, month, day, hour, minute, second) => new Date(year, month - 1, day, hour, minute, second),
