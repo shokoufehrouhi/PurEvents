@@ -10,7 +10,7 @@ import fa from './locales/fa.json';
 import tr from './locales/tr.json';
 
 // Phase 1 language set — see docs/PROJECT.md §8 (adjustable based on install data).
-export const SUPPORTED_LANGUAGES = ['en', 'fa', 'ar', 'es', 'de', 'tr'] as const;
+export const SUPPORTED_LANGUAGES = ['en', 'de', 'es', 'tr', 'fa', 'ar'] as const;
 export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 export const RTL_LANGUAGES: SupportedLanguage[] = ['fa', 'ar'];
 
