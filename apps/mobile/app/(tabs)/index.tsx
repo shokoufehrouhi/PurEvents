@@ -20,6 +20,25 @@ function daysUntil(iso: string): number {
   return Math.ceil(dayjs(iso).diff(dayjs(), 'hour') / 24);
 }
 
+// Bordered placeholder card for an empty Upcoming/Past list — a plain
+// centered line of text read as an afterthought floating on the
+// background, so this wraps it in a dashed, rounded "holder" (icon +
+// message) matching the app's card language (radius.lg, colors.outline).
+function EmptyState({ icon, text }: { icon: keyof typeof Ionicons.glyphMap; text: string }) {
+  const { colors, spacing, radius, typography } = useTheme();
+  return (
+    <View
+      style={[
+        styles.emptyBox,
+        { borderColor: colors.outline, backgroundColor: colors.surfaceAlt, borderRadius: radius.lg, padding: spacing.xl },
+      ]}
+    >
+      <Ionicons name={icon} size={30} color={colors.secondary} style={{ marginBottom: 10 }} />
+      <Text style={[typography.body, styles.emptyText, { color: colors.secondary }]}>{text}</Text>
+    </View>
+  );
+}
+
 function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) {
   const { colors, spacing, radius, typography } = useTheme();
   const { i18n } = useTranslation();
@@ -152,11 +171,9 @@ export default function EventListScreen() {
           // itself, with its own message (no "add your first countdown"
           // CTA — that action belongs to the Upcoming/global empty state).
           tab === 'upcoming' ? (
-            !hero ? (
-              <Text style={[typography.body, styles.empty, { color: colors.secondary }]}>{t('events.empty')}</Text>
-            ) : null
+            !hero ? <EmptyState icon="calendar-outline" text={t('events.empty')} /> : null
           ) : pastList.length === 0 ? (
-            <Text style={[typography.body, styles.empty, { color: colors.secondary }]}>{t('events.emptyPast')}</Text>
+            <EmptyState icon="time-outline" text={t('events.emptyPast')} />
           ) : null
         }
         renderItem={({ item }) => <EventRow event={item} onPress={() => router.push(`/event/${item.id}`)} />}
@@ -171,5 +188,6 @@ const styles = StyleSheet.create({
   rowMiddle: { flex: 1, marginLeft: 12, gap: 2 },
   rowRight: { alignItems: 'flex-end' },
   rowIcons: { flexDirection: 'row', marginBottom: 4 },
-  empty: { textAlign: 'center', marginTop: 60, paddingHorizontal: 32 },
+  emptyBox: { alignItems: 'center', borderWidth: 1, borderStyle: 'dashed', marginTop: 40 },
+  emptyText: { textAlign: 'center' },
 });
