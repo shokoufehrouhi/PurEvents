@@ -106,18 +106,33 @@ export function isolateRTL(s: string): string {
 /** Persian weekday initials, indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
 export const PERSIAN_WEEKDAYS_BY_JS_DAY = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'];
 
-/** "10 Sep 2026" / "19 شهریور 1405" / "27 صفر 1448" */
+const PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+
+/** "10" -> "۱۰" — for numbers displayed as part of a Persian-calendar date. */
+export function toPersianDigits(value: string | number): string {
+  return String(value).replace(/[0-9]/g, (d) => PERSIAN_DIGITS[Number(d)]);
+}
+
+/** "۱۰" -> "10" — accepts Persian-Indic digits typed into a text field, strips anything else. */
+export function fromPersianDigits(value: string): string {
+  return value.replace(/[۰-۹]/g, (d) => String(PERSIAN_DIGITS.indexOf(d))).replace(/[^0-9]/g, '');
+}
+
+/** "10 Sep 2026" / "۱۹ شهریور ۱۴۰۵" / "27 صفر 1448" */
 export function formatCivilDateFull(iso: string, calendar: CalendarSystem): string {
   const { day, monthName, year } = toCivilDate(iso, calendar);
   if (calendar === 'gregorian') return `${monthName} ${day}, ${year}`;
-  return `${day} ${isolateRTL(monthName)} ${year}`;
+  const dayStr = calendar === 'persian' ? toPersianDigits(day) : String(day);
+  const yearStr = calendar === 'persian' ? toPersianDigits(year) : String(year);
+  return `${dayStr} ${isolateRTL(monthName)} ${yearStr}`;
 }
 
-/** "Sep 10" / "19 شهریور" / "27 صفر" — for repeats where the year is noise. */
+/** "Sep 10" / "۱۹ شهریور" / "27 صفر" — for repeats where the year is noise. */
 export function formatCivilDateMonthDay(iso: string, calendar: CalendarSystem): string {
   const { day, monthName } = toCivilDate(iso, calendar);
   if (calendar === 'gregorian') return `${monthName} ${day}`;
-  return `${day} ${isolateRTL(monthName)}`;
+  const dayStr = calendar === 'persian' ? toPersianDigits(day) : String(day);
+  return `${dayStr} ${isolateRTL(monthName)}`;
 }
 
 /** Bare day-of-month number in the target calendar, e.g. for "every month on the 16th". */

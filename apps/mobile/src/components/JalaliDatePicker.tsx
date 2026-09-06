@@ -1,50 +1,39 @@
 import { Ionicons } from '@expo/vector-icons';
 import { jalaaliMonthLength, jalaaliToDateObject, toJalaali } from 'jalaali-js';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
-import { PERSIAN_MONTHS, PERSIAN_WEEKDAYS_BY_JS_DAY } from '../utils/calendars';
+import { fromPersianDigits, PERSIAN_MONTHS, PERSIAN_WEEKDAYS_BY_JS_DAY, toPersianDigits } from '../utils/calendars';
 
 interface Props {
   value: Date;
   onChange: (date: Date) => void;
 }
 
-interface HeaderStepperProps {
-  label: string;
-  onPrev: () => void;
-  onNext: () => void;
-}
-
-function HeaderStepper({ label, onPrev, onNext }: HeaderStepperProps) {
-  const { colors, radius, spacing, typography } = useTheme();
-  return (
-    <View style={[styles.headerStepper, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}>
-      <Pressable onPress={onPrev} hitSlop={8} style={styles.chevron}>
-        <Ionicons name="chevron-back" size={16} color={colors.secondary} />
-      </Pressable>
-      <Text style={[typography.bodyStrong, { color: colors.text, minWidth: 64, textAlign: 'center' }]} numberOfLines={1}>
-        {label}
-      </Text>
-      <Pressable onPress={onNext} hitSlop={8} style={styles.chevron}>
-        <Ionicons name="chevron-forward" size={16} color={colors.secondary} />
-      </Pressable>
-    </View>
-  );
-}
-
 // The native DateTimePicker only knows the Gregorian calendar (see UI
 // feedback — locale='...@calendar=persian' changes the picker's language
 // but not its actual calendar). This is a real calendar-grid picker backed
-// by jalaali-js (exact, round-trip tested): a month/year header to
-// navigate, and a tappable day grid below, same shape as the native
-// calendar UI — used for the DATE portion only when calendar='persian';
-// time is still picked with the native time-only picker since hours/minutes
-// don't depend on calendar.
+// by jalaali-js (exact, round-trip tested): a month dropdown + a typeable
+// year above a tappable day grid — used for the DATE portion only when
+// calendar='persian'; time is still picked with the native time-only
+// picker since hours/minutes don't depend on calendar.
 export function JalaliDatePicker({ value, onChange }: Props) {
-  const { colors, radius, typography } = useTheme();
+  const { colors, radius, spacing, typography } = useTheme();
   const { prefs } = usePreferences();
   const { jy, jm, jd } = toJalaali(value);
+
+  const [monthPickerOpen, setMonthPickerOpen] = useState(false);
+  const [yearDraft, setYearDraft] = useState(String(jy));
+  // Keep the year text field in sync when the year changes from elsewhere
+  // (a different event loaded into the form) — adjusted during render
+  // rather than in an effect, per React's documented "storing information
+  // from previous renders" pattern (react.dev/learn/you-might-not-need-an-effect).
+  const [prevJy, setPrevJy] = useState(jy);
+  if (jy !== prevJy) {
+    setPrevJy(jy);
+    setYearDraft(String(jy));
+  }
 
   function apply(nextJy: number, nextJm: number, nextJd: number) {
     const maxDay = jalaaliMonthLength(nextJy, nextJm);
@@ -52,21 +41,16 @@ export function JalaliDatePicker({ value, onChange }: Props) {
     onChange(jalaaliToDateObject(nextJy, nextJm, clampedDay, value.getHours(), value.getMinutes(), value.getSeconds()));
   }
 
-  function stepMonth(delta: number) {
-    let newMonth = jm + delta;
-    let newYear = jy;
-    if (newMonth > 12) {
-      newMonth = 1;
-      newYear += 1;
-    } else if (newMonth < 1) {
-      newMonth = 12;
-      newYear -= 1;
-    }
-    apply(newYear, newMonth, jd);
+  function selectMonth(monthIndex1: number) {
+    apply(jy, monthIndex1, jd);
+    setMonthPickerOpen(false);
   }
 
-  function stepYear(delta: number) {
-    apply(jy + delta, jm, jd);
+  function onYearChangeText(text: string) {
+    const latin = fromPersianDigits(text).slice(0, 4);
+    setYearDraft(latin);
+    const parsed = parseInt(latin, 10);
+    if (!Number.isNaN(parsed) && parsed > 0) apply(parsed, jm, jd);
   }
 
   function selectDay(day: number) {
@@ -88,8 +72,25 @@ export function JalaliDatePicker({ value, onChange }: Props) {
   return (
     <View>
       <View style={styles.header}>
-        <HeaderStepper label={PERSIAN_MONTHS[jm - 1]} onPrev={() => stepMonth(-1)} onNext={() => stepMonth(1)} />
-        <HeaderStepper label={String(jy)} onPrev={() => stepYear(-1)} onNext={() => stepYear(1)} />
+        <Pressable
+          onPress={() => setMonthPickerOpen(true)}
+          style={[styles.monthField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}
+        >
+          <Text style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
+            {PERSIAN_MONTHS[jm - 1]}
+          </Text>
+          <Ionicons name="chevron-down" size={16} color={colors.secondary} />
+        </Pressable>
+
+        <View style={[styles.yearField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}>
+          <TextInput
+            value={toPersianDigits(yearDraft)}
+            onChangeText={onYearChangeText}
+            keyboardType="number-pad"
+            maxLength={4}
+            style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center', padding: 0 }]}
+          />
+        </View>
       </View>
 
       <View style={styles.weekdayRow}>
@@ -109,13 +110,9 @@ export function JalaliDatePicker({ value, onChange }: Props) {
                 {day !== null && (
                   <Pressable
                     onPress={() => selectDay(day)}
-                    style={[
-                      styles.dayButton,
-                      { borderRadius: radius.md },
-                      isSelected && { backgroundColor: colors.primary },
-                    ]}
+                    style={[styles.dayButton, { borderRadius: radius.md }, isSelected && { backgroundColor: colors.primary }]}
                   >
-                    <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]}>{day}</Text>
+                    <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]}>{toPersianDigits(day)}</Text>
                   </Pressable>
                 )}
               </View>
@@ -123,16 +120,47 @@ export function JalaliDatePicker({ value, onChange }: Props) {
           })}
         </View>
       ))}
+
+      <Modal visible={monthPickerOpen} transparent animationType="fade" onRequestClose={() => setMonthPickerOpen(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setMonthPickerOpen(false)}>
+          <Pressable style={[styles.monthSheet, { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md }]}>
+            <View style={styles.monthGrid}>
+              {PERSIAN_MONTHS.map((name, index) => {
+                const monthIndex1 = index + 1;
+                const isSelected = monthIndex1 === jm;
+                return (
+                  <Pressable
+                    key={name}
+                    onPress={() => selectMonth(monthIndex1)}
+                    style={[
+                      styles.monthCell,
+                      { borderRadius: radius.md, backgroundColor: isSelected ? colors.primary : colors.surfaceAlt },
+                    ]}
+                  >
+                    <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]} numberOfLines={1}>
+                      {name}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  headerStepper: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  chevron: { padding: 4 },
+  monthField: { flex: 2, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
+  yearField: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   weekdayRow: { flexDirection: 'row', marginBottom: 4 },
   weekRow: { flexDirection: 'row' },
   dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
   dayButton: { width: '78%', aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center', padding: 24 },
+  monthSheet: { width: '100%', maxWidth: 360 },
+  monthGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  monthCell: { width: '30.5%', paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
 });
