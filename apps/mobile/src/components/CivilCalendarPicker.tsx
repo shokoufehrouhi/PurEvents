@@ -1,12 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import { jalaaliMonthLength, jalaaliToDateObject, toJalaali } from 'jalaali-js';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { I18nManager, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import {
   ARABIC_WEEKDAYS_BY_JS_DAY,
   fromPersianDigits,
+  GREGORIAN_MONTHS_BY_LANGUAGE,
+  GREGORIAN_WEEKDAYS_BY_LANGUAGE,
   hijriToDateObject,
   islamicMonthLength,
   ISLAMIC_MONTHS,
@@ -15,27 +18,17 @@ import {
   toHijri,
   toPersianDigits,
 } from '../utils/calendars';
+import type { CalendarSystem } from '../storage/preferences';
 
 interface Props {
-  calendar: 'persian' | 'islamic';
+  calendar: CalendarSystem;
   value: Date;
   onChange: (date: Date) => void;
   // Farsi digits (۱۴۰۵) vs. Latin (1405) — tied to the UI language, not to
-  // which non-Gregorian calendar this is (see calendars.ts
-  // shouldUseFarsiDigits): an English-language user still reads 1405/1448.
+  // which calendar this is (see calendars.ts shouldUseFarsiDigits): an
+  // English-language user still reads 1405/1448/2026.
   useFarsiDigits: boolean;
 }
-
-// Both the Persian/Shamsi and Islamic/Hijri calendars are conventionally
-// read right-to-left regardless of the device's system language: month 1
-// belongs at the right of the month grid, the first weekday at the right
-// of the calendar — so these rows must render RTL *unconditionally*.
-// React Native auto-mirrors `flexDirection: 'row'` into right-to-left only
-// when I18nManager.isRTL is already on, so on an LTR system (isRTL false)
-// we have to flip to 'row-reverse' ourselves to get that same
-// right-to-left order; on an RTL system 'row' already renders
-// right-to-left, so leave it alone there.
-const ROW = I18nManager.isRTL ? 'row' : 'row-reverse';
 
 interface MonthMeta {
   icon: string;
@@ -47,6 +40,12 @@ interface CalendarAdapter {
   monthMeta: MonthMeta[];
   weekdayLabels: string[];
   sheetTitle: string;
+  // The Persian/Shamsi and Islamic/Hijri calendars are conventionally read
+  // right-to-left regardless of the device's system language (month 1 at
+  // the right of the month grid, first weekday at the right); Gregorian
+  // reads left-to-right everywhere it's used. This is a property of the
+  // calendar, not of the current UI language.
+  rtl: boolean;
   toCivil: (date: Date) => { year: number; month: number; day: number };
   toDate: (year: number, month: number, day: number, hour: number, minute: number, second: number) => Date;
   monthLength: (year: number, month: number) => number;
@@ -93,43 +92,87 @@ const ISLAMIC_MONTH_META: MonthMeta[] = [
   { icon: '🕋', bg: '#FFECB3' }, // Dhu al-Hijjah — Hajj / Eid al-Adha
 ];
 
-const ADAPTERS: Record<'persian' | 'islamic', CalendarAdapter> = {
-  persian: {
-    monthNames: PERSIAN_MONTHS,
-    monthMeta: PERSIAN_MONTH_META,
-    weekdayLabels: PERSIAN_WEEKDAYS_BY_JS_DAY,
-    sheetTitle: 'انتخاب ماه',
-    toCivil: (date) => {
-      const { jy, jm, jd } = toJalaali(date);
-      return { year: jy, month: jm, day: jd };
-    },
-    toDate: (year, month, day, hour, minute, second) => jalaaliToDateObject(year, month, day, hour, minute, second),
-    monthLength: (year, month) => jalaaliMonthLength(year, month),
-  },
-  islamic: {
-    monthNames: ISLAMIC_MONTHS,
-    monthMeta: ISLAMIC_MONTH_META,
-    weekdayLabels: ARABIC_WEEKDAYS_BY_JS_DAY,
-    sheetTitle: 'اختيار الشهر',
-    toCivil: (date) => toHijri(date),
-    toDate: (year, month, day, hour, minute, second) => hijriToDateObject(year, month, day, hour, minute, second),
-    monthLength: (year, month) => islamicMonthLength(year, month),
-  },
-};
+// Icon + pastel chip background per Gregorian month (index 0 = January),
+// Northern-hemisphere seasonal/secular-holiday iconography — same spirit
+// as the Persian set, just for the calendar most of the app's other UI
+// already assumes.
+const GREGORIAN_MONTH_META: MonthMeta[] = [
+  { icon: '❄️', bg: '#E1F5FE' }, // Jan
+  { icon: '❄️', bg: '#E3F2FD' }, // Feb
+  { icon: '🌱', bg: '#E8F5E9' }, // Mar
+  { icon: '🌸', bg: '#FCE4EC' }, // Apr
+  { icon: '🌷', bg: '#F3E5F5' }, // May
+  { icon: '☀️', bg: '#FFF8E1' }, // Jun
+  { icon: '☀️', bg: '#FFE0B2' }, // Jul
+  { icon: '🌻', bg: '#FFF3E0' }, // Aug
+  { icon: '🍂', bg: '#F1F8E9' }, // Sep
+  { icon: '🎃', bg: '#FFE0B2' }, // Oct
+  { icon: '🍁', bg: '#EFEBE9' }, // Nov
+  { icon: '🎄', bg: '#FFECB3' }, // Dec
+];
 
-// The native DateTimePicker only knows the Gregorian calendar (see UI
-// feedback — locale='...@calendar=persian'/'@calendar=islamic' changes the
-// picker's language but not its actual calendar). This is a real
-// calendar-grid picker — month step chevrons flanking a month dropdown +
-// typeable year, above a tappable day grid — backed by an exact,
-// round-trip-tested conversion for whichever non-Gregorian calendar is
-// selected (jalaali-js for Persian, @umalqura/core for Islamic). Used for
-// the DATE portion only; time is picked separately since it's
-// calendar-agnostic.
+function gregorianMonthLength(year: number, month1: number): number {
+  return new Date(year, month1, 0).getDate();
+}
+
 export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits }: Props) {
   const { colors, radius, spacing, typography } = useTheme();
   const { prefs } = usePreferences();
-  const adapter = ADAPTERS[calendar];
+  const { t, i18n } = useTranslation();
+
+  const adapters: Record<CalendarSystem, CalendarAdapter> = {
+    persian: {
+      monthNames: PERSIAN_MONTHS,
+      monthMeta: PERSIAN_MONTH_META,
+      weekdayLabels: PERSIAN_WEEKDAYS_BY_JS_DAY,
+      sheetTitle: 'انتخاب ماه',
+      rtl: true,
+      toCivil: (date) => {
+        const { jy, jm, jd } = toJalaali(date);
+        return { year: jy, month: jm, day: jd };
+      },
+      toDate: (year, month, day, hour, minute, second) => jalaaliToDateObject(year, month, day, hour, minute, second),
+      monthLength: (year, month) => jalaaliMonthLength(year, month),
+    },
+    islamic: {
+      monthNames: ISLAMIC_MONTHS,
+      monthMeta: ISLAMIC_MONTH_META,
+      weekdayLabels: ARABIC_WEEKDAYS_BY_JS_DAY,
+      sheetTitle: 'اختيار الشهر',
+      rtl: true,
+      toCivil: (date) => toHijri(date),
+      toDate: (year, month, day, hour, minute, second) => hijriToDateObject(year, month, day, hour, minute, second),
+      monthLength: (year, month) => islamicMonthLength(year, month),
+    },
+    gregorian: {
+      // Hardcoded per-language table rather than generated via
+      // Intl.DateTimeFormat: Hermes's Intl support proved unreliable
+      // on-device (verified — the exact same code gave correct output in
+      // plain Node.js but showed the wrong month in the app), so this
+      // follows the same static-table approach as PERSIAN_MONTHS/
+      // ISLAMIC_MONTHS above.
+      monthNames: GREGORIAN_MONTHS_BY_LANGUAGE[i18n.language] ?? GREGORIAN_MONTHS_BY_LANGUAGE.en,
+      monthMeta: GREGORIAN_MONTH_META,
+      weekdayLabels: GREGORIAN_WEEKDAYS_BY_LANGUAGE[i18n.language] ?? GREGORIAN_WEEKDAYS_BY_LANGUAGE.en,
+      sheetTitle: t('events.chooseMonth'),
+      rtl: false,
+      toCivil: (date) => ({ year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() }),
+      toDate: (year, month, day, hour, minute, second) => new Date(year, month - 1, day, hour, minute, second),
+      monthLength: (year, month) => gregorianMonthLength(year, month),
+    },
+  };
+  const adapter = adapters[calendar];
+  // React Native auto-mirrors `flexDirection: 'row'` into right-to-left
+  // only when I18nManager.isRTL is already on. ROW gives a calendar-driven
+  // direction (right-to-left for Persian/Islamic, left-to-right for
+  // Gregorian) regardless of the device's system language: if the two
+  // already agree, plain 'row' is correct; if they disagree, flip to
+  // 'row-reverse' to counter- (or force-) mirror. PHYSICAL_ROW instead
+  // gives a true fixed left-to-right order regardless of *either* — used
+  // for the header, where the prev/next chevrons must stay physically put.
+  const ROW = adapter.rtl !== I18nManager.isRTL ? 'row-reverse' : 'row';
+  const PHYSICAL_ROW = I18nManager.isRTL ? 'row-reverse' : 'row';
+
   const { year: cy, month: cm, day: cd } = adapter.toCivil(value);
 
   const [monthPickerOpen, setMonthPickerOpen] = useState(false);
@@ -191,40 +234,44 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
   const rows: (number | null)[][] = [];
   for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
 
+  const monthField = (
+    <Pressable
+      key="month"
+      onPress={() => setMonthPickerOpen(true)}
+      style={[styles.monthField, { flexDirection: PHYSICAL_ROW, backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}
+    >
+      <Text style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
+        {adapter.monthNames[cm - 1]}
+      </Text>
+      <Ionicons name="chevron-down" size={16} color={colors.secondary} />
+    </Pressable>
+  );
+
+  const yearField = (
+    <View key="year" style={[styles.yearField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}>
+      <TextInput
+        value={useFarsiDigits ? toPersianDigits(yearDraft) : yearDraft}
+        onChangeText={onYearChangeText}
+        keyboardType="number-pad"
+        maxLength={4}
+        style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center', padding: 0 }]}
+      />
+    </View>
+  );
+
   return (
     <View>
-      {/* Coded [next-chevron, month, year, prev-chevron]: with ROW mirroring
-          the first child to the right, this renders visually left-to-right
-          as [prev, year, month, next] — "<" "1405" "Shahrivar ⌄" ">". */}
-      <View style={styles.header}>
-        <Pressable
-          onPress={() => stepMonth(1)}
-          hitSlop={8}
-          style={[styles.stepChevron, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}
-        >
-          <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
-        </Pressable>
-
-        <Pressable
-          onPress={() => setMonthPickerOpen(true)}
-          style={[styles.monthField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}
-        >
-          <Text style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
-            {adapter.monthNames[cm - 1]}
-          </Text>
-          <Ionicons name="chevron-down" size={16} color={colors.secondary} />
-        </Pressable>
-
-        <View style={[styles.yearField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}>
-          <TextInput
-            value={useFarsiDigits ? toPersianDigits(yearDraft) : yearDraft}
-            onChangeText={onYearChangeText}
-            keyboardType="number-pad"
-            maxLength={4}
-            style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center', padding: 0 }]}
-          />
-        </View>
-
+      {/* The prev/next chevrons are pagination arrows — physically "<" on
+          the left, ">" on the right always, regardless of the calendar's
+          reading direction (matches the approved mockup for the RTL
+          calendars too). So this row uses PHYSICAL_ROW (a true fixed
+          left-to-right order, only counter-mirrored against the *system's*
+          RTL setting, not the calendar's) with prev/next chevrons coded in
+          that fixed physical order; only the month/year pair between them
+          swaps order — [year, month] for an RTL calendar ("1405 شهریور",
+          reading right-to-left as month-then-year), [month, year] for LTR
+          ("August 2026"). */}
+      <View style={[styles.header, { flexDirection: PHYSICAL_ROW }]}>
         <Pressable
           onPress={() => stepMonth(-1)}
           hitSlop={8}
@@ -232,18 +279,28 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
         >
           <Ionicons name="chevron-back" size={18} color={colors.secondary} />
         </Pressable>
+
+        <View style={[styles.middleRow, { flexDirection: PHYSICAL_ROW }]}>{adapter.rtl ? [yearField, monthField] : [monthField, yearField]}</View>
+
+        <Pressable
+          onPress={() => stepMonth(1)}
+          hitSlop={8}
+          style={[styles.stepChevron, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}
+        >
+          <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+        </Pressable>
       </View>
 
-      <View style={styles.weekdayRow}>
+      <View style={[styles.weekdayRow, { flexDirection: ROW }]}>
         {order.map((dayIdx) => (
-          <Text key={dayIdx} style={[typography.caption, { color: colors.secondary, flex: 1, textAlign: 'center' }]}>
+          <Text key={dayIdx} style={[typography.caption, { color: colors.secondary, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
             {adapter.weekdayLabels[dayIdx]}
           </Text>
         ))}
       </View>
 
       {rows.map((row, rowIndex) => (
-        <View key={rowIndex} style={styles.weekRow}>
+        <View key={rowIndex} style={[styles.weekRow, { flexDirection: ROW }]}>
           {row.map((day, cellIndex) => {
             const isSelected = day === cd;
             return (
@@ -284,7 +341,7 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
               {adapter.sheetTitle}
             </Text>
 
-            <View style={styles.monthGrid}>
+            <View style={[styles.monthGrid, { flexDirection: ROW }]}>
               {adapter.monthNames.map((name, index) => {
                 const monthIndex1 = index + 1;
                 const isSelected = monthIndex1 === cm;
@@ -320,19 +377,20 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: ROW, alignItems: 'center', gap: 8, marginBottom: 10 },
+  header: { alignItems: 'center', gap: 8, marginBottom: 10 },
   stepChevron: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  monthField: { flex: 1, flexDirection: ROW, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  middleRow: { flex: 1, alignItems: 'center', gap: 8 },
+  monthField: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 6 },
   yearField: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  weekdayRow: { flexDirection: ROW, marginBottom: 4 },
-  weekRow: { flexDirection: ROW },
+  weekdayRow: { marginBottom: 4 },
+  weekRow: {},
   dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
   dayButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
   selectedDot: { position: 'absolute', bottom: 6, width: 4, height: 4, borderRadius: 2 },
   sheetBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
   sheet: { width: '100%' },
   sheetHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 14 },
-  monthGrid: { flexDirection: ROW, flexWrap: 'wrap', gap: 10 },
+  monthGrid: { flexWrap: 'wrap', gap: 10 },
   monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
   monthEmoji: { fontSize: 22 },
   checkBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },

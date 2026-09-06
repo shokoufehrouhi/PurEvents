@@ -34,6 +34,39 @@ export const ISLAMIC_MONTHS = [
   'ذوالحجه',
 ];
 
+/** Persian weekday initials, indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
+export const PERSIAN_WEEKDAYS_BY_JS_DAY = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'];
+
+/** Arabic weekday initials (الأحد..السبت), indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
+export const ARABIC_WEEKDAYS_BY_JS_DAY = ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'];
+
+// Gregorian month/weekday names, per supported UI language — hardcoded
+// rather than generated at runtime via Intl.DateTimeFormat: that produced
+// wrong output on-device (React Native's Hermes engine's Intl support is
+// unreliable here, verified — a plain Node.js check of the exact same code
+// gave correct results, but the on-device picker showed the wrong month
+// entirely), so a static table is the safe choice, same as the hardcoded
+// PERSIAN_MONTHS/ISLAMIC_MONTHS above. Farsi/Arabic reuse the weekday
+// arrays above since weekday names aren't calendar-specific.
+export const GREGORIAN_MONTHS_BY_LANGUAGE: Record<string, string[]> = {
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+  es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+  tr: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+  fa: ['ژانویه', 'فوریه', 'مارس', 'آوریل', 'مه', 'ژوئن', 'ژوئیه', 'اوت', 'سپتامبر', 'اکتبر', 'نوامبر', 'دسامبر'],
+  ar: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'],
+};
+
+/** Indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
+export const GREGORIAN_WEEKDAYS_BY_LANGUAGE: Record<string, string[]> = {
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  de: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+  es: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+  tr: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
+  fa: PERSIAN_WEEKDAYS_BY_JS_DAY,
+  ar: ARABIC_WEEKDAYS_BY_JS_DAY,
+};
+
 /**
  * Gregorian <-> Hijri via @umalqura/core (the real Umm al-Qura calendar,
  * not an arithmetic approximation) — exact and round-trip verified across a
@@ -97,12 +130,6 @@ const PDI = '⁩';
 export function isolateRTL(s: string): string {
   return `${RLI}${s}${PDI}`;
 }
-
-/** Persian weekday initials, indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
-export const PERSIAN_WEEKDAYS_BY_JS_DAY = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'];
-
-/** Arabic weekday initials (الأحد..السبت), indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
-export const ARABIC_WEEKDAYS_BY_JS_DAY = ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'];
 
 const PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 

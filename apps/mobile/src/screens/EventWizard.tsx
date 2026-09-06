@@ -279,73 +279,60 @@ export function EventWizard({ mode, eventId }: Props) {
               expanded={expanded === 'schedule'}
               onPress={() => toggle('schedule')}
             >
-              {prefs.calendar !== 'gregorian' ? (
-                // The native picker only understands the Gregorian calendar
-                // (its `locale` prop only swaps language/font, not the
-                // calendar system — confirmed on-device, both for
-                // '@calendar=persian' and '@calendar=islamic'). So for
-                // Persian/Islamic we show our own calendar grid for the
-                // date, and a styled row (icon + label + value) for time,
-                // matching the approved calendar mockup — since time is
-                // calendar-agnostic, it still opens the native time picker
-                // underneath.
-                <View style={{ gap: spacing.sm }}>
-                  <CivilCalendarPicker calendar={prefs.calendar} value={date} onChange={setDate} useFarsiDigits={useFarsiDigits} />
+              {/* The native picker doesn't do a good job with any of the
+                  three calendars for this UI: `locale` only swaps its
+                  language/font, never its actual calendar system
+                  (confirmed on-device for '@calendar=persian' and
+                  '@calendar=islamic'), and even for Gregorian it doesn't
+                  match the approved calendar mockup. So all three use the
+                  same real calendar grid for the date, and a styled row
+                  (icon + label + value) for time — since time is
+                  calendar-agnostic, it still opens the native time picker
+                  underneath. */}
+              <View style={{ gap: spacing.sm }}>
+                <CivilCalendarPicker calendar={prefs.calendar} value={date} onChange={setDate} useFarsiDigits={useFarsiDigits} />
 
-                  <Pressable
-                    onPress={openTimePicker}
-                    style={[styles.timeRow, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.sm + 4 }]}
-                  >
-                    <View style={[styles.timeIconBadge, { backgroundColor: colors.primary, borderRadius: radius.md }]}>
-                      <Ionicons name="time-outline" size={18} color="#FFFFFF" />
-                    </View>
-                    <View style={{ flex: 1, marginLeft: 10 }}>
-                      <Text style={[typography.caption, { color: colors.secondary }]}>{t('events.timeLabel')}</Text>
-                      <Text style={[typography.bodyStrong, { color: colors.text }]}>{dayjs(date).format('h:mm A')}</Text>
-                    </View>
-                    <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
-                  </Pressable>
+                <Pressable
+                  onPress={openTimePicker}
+                  style={[styles.timeRow, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.sm + 4 }]}
+                >
+                  <View style={[styles.timeIconBadge, { backgroundColor: colors.primary, borderRadius: radius.md }]}>
+                    <Ionicons name="time-outline" size={18} color="#FFFFFF" />
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 10 }}>
+                    <Text style={[typography.caption, { color: colors.secondary }]}>{t('events.timeLabel')}</Text>
+                    <Text style={[typography.bodyStrong, { color: colors.text }]}>{dayjs(date).format('h:mm A')}</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+                </Pressable>
 
-                  {Platform.OS === 'ios' && (
-                    <Modal
-                      visible={iosTimeSheetOpen}
-                      transparent
-                      animationType="slide"
-                      onRequestClose={() => setIosTimeSheetOpen(false)}
-                    >
-                      <Pressable style={styles.timeSheetBackdrop} onPress={() => setIosTimeSheetOpen(false)}>
-                        <Pressable
-                          style={[
-                            styles.timeSheet,
-                            {
-                              backgroundColor: colors.surface,
-                              borderTopLeftRadius: radius.lg,
-                              borderTopRightRadius: radius.lg,
-                              padding: spacing.md,
-                            },
-                          ]}
-                        >
-                          <View style={[styles.timeSheetHandle, { backgroundColor: colors.outline }]} />
-                          <DateTimePicker
-                            value={date}
-                            mode="time"
-                            display="spinner"
-                            onChange={(_, selected) => selected && setDate(selected)}
-                          />
-                          <Button label={t('events.done')} onPress={() => setIosTimeSheetOpen(false)} style={{ marginTop: spacing.sm }} />
-                        </Pressable>
+                {Platform.OS === 'ios' && (
+                  <Modal visible={iosTimeSheetOpen} transparent animationType="slide" onRequestClose={() => setIosTimeSheetOpen(false)}>
+                    <Pressable style={styles.timeSheetBackdrop} onPress={() => setIosTimeSheetOpen(false)}>
+                      <Pressable
+                        style={[
+                          styles.timeSheet,
+                          {
+                            backgroundColor: colors.surface,
+                            borderTopLeftRadius: radius.lg,
+                            borderTopRightRadius: radius.lg,
+                            padding: spacing.md,
+                          },
+                        ]}
+                      >
+                        <View style={[styles.timeSheetHandle, { backgroundColor: colors.outline }]} />
+                        <DateTimePicker
+                          value={date}
+                          mode="time"
+                          display="spinner"
+                          onChange={(_, selected) => selected && setDate(selected)}
+                        />
+                        <Button label={t('events.done')} onPress={() => setIosTimeSheetOpen(false)} style={{ marginTop: spacing.sm }} />
                       </Pressable>
-                    </Modal>
-                  )}
-                </View>
-              ) : (
-                <DateTimePicker
-                  value={date}
-                  mode="datetime"
-                  display={Platform.OS === 'ios' ? 'compact' : 'default'}
-                  onChange={(_, selected) => selected && setDate(selected)}
-                />
-              )}
+                    </Pressable>
+                  </Modal>
+                )}
+              </View>
             </AccordionRow>
 
             <AccordionRow
