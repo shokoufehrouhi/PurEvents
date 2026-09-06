@@ -18,7 +18,7 @@ export function SegmentedControl<T extends string | number>({ options, value, on
   const { colors, radius, spacing, typography } = useTheme();
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: 3 }]}>
+    <View style={[styles.container, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: 4 }]}>
       {options.map((opt) => {
         const selected = opt.value === value;
         return (
@@ -30,14 +30,15 @@ export function SegmentedControl<T extends string | number>({ options, value, on
               {
                 backgroundColor: selected ? colors.primary : 'transparent',
                 borderRadius: radius.sm,
-                paddingVertical: spacing.xs + 2,
+                paddingVertical: spacing.sm + 4,
               },
             ]}
           >
             <Text
               style={[
                 typography.label,
-                { color: selected ? colors.onPrimary : colors.text, textAlign: 'center' },
+                styles.label,
+                { color: selected ? colors.onPrimary : colors.text },
               ]}
             >
               {opt.label}
@@ -51,5 +52,6 @@ export function SegmentedControl<T extends string | number>({ options, value, on
 
 const styles = StyleSheet.create({
   container: { flexDirection: 'row' },
-  segment: { flex: 1, minHeight: minTapTarget - 12, alignItems: 'center', justifyContent: 'center' },
+  segment: { flex: 1, minHeight: minTapTarget, alignItems: 'center', justifyContent: 'center' },
+  label: { fontSize: 16, fontWeight: '600', textAlign: 'center' },
 });
