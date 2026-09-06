@@ -2,31 +2,35 @@ import dayjs from 'dayjs';
 
 import type { CalendarSystem } from '../storage/preferences';
 import type { RepeatRule } from '../types/event';
-import { formatCivilDateFull, formatCivilDateMonthDay } from './calendars';
+import { formatCivilDateFull, formatCivilDateMonthDay, formatWeekdayName, shouldUseFarsiDigits } from './calendars';
 
 // Hero card date line, format depends on how the event repeats — a
 // non-repeating event needs the year to be meaningful; a yearly/monthly
 // repeat happens on the same day+month (or day) every cycle so the year is
-// noise; a weekly repeat is easiest to read by weekday. Time is always
-// shown last as HH:mm. See UI feedback for the exact per-repeat rules.
-// The day/month/year themselves follow the user's chosen calendar system
-// (Gregorian/Persian/Islamic) — see src/utils/calendars.ts.
+// noise; a weekly repeat is easiest to read by weekday. The weekday name is
+// always shown (matching the mockup's "May 15, 2026 (Fri)" date row) since
+// it's useful regardless of repeat type, not just for weekly repeats. Time
+// is always shown last as HH:mm. The day/month/year and weekday name both
+// follow the UI's chosen calendar system / language — see calendars.ts.
 export function formatEventDateLine(
   dateTimeISO: string,
   repeat: RepeatRule,
   calendar: CalendarSystem,
-  useFarsiDigits: boolean,
+  language: string,
 ): string {
   const time = dayjs(dateTimeISO).format('HH:mm');
+  const useFarsiDigits = shouldUseFarsiDigits(language);
+  const weekday = formatWeekdayName(dateTimeISO, language);
+  // Farsi/Arabic text conventionally separates clauses with "،", not ",".
+  const comma = useFarsiDigits ? '،' : ',';
 
   switch (repeat) {
     case 'weekly':
-      return `${dayjs(dateTimeISO).format('ddd')}, ${formatCivilDateMonthDay(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
     case 'monthly':
     case 'yearly':
-      return `${formatCivilDateMonthDay(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
+      return `${weekday}${comma} ${formatCivilDateMonthDay(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
     case 'none':
     default:
-      return `${formatCivilDateFull(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
+      return `${weekday}${comma} ${formatCivilDateFull(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
   }
 }

@@ -5,7 +5,6 @@ import { usePreferences } from '../theme/PreferencesContext';
 import { CARD_THEMES } from '../theme/cardThemes';
 import { accents } from '../theme/tokens';
 import type { PurEvent } from '../types/event';
-import { shouldUseFarsiDigits } from '../utils/calendars';
 import { formatEventDateLine } from '../utils/eventDate';
 import { getNextOccurrenceISO } from '../utils/recurrence';
 import { EventIcon } from './EventIcon';
@@ -58,7 +57,7 @@ export function EventHeroCard({ event, height = 170, photoUri }: Props) {
           {event.title}
         </Text>
         <Text style={[styles.dateLine, { color: secondaryColor }]} numberOfLines={1}>
-          {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar, shouldUseFarsiDigits(i18n.language))}
+          {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar, i18n.language)}
         </Text>
         <HeroCountdown targetISO={nextOccurrenceISO} textColor={textColor} labelColor={secondaryColor} />
       </View>

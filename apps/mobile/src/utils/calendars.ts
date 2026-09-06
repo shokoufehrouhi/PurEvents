@@ -67,6 +67,29 @@ export const GREGORIAN_WEEKDAYS_BY_LANGUAGE: Record<string, string[]> = {
   ar: ARABIC_WEEKDAYS_BY_JS_DAY,
 };
 
+// Readable weekday names for a date line ("Fri, May 15") — distinct from
+// the single-initial GREGORIAN_WEEKDAYS_BY_LANGUAGE above (which is only
+// for the calendar grid's 7-column header row). Day-of-week is calendar
+// system-independent (the same actual date is always the same weekday
+// regardless of whether it's labeled via Gregorian/Persian/Islamic month
+// names), so this is keyed by UI language only. Hardcoded per the same
+// on-device Intl.DateTimeFormat unreliability noted above for
+// GREGORIAN_MONTHS_BY_LANGUAGE — don't switch this to runtime Intl.
+export const WEEKDAY_NAMES_BY_LANGUAGE: Record<string, string[]> = {
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  de: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+  es: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+  tr: ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'],
+  fa: ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'],
+  ar: ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
+};
+
+/** Localized weekday name for a given instant, e.g. "Fri" / "جمعه". */
+export function formatWeekdayName(iso: string, language: string): string {
+  const table = WEEKDAY_NAMES_BY_LANGUAGE[language] ?? WEEKDAY_NAMES_BY_LANGUAGE.en;
+  return table[dayjs(iso).day()];
+}
+
 /**
  * Gregorian <-> Hijri via @umalqura/core (the real Umm al-Qura calendar,
  * not an arithmetic approximation) — exact and round-trip verified across a
