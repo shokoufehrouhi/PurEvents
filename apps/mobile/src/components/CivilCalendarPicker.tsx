@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center', position: 'relative' },
   iconWrap: { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   monthEmoji: { fontSize: 22 },
-  monthImage: { width: 34, height: 34 },
+  monthImage: { width: 26, height: 26 },
   iconAccent: { position: 'absolute', top: -4, right: -10, fontSize: 12 },
   checkBadge: {
     position: 'absolute',
