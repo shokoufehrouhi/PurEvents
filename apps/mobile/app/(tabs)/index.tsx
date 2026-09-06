@@ -167,17 +167,18 @@ export default function EventListScreen() {
     };
   }, []);
 
-  const { hero, rest, pastList } = useMemo(() => {
+  const { upcoming, pastList } = useMemo(() => {
     const now = dayjs();
     // A repeating event's *next* occurrence is always upcoming by
     // definition — only a one-time (repeat: 'none') event can be "past".
     const isPast = (e: PurEvent) => e.repeat === 'none' && !dayjs(e.dateTimeISO).isAfter(now);
-    const upcoming = events.filter((e) => !isPast(e));
-    const past = events.filter(isPast).reverse();
-    return { hero: upcoming[0], rest: upcoming.slice(1), pastList: past };
+    return {
+      upcoming: events.filter((e) => !isPast(e)),
+      pastList: events.filter(isPast).reverse(),
+    };
   }, [events]);
 
-  const listData = tab === 'upcoming' ? rest : pastList;
+  const listData = tab === 'upcoming' ? upcoming : pastList;
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
@@ -204,29 +205,24 @@ export default function EventListScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: spacing.md, gap: spacing.sm }}
         ListHeaderComponent={
+          // Always a generic "Today" banner — never tied to a specific
+          // event's title/countdown (a user explicitly asked why "their"
+          // event had to sit on the banner instead of just showing as a
+          // normal record like everything else below it). Not pressable
+          // since it isn't linked to any one event anymore.
           tab === 'upcoming' ? (
-            hero ? (
-              <Pressable onPress={() => router.push(`/event/${hero.id}`)} style={{ marginBottom: spacing.sm }}>
-                <EventHeroCard event={hero} photoUri={heroPhotoUri ?? undefined} />
-              </Pressable>
-            ) : (
-              // No events yet — still show the "Today" banner (see
-              // EventHeroCard's no-event fallback), just not pressable.
-              <View style={{ marginBottom: spacing.sm }}>
-                <EventHeroCard photoUri={heroPhotoUri ?? undefined} />
-              </View>
-            )
+            <View style={{ marginBottom: spacing.sm }}>
+              <EventHeroCard photoUri={heroPhotoUri ?? undefined} />
+            </View>
           ) : null
         }
         ListEmptyComponent={
-          // Upcoming: only empty if there's truly no event at all (hero
-          // covers the first one, so an empty `rest` with a hero present
-          // isn't "empty" — that one event is just shown above). Past:
-          // independent of Upcoming's hero, just checks the past list
-          // itself, with its own message (no "add your first countdown"
-          // CTA — that action belongs to the Upcoming/global empty state).
+          // Upcoming/Past both just check their own list now that the
+          // banner no longer "hides" the nearest event — Past keeps its
+          // own message (no "add your first countdown" CTA — that action
+          // belongs to the Upcoming/global empty state).
           tab === 'upcoming' ? (
-            !hero ? (
+            upcoming.length === 0 ? (
               <EmptyState
                 icon="calendar-outline"
                 badgeIcon="time"
