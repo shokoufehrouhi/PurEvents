@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-import dayjs, { type Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,15 +24,6 @@ import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
 const STEPS = ['stepBasics', 'stepSchedule', 'stepReminders', 'stepAppearance'] as const;
 type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced';
-
-// A pleasant, always-future sample date for the Appearance preview (next
-// Saturday at 9am) so the countdown never shows "0 DAYS" before the user
-// has picked a real date in Schedule.
-function nextSampleSaturday(): Dayjs {
-  let sample = dayjs().add(1, 'day').hour(9).minute(0).second(0).millisecond(0);
-  while (sample.day() !== 6) sample = sample.add(1, 'day');
-  return sample;
-}
 
 function timezoneAbbrev(tz: string): string {
   try {
@@ -89,7 +80,7 @@ export function EventWizard({ mode, eventId }: Props) {
   const [expanded, setExpanded] = useState<SectionKey | null>(null);
   const [accentOpen, setAccentOpen] = useState(false);
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState(() => new Date(Date.now() + 60 * 60 * 1000));
+  const [date, setDate] = useState(() => new Date());
   const [category, setCategory] = useState<EventCategory>('personal');
   const [accentColor, setAccentColor] = useState<AccentKey>('coral');
   const [cardTheme, setCardTheme] = useState<CardTheme>('color');
@@ -130,12 +121,6 @@ export function EventWizard({ mode, eventId }: Props) {
     createdAt: '',
     updatedAt: '',
   };
-
-  // The Appearance preview shouldn't show "0 DAYS" just because the real
-  // date hasn't been set yet (it defaults to ~1 hour from now) — swap in a
-  // fixed few-days-out sample date so the theme swatch always looks like a
-  // real countdown, matching the reference mockup's static sample.
-  const appearancePreviewEvent: PurEvent = { ...draftEvent, dateTimeISO: nextSampleSaturday().toISOString() };
 
   function toggle(key: SectionKey) {
     setExpanded((prev) => (prev === key ? null : key));
@@ -341,7 +326,7 @@ export function EventWizard({ mode, eventId }: Props) {
               expanded={expanded === 'appearance'}
               onPress={() => toggle('appearance')}
             >
-              <EventHeroCard event={appearancePreviewEvent} height={140} />
+              <EventHeroCard event={draftEvent} height={140} />
 
               <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>
                 {t('events.cardThemeLabel')}
