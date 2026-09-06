@@ -49,8 +49,7 @@ export default function RepeatPickerScreen() {
         return t('events.repeatWeeklyDesc', { day: dayjs(dateISO).format('dddd') });
       case 'monthly': {
         const day = civilDayOfMonth(dateISO, prefs.calendar);
-        const dayLabel =
-          prefs.calendar === 'gregorian' ? ordinal(day) : prefs.calendar === 'persian' && useFarsiDigits ? toPersianDigits(day) : day;
+        const dayLabel = prefs.calendar === 'gregorian' ? ordinal(day) : useFarsiDigits ? toPersianDigits(day) : day;
         return t('events.repeatMonthlyDesc', { day: dayLabel });
       }
       case 'yearly':

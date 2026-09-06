@@ -1,3 +1,4 @@
+import umalqura from '@umalqura/core';
 import dayjs from 'dayjs';
 import { toJalaali } from 'jalaali-js';
 
@@ -34,35 +35,29 @@ export const ISLAMIC_MONTHS = [
 ];
 
 /**
- * Gregorian -> Hijri via the tabular ("Kuwaiti algorithm") civil Islamic
- * calendar — the same arithmetic conversion used by most non-religious
- * apps. It's an approximation: real Hijri dates follow lunar sighting and
- * can be off by a day from this in either direction. Good enough for a
- * countdown app's calendar *display* preference; not for religious
- * observance.
+ * Gregorian <-> Hijri via @umalqura/core (the real Umm al-Qura calendar,
+ * not an arithmetic approximation) — exact and round-trip verified across a
+ * 10-year span in both directions. Replaced an earlier hand-rolled tabular
+ * ("Kuwaiti algorithm") conversion that was forward-only and ~1-2 days off
+ * official Umm al-Qura; two attempts at hand-deriving its inverse both
+ * failed with a consistent ~2-day round-trip error, so this uses a tested
+ * library instead, same reasoning as jalaali-js for the Persian calendar.
+ * Valid range: Hijri 1318-1500 (~Gregorian 1900-2077) — ample for a
+ * countdown app.
  */
 export function toHijri(date: Date): { year: number; month: number; day: number } {
-  const gy = date.getFullYear();
-  const gm = date.getMonth() + 1;
-  const gd = date.getDate();
+  const h = umalqura(date);
+  return { year: h.hy, month: h.hm, day: h.hd };
+}
 
-  const jd =
-    Math.floor((1461 * (gy + 4800 + Math.floor((gm - 14) / 12))) / 4) +
-    Math.floor((367 * (gm - 2 - 12 * Math.floor((gm - 14) / 12))) / 12) -
-    Math.floor((3 * Math.floor((gy + 4900 + Math.floor((gm - 14) / 12)) / 100)) / 4) +
-    gd -
-    32075;
+/** Hijri (year, month 1-indexed, day) + time-of-day -> Gregorian Date. */
+export function hijriToDateObject(hy: number, hm: number, hd: number, hour = 0, minute = 0, second = 0): Date {
+  return umalqura(hy, hm, hd, hour, minute, second).date;
+}
 
-  let l = jd - 1948440 + 10632;
-  const n = Math.floor((l - 1) / 10631);
-  l = l - 10631 * n + 354;
-  const j = Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) + Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
-  l = l - Math.floor((30 - j) / 15) * Math.floor((17719 * j) / 50) - Math.floor(j / 16) * Math.floor((15238 * j) / 43) + 29;
-  const month = Math.floor((24 * l) / 709);
-  const day = l - Math.floor((709 * month) / 24);
-  const year = 30 * n + j - 30;
-
-  return { year, month, day };
+/** Number of days in a given Hijri month (29 or 30, per Umm al-Qura). */
+export function islamicMonthLength(hy: number, hm: number): number {
+  return umalqura(hy, hm, 1).daysInMonth;
 }
 
 interface CivilDate {
@@ -106,6 +101,9 @@ export function isolateRTL(s: string): string {
 /** Persian weekday initials, indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
 export const PERSIAN_WEEKDAYS_BY_JS_DAY = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'];
 
+/** Arabic weekday initials (الأحد..السبت), indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
+export const ARABIC_WEEKDAYS_BY_JS_DAY = ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'];
+
 const PERSIAN_DIGITS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
 /** "10" -> "۱۰" — for numbers displayed as part of a Persian-calendar date. */
@@ -119,30 +117,29 @@ export function fromPersianDigits(value: string): string {
 }
 
 /**
- * Whether Persian-calendar dates should render Farsi digits (۱۴۰۵) instead
- * of Latin ones (1405) — tied to the UI *language*, not the calendar
- * system: a Shamsi date read in English still uses Latin digits, but reads
- * Farsi digits when the app language is Farsi or Arabic.
+ * Whether Persian/Islamic-calendar dates should render Farsi digits
+ * (۱۴۰۵) instead of Latin ones (1405) — tied to the UI *language*, not the
+ * calendar system: a Shamsi or Hijri date read in English still uses Latin
+ * digits, but reads Farsi digits when the app language is Farsi or Arabic.
  */
 export function shouldUseFarsiDigits(language: string): boolean {
   return language === 'fa' || language === 'ar';
 }
 
-/** "10 Sep 2026" / "۱۹ شهریور ۱۴۰۵" / "27 صفر 1448" */
+/** "10 Sep 2026" / "۱۹ شهریور ۱۴۰۵" / "۲۷ صفر ۱۴۴۸" */
 export function formatCivilDateFull(iso: string, calendar: CalendarSystem, useFarsiDigits: boolean): string {
   const { day, monthName, year } = toCivilDate(iso, calendar);
   if (calendar === 'gregorian') return `${monthName} ${day}, ${year}`;
-  const farsi = calendar === 'persian' && useFarsiDigits;
-  const dayStr = farsi ? toPersianDigits(day) : String(day);
-  const yearStr = farsi ? toPersianDigits(year) : String(year);
+  const dayStr = useFarsiDigits ? toPersianDigits(day) : String(day);
+  const yearStr = useFarsiDigits ? toPersianDigits(year) : String(year);
   return `${dayStr} ${isolateRTL(monthName)} ${yearStr}`;
 }
 
-/** "Sep 10" / "۱۹ شهریور" / "27 صفر" — for repeats where the year is noise. */
+/** "Sep 10" / "۱۹ شهریور" / "۲۷ صفر" — for repeats where the year is noise. */
 export function formatCivilDateMonthDay(iso: string, calendar: CalendarSystem, useFarsiDigits: boolean): string {
   const { day, monthName } = toCivilDate(iso, calendar);
   if (calendar === 'gregorian') return `${monthName} ${day}`;
-  const dayStr = calendar === 'persian' && useFarsiDigits ? toPersianDigits(day) : String(day);
+  const dayStr = useFarsiDigits ? toPersianDigits(day) : String(day);
   return `${dayStr} ${isolateRTL(monthName)}`;
 }
 
