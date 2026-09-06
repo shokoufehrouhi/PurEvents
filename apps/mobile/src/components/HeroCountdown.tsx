@@ -49,9 +49,9 @@ export function HeroCountdown({ targetISO, textColor = '#fff', labelColor = 'rgb
 }
 
 const styles = StyleSheet.create({
-  row: { flexDirection: 'row', gap: 20 },
+  row: { flexDirection: 'row', gap: 22 },
   col: { alignItems: 'flex-start' },
-  number: { fontSize: 34, fontWeight: '700', fontVariant: ['tabular-nums'] },
-  label: { fontSize: 11, fontWeight: '600', letterSpacing: 0.5, marginTop: 2 },
+  number: { fontSize: 52, fontWeight: '800', fontVariant: ['tabular-nums'], lineHeight: 56 },
+  label: { fontSize: 12, fontWeight: '600', letterSpacing: 0.5, marginTop: 2 },
   past: { fontSize: 20, fontWeight: '600' },
 });
