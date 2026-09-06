@@ -272,6 +272,13 @@ export function EventWizard({ mode, eventId }: Props) {
                 value={date}
                 mode="datetime"
                 display={Platform.OS === 'ios' ? 'compact' : 'default'}
+                locale={
+                  prefs.calendar === 'persian'
+                    ? 'fa_IR@calendar=persian'
+                    : prefs.calendar === 'islamic'
+                      ? 'ar_SA@calendar=islamic'
+                      : undefined
+                }
                 onChange={(_, selected) => selected && setDate(selected)}
               />
             </AccordionRow>
