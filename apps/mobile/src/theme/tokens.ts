@@ -19,6 +19,14 @@ export const radius = {
   pill: 999,
 } as const;
 
+// Caps a scrollable screen's content width and centers it on wide viewports
+// (iPad, Android tablets, Mac via "designed for iPad") so a form or list
+// designed for a phone doesn't stretch into unreadably wide rows/inputs —
+// on a phone-width screen this is a no-op since maxWidth exceeds the
+// viewport. Apply via contentContainerStyle: { ...responsiveContent }.
+export const maxContentWidth = 640;
+export const responsiveContent = { width: '100%', maxWidth: maxContentWidth, alignSelf: 'center' } as const;
+
 // Event accent colors (used on hero cards, widgets, chips). Shared across
 // light/dark — only the neutrals (background/surface/text/...) flip.
 export const accents = {

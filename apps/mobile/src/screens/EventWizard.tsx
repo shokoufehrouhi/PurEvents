@@ -19,7 +19,7 @@ import { usePro, FREE_LIMITS } from '../subscription';
 import { CARD_THEME_KEYS, CARD_THEMES } from '../theme/cardThemes';
 import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
-import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
+import { ACCENT_KEYS, accents, elevation, responsiveContent, type AccentKey } from '../theme/tokens';
 import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/event';
 import { formatCivilDateFull, shouldUseFarsiDigits } from '../utils/calendars';
 import { awaitPick } from '../utils/pickerBridge';
@@ -206,7 +206,11 @@ export function EventWizard({ mode, eventId }: Props) {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ padding: spacing.md, paddingBottom: 48, ...responsiveContent }}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Basics — always visible, matches the approved layout */}
         <Card>
           <Text style={[typography.bodyStrong, { color: colors.text, marginBottom: spacing.md }]}>{t('events.basicsHeading')}</Text>

@@ -10,7 +10,7 @@ import { Section } from '../../src/components/ui/Section';
 import { listEvents } from '../../src/storage/events';
 import { usePreferences, useTheme } from '../../src/theme/PreferencesContext';
 import { usePro } from '../../src/subscription';
-import { rowBadgeColors } from '../../src/theme/tokens';
+import { responsiveContent, rowBadgeColors } from '../../src/theme/tokens';
 import { reminderLabel } from '../../src/utils/reminders';
 
 function comingSoon() {
@@ -31,7 +31,7 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top']}>
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md, ...responsiveContent }}>
         <Text style={[typography.title, { color: colors.text, marginBottom: spacing.md }]}>{t('settings.title')}</Text>
 
         <View
