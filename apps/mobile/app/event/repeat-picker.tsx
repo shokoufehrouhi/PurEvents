@@ -1,14 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '../../src/components/ui/Button';
 import { useTheme } from '../../src/theme/PreferencesContext';
-import { accents } from '../../src/theme/tokens';
+import { REPEAT_STYLES } from '../../src/theme/repeatStyles';
 import type { RepeatRule } from '../../src/types/event';
 import { resolvePick } from '../../src/utils/pickerBridge';
 
@@ -27,24 +25,17 @@ function ordinal(n: number): string {
   }
 }
 
-const REPEATS: { key: RepeatRule; color: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { key: 'none', color: accents.violet, icon: 'ban' },
-  { key: 'weekly', color: '#2F9BFF', icon: 'repeat' },
-  { key: 'monthly', color: accents.coral, icon: 'calendar' },
-  { key: 'yearly', color: accents.mint, icon: 'calendar-number' },
-];
+const REPEATS: RepeatRule[] = ['none', 'weekly', 'monthly', 'yearly'];
 
 // Full-screen repeat picker matching the approved design: each option has
-// its own accent color, a date-aware description ("Every week on
-// Wednesday"), and a Done button (tapping a row only selects it locally —
-// same pattern the reference mockup uses, unlike category/theme pickers
-// which resolve immediately on tap).
+// its own accent color and a date-aware description ("Every week on
+// Wednesday"). Tapping a row selects it and closes immediately — same
+// interaction as the category picker, no separate Done step.
 export default function RepeatPickerScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors, spacing, radius, typography } = useTheme();
   const { current, date: dateParam } = useLocalSearchParams<{ current?: string; date?: string }>();
-  const [selected, setSelected] = useState<RepeatRule>((current as RepeatRule) ?? 'none');
 
   const date = dayjs(dateParam);
 
@@ -62,8 +53,8 @@ export default function RepeatPickerScreen() {
     }
   }
 
-  function handleDone() {
-    resolvePick(selected);
+  function pick(repeat: RepeatRule) {
+    resolvePick(repeat);
     router.back();
   }
 
@@ -82,12 +73,13 @@ export default function RepeatPickerScreen() {
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md, paddingTop: 0 }}>
         <View style={styles.list}>
-          {REPEATS.map(({ key, color, icon }) => {
-            const isSelected = selected === key;
+          {REPEATS.map((key) => {
+            const { color, icon } = REPEAT_STYLES[key];
+            const isSelected = current === key;
             return (
               <Pressable
                 key={key}
-                onPress={() => setSelected(key)}
+                onPress={() => pick(key)}
                 style={[
                   styles.row,
                   { backgroundColor: isSelected ? color : `${color}1A`, borderRadius: radius.lg, padding: spacing.md },
@@ -117,10 +109,6 @@ export default function RepeatPickerScreen() {
           })}
         </View>
       </ScrollView>
-
-      <View style={{ padding: spacing.md }}>
-        <Button label={t('events.done')} onPress={handleDone} />
-      </View>
     </SafeAreaView>
   );
 }

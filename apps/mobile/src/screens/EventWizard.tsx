@@ -16,6 +16,7 @@ import { scheduleRemindersForEvent } from '../notifications';
 import { createEvent, getEvent, listEvents, updateEvent } from '../storage/events';
 import { usePro, FREE_LIMITS } from '../subscription';
 import { CARD_THEME_KEYS, CARD_THEMES } from '../theme/cardThemes';
+import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
 import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/event';
@@ -368,7 +369,7 @@ export function EventWizard({ mode, eventId }: Props) {
                 onPress={openRepeatPicker}
                 style={[styles.dropdownField, { borderColor: colors.outline, borderRadius: radius.md }]}
               >
-                <Ionicons name="repeat" size={18} color={colors.secondary} />
+                <Ionicons name={REPEAT_STYLES[repeat].icon} size={18} color={REPEAT_STYLES[repeat].color} />
                 <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: 10 }]}>{t(`events.repeat.${repeat}`)}</Text>
                 <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
               </Pressable>
