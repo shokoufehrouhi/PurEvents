@@ -32,6 +32,12 @@ interface Props {
 
 interface MonthMeta {
   icon: string;
+  // When set, `icon` is an Ionicons glyph name drawn in `iconColor` instead
+  // of an emoji glyph — used for the shared Islamic crescent-moon base, so
+  // it can be tinted purple/blue like the approved mockup instead of
+  // rendering as the emoji's built-in (yellow) moon color.
+  iconIsVector?: boolean;
+  iconColor?: string;
   // Small badge layered on the icon's top-right corner (e.g. a crescent
   // moon base with a leaf/star/sparkle accent) — omit for months that get
   // one fully custom icon on its own instead (see Islamic's Ramadan/
@@ -88,17 +94,23 @@ const PERSIAN_MONTH_META: MonthMeta[] = [
 // coin/token — pre-Hajj, no major event of its own), Dhu al-Hijjah (Kaaba,
 // Hajj/Eid al-Adha). No seasonal icons, since a lunar calendar drifts
 // through all seasons over ~33 years.
+// Ionicons "moon" tinted to match the mockup's periwinkle-purple crescent —
+// an emoji 🌙 renders as a realistic yellow moon regardless of styling, so
+// the shared base needs to be a colorable vector icon instead.
+const CRESCENT_COLOR = '#7C6FE8';
+const crescent = { icon: 'moon', iconIsVector: true, iconColor: CRESCENT_COLOR } as const;
+
 const ISLAMIC_MONTH_META: MonthMeta[] = [
-  { icon: '🌙', accent: '⭐', bg: '#EDE7F6' }, // Muharram — Islamic New Year
-  { icon: '🌙', accent: '⚛️', bg: '#E0F2F1' }, // Safar
-  { icon: '🌙', accent: '🌱', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
-  { icon: '🌙', accent: '🍃', bg: '#F1F8E9' }, // Rabi' al-Thani
-  { icon: '🌙', accent: '✨', bg: '#FFF8E1' }, // Jumada al-Awwal
-  { icon: '🌙', accent: '✳️', bg: '#E3F2FD' }, // Jumada al-Thani
-  { icon: '🌙', accent: '✴️', bg: '#FCE4EC' }, // Rajab — Isra & Mi'raj
-  { icon: '🌙', accent: '🔹', bg: '#F3E5F5' }, // Sha'ban
+  { ...crescent, accent: '⭐', bg: '#EDE7F6' }, // Muharram — Islamic New Year
+  { ...crescent, accent: '⚛️', bg: '#E0F2F1' }, // Safar
+  { ...crescent, accent: '🌱', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
+  { ...crescent, accent: '🍃', bg: '#F1F8E9' }, // Rabi' al-Thani
+  { ...crescent, accent: '✨', bg: '#FFF8E1' }, // Jumada al-Awwal
+  { ...crescent, accent: '✳️', bg: '#E3F2FD' }, // Jumada al-Thani
+  { ...crescent, accent: '✴️', bg: '#FCE4EC' }, // Rajab — Isra & Mi'raj
+  { ...crescent, accent: '🔹', bg: '#F3E5F5' }, // Sha'ban
   { icon: '🏮', bg: '#FFECB3' }, // Ramadan
-  { icon: '🌙', accent: '💫', bg: '#FCE4EC' }, // Shawwal — Eid al-Fitr
+  { ...crescent, accent: '💫', bg: '#FCE4EC' }, // Shawwal — Eid al-Fitr
   { icon: '🪙', bg: '#EFEBE9' }, // Dhu al-Qi'dah
   { icon: '🕋', bg: '#FFE0B2' }, // Dhu al-Hijjah — Hajj / Eid al-Adha
 ];
@@ -365,7 +377,11 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
                     style={[styles.monthCell, { borderRadius: radius.lg, backgroundColor: isSelected ? colors.primary : meta.bg }]}
                   >
                     <View style={styles.iconWrap}>
-                      <Text style={styles.monthEmoji}>{meta.icon}</Text>
+                      {meta.iconIsVector ? (
+                        <Ionicons name={meta.icon as keyof typeof Ionicons.glyphMap} size={24} color={meta.iconColor} />
+                      ) : (
+                        <Text style={styles.monthEmoji}>{meta.icon}</Text>
+                      )}
                       {meta.accent && <Text style={styles.iconAccent}>{meta.accent}</Text>}
                     </View>
                     <Text
