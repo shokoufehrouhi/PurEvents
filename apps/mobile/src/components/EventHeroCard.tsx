@@ -40,6 +40,11 @@ export function EventHeroCard({ event, height = 170, photoUri }: Props) {
 
   const content = (
     <>
+      {photoUri ? (
+        <Text style={styles.heroCaption} numberOfLines={1}>
+          {t('events.heroCaption')}
+        </Text>
+      ) : null}
       <View style={styles.metaRow}>
         <View style={styles.categoryRow}>
           <EventIcon category={event.category} size={22} variant={photoUri ? 'white' : preset.iconVariant} />
@@ -98,6 +103,14 @@ export function EventHeroCard({ event, height = 170, photoUri }: Props) {
 const styles = StyleSheet.create({
   card: { justifyContent: 'space-between', overflow: 'hidden' },
   photoScrim: { flex: 1, justifyContent: 'space-between', backgroundColor: 'rgba(0,0,0,0.32)' },
+  heroCaption: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    color: 'rgba(255,255,255,0.85)',
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
   metaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   categoryRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 },
   categoryText: { fontSize: 13, fontWeight: '600' },

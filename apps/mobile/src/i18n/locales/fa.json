@@ -7,6 +7,7 @@
   },
   "events": {
     "listTitle": "رویدادهای شما",
+    "heroCaption": "Today Trips",
     "upcoming": "پیش‌رو",
     "past": "گذشته",
     "empty": "هنوز رویدادی اضافه نکرده‌اید. اولین شمارش معکوس را بسازید!",
