@@ -1,10 +1,10 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EventHeroCard } from '../components/EventHeroCard';
@@ -115,6 +115,22 @@ export function EventWizard({ mode, eventId }: Props) {
 
   function toggle(key: SectionKey) {
     setExpanded((prev) => (prev === key ? null : key));
+  }
+
+  const [iosTimeSheetOpen, setIosTimeSheetOpen] = useState(false);
+  function openTimePicker() {
+    // Android's time picker is always a native modal dialog — no inline
+    // rendering needed. iOS has no equivalent imperative API, so we render
+    // an actual (spinner) DateTimePicker ourselves inside a bottom sheet.
+    if (Platform.OS === 'android') {
+      DateTimePickerAndroid.open({
+        value: date,
+        mode: 'time',
+        onChange: (_, selected) => selected && setDate(selected),
+      });
+    } else {
+      setIosTimeSheetOpen(true);
+    }
   }
 
   async function openCategoryPicker() {
@@ -262,17 +278,58 @@ export function EventWizard({ mode, eventId }: Props) {
                 // The native picker only understands the Gregorian calendar
                 // (its `locale` prop only swaps language/font, not the
                 // calendar system — confirmed on-device). So for Persian we
-                // show our own Jalali date stepper (exact, jalaali-js-backed)
-                // for the date, and keep the native picker for time only,
-                // since hours/minutes don't depend on the calendar.
+                // show our own Jalali calendar grid for the date, and a
+                // styled row (icon + label + value) for time, matching the
+                // approved calendar mockup — since time is calendar-agnostic,
+                // it still opens the native time picker underneath.
                 <View style={{ gap: spacing.sm }}>
                   <JalaliDatePicker value={date} onChange={setDate} />
-                  <DateTimePicker
-                    value={date}
-                    mode="time"
-                    display={Platform.OS === 'ios' ? 'compact' : 'default'}
-                    onChange={(_, selected) => selected && setDate(selected)}
-                  />
+
+                  <Pressable
+                    onPress={openTimePicker}
+                    style={[styles.timeRow, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.sm + 4 }]}
+                  >
+                    <View style={[styles.timeIconBadge, { backgroundColor: colors.primary, borderRadius: radius.md }]}>
+                      <Ionicons name="time-outline" size={18} color="#FFFFFF" />
+                    </View>
+                    <View style={{ flex: 1, marginLeft: 10 }}>
+                      <Text style={[typography.caption, { color: colors.secondary }]}>{t('events.timeLabel')}</Text>
+                      <Text style={[typography.bodyStrong, { color: colors.text }]}>{dayjs(date).format('h:mm A')}</Text>
+                    </View>
+                    <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+                  </Pressable>
+
+                  {Platform.OS === 'ios' && (
+                    <Modal
+                      visible={iosTimeSheetOpen}
+                      transparent
+                      animationType="slide"
+                      onRequestClose={() => setIosTimeSheetOpen(false)}
+                    >
+                      <Pressable style={styles.timeSheetBackdrop} onPress={() => setIosTimeSheetOpen(false)}>
+                        <Pressable
+                          style={[
+                            styles.timeSheet,
+                            {
+                              backgroundColor: colors.surface,
+                              borderTopLeftRadius: radius.lg,
+                              borderTopRightRadius: radius.lg,
+                              padding: spacing.md,
+                            },
+                          ]}
+                        >
+                          <View style={[styles.timeSheetHandle, { backgroundColor: colors.outline }]} />
+                          <DateTimePicker
+                            value={date}
+                            mode="time"
+                            display="spinner"
+                            onChange={(_, selected) => selected && setDate(selected)}
+                          />
+                          <Button label={t('events.done')} onPress={() => setIosTimeSheetOpen(false)} style={{ marginTop: spacing.sm }} />
+                        </Pressable>
+                      </Pressable>
+                    </Modal>
+                  )}
                 </View>
               ) : (
                 <DateTimePicker
@@ -436,4 +493,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   radioDot: { width: 10, height: 10, borderRadius: 5 },
+  timeRow: { flexDirection: 'row', alignItems: 'center' },
+  timeIconBadge: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
+  timeSheetBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  timeSheet: { width: '100%', alignItems: 'stretch' },
+  timeSheetHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 8 },
 });

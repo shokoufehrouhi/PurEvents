@@ -22,13 +22,31 @@ interface Props {
 // system 'row' already renders right-to-left, so leave it alone there.
 const ROW = I18nManager.isRTL ? 'row' : 'row-reverse';
 
+// Icon + pastel chip background per Jalali month (index 0 = Farvardin),
+// matching the seasonal iconography of a physical Persian calendar/planner —
+// spring flowers, summer fruit/sun, autumn leaves, winter snow, and the
+// Nowruz goldfish for Esfand.
+const MONTH_META: { icon: string; bg: string }[] = [
+  { icon: '🌸', bg: '#FCE4EC' },
+  { icon: '🌱', bg: '#E8F5E9' },
+  { icon: '☀️', bg: '#FFF8E1' },
+  { icon: '☂️', bg: '#E3F2FD' },
+  { icon: '🍉', bg: '#FFEBEE' },
+  { icon: '🍇', bg: '#F3E5F5' },
+  { icon: '🍁', bg: '#FFE0B2' },
+  { icon: '🍂', bg: '#F1F8E9' },
+  { icon: '❄️', bg: '#E1F5FE' },
+  { icon: '🧣', bg: '#EDE7F6' },
+  { icon: '⛄', bg: '#ECEFF1' },
+  { icon: '🐟', bg: '#E0F7FA' },
+];
+
 // The native DateTimePicker only knows the Gregorian calendar (see UI
 // feedback — locale='...@calendar=persian' changes the picker's language
 // but not its actual calendar). This is a real calendar-grid picker backed
-// by jalaali-js (exact, round-trip tested): a month dropdown + a typeable
-// year above a tappable day grid — used for the DATE portion only when
-// calendar='persian'; time is still picked with the native time-only
-// picker since hours/minutes don't depend on calendar.
+// by jalaali-js (exact, round-trip tested): month step chevrons flanking a
+// month dropdown + typeable year, above a tappable day grid — used for the
+// DATE portion only when calendar='persian'; time is picked separately.
 export function JalaliDatePicker({ value, onChange }: Props) {
   const { colors, radius, spacing, typography } = useTheme();
   const { prefs } = usePreferences();
@@ -50,6 +68,19 @@ export function JalaliDatePicker({ value, onChange }: Props) {
     const maxDay = jalaaliMonthLength(nextJy, nextJm);
     const clampedDay = Math.min(nextJd, maxDay);
     onChange(jalaaliToDateObject(nextJy, nextJm, clampedDay, value.getHours(), value.getMinutes(), value.getSeconds()));
+  }
+
+  function stepMonth(delta: number) {
+    let newMonth = jm + delta;
+    let newYear = jy;
+    if (newMonth > 12) {
+      newMonth = 1;
+      newYear += 1;
+    } else if (newMonth < 1) {
+      newMonth = 12;
+      newYear -= 1;
+    }
+    apply(newYear, newMonth, jd);
   }
 
   function selectMonth(monthIndex1: number) {
@@ -82,7 +113,18 @@ export function JalaliDatePicker({ value, onChange }: Props) {
 
   return (
     <View>
+      {/* Coded [next-chevron, month, year, prev-chevron]: with ROW mirroring
+          the first child to the right, this renders visually left-to-right
+          as [prev, year, month, next] — "<" "1405" "Shahrivar ⌄" ">". */}
       <View style={styles.header}>
+        <Pressable
+          onPress={() => stepMonth(1)}
+          hitSlop={8}
+          style={[styles.stepChevron, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}
+        >
+          <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+        </Pressable>
+
         <Pressable
           onPress={() => setMonthPickerOpen(true)}
           style={[styles.monthField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}
@@ -102,6 +144,14 @@ export function JalaliDatePicker({ value, onChange }: Props) {
             style={[typography.bodyStrong, { color: colors.text, flex: 1, textAlign: 'center', padding: 0 }]}
           />
         </View>
+
+        <Pressable
+          onPress={() => stepMonth(-1)}
+          hitSlop={8}
+          style={[styles.stepChevron, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md }]}
+        >
+          <Ionicons name="chevron-back" size={18} color={colors.secondary} />
+        </Pressable>
       </View>
 
       <View style={styles.weekdayRow}>
@@ -124,6 +174,7 @@ export function JalaliDatePicker({ value, onChange }: Props) {
                     style={[styles.dayButton, { borderRadius: radius.md }, isSelected && { backgroundColor: colors.primary }]}
                   >
                     <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]}>{toPersianDigits(day)}</Text>
+                    {isSelected && <View style={[styles.selectedDot, { backgroundColor: '#FFFFFF' }]} />}
                   </Pressable>
                 )}
               </View>
@@ -132,29 +183,52 @@ export function JalaliDatePicker({ value, onChange }: Props) {
         </View>
       ))}
 
-      <Modal visible={monthPickerOpen} transparent animationType="fade" onRequestClose={() => setMonthPickerOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setMonthPickerOpen(false)}>
-          <Pressable style={[styles.monthSheet, { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md }]}>
+      <Modal visible={monthPickerOpen} transparent animationType="slide" onRequestClose={() => setMonthPickerOpen(false)}>
+        <Pressable style={styles.sheetBackdrop} onPress={() => setMonthPickerOpen(false)}>
+          <Pressable
+            style={[
+              styles.sheet,
+              { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.md },
+            ]}
+          >
+            <View style={[styles.sheetHandle, { backgroundColor: colors.outline }]} />
+            <Text style={[typography.headline, { color: colors.text, textAlign: 'center', marginBottom: spacing.md }]}>انتخاب ماه</Text>
+
             <View style={styles.monthGrid}>
               {PERSIAN_MONTHS.map((name, index) => {
                 const monthIndex1 = index + 1;
                 const isSelected = monthIndex1 === jm;
+                const meta = MONTH_META[index];
                 return (
                   <Pressable
                     key={name}
                     onPress={() => selectMonth(monthIndex1)}
-                    style={[
-                      styles.monthCell,
-                      { borderRadius: radius.md, backgroundColor: isSelected ? colors.primary : colors.surfaceAlt },
-                    ]}
+                    style={[styles.monthCell, { borderRadius: radius.lg, backgroundColor: isSelected ? colors.primary : meta.bg }]}
                   >
-                    <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]} numberOfLines={1}>
+                    {isSelected ? (
+                      <View style={styles.checkBadge}>
+                        <Ionicons name="checkmark" size={14} color={colors.primary} />
+                      </View>
+                    ) : (
+                      <Text style={styles.monthEmoji}>{meta.icon}</Text>
+                    )}
+                    <Text
+                      style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text, marginTop: 6 }]}
+                      numberOfLines={1}
+                    >
                       {name}
                     </Text>
                   </Pressable>
                 );
               })}
             </View>
+
+            <Pressable
+              onPress={() => setMonthPickerOpen(false)}
+              style={[styles.doneButton, { backgroundColor: colors.primary, borderRadius: radius.lg, marginTop: spacing.md }]}
+            >
+              <Text style={[typography.bodyStrong, { color: '#FFFFFF' }]}>انجام شد</Text>
+            </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
@@ -163,15 +237,21 @@ export function JalaliDatePicker({ value, onChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection: ROW, gap: 8, marginBottom: 10 },
+  header: { flexDirection: ROW, alignItems: 'center', gap: 8, marginBottom: 10 },
+  stepChevron: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
   monthField: { flex: 1, flexDirection: ROW, alignItems: 'center', justifyContent: 'center', gap: 6 },
   yearField: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   weekdayRow: { flexDirection: ROW, marginBottom: 4 },
   weekRow: { flexDirection: ROW },
   dayCell: { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
-  dayButton: { width: '78%', aspectRatio: 1, alignItems: 'center', justifyContent: 'center' },
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center', padding: 24 },
-  monthSheet: { width: '100%', maxWidth: 360 },
-  monthGrid: { flexDirection: ROW, flexWrap: 'wrap', gap: 8 },
-  monthCell: { width: '30.5%', paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
+  dayButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  selectedDot: { position: 'absolute', bottom: 6, width: 4, height: 4, borderRadius: 2 },
+  sheetBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' },
+  sheet: { width: '100%' },
+  sheetHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 14 },
+  monthGrid: { flexDirection: ROW, flexWrap: 'wrap', gap: 10 },
+  monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
+  monthEmoji: { fontSize: 22 },
+  checkBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
+  doneButton: { paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
 });
