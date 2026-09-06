@@ -9,6 +9,10 @@ import { fromPersianDigits, PERSIAN_MONTHS, PERSIAN_WEEKDAYS_BY_JS_DAY, toPersia
 interface Props {
   value: Date;
   onChange: (date: Date) => void;
+  // Farsi digits (۱۴۰۵) vs. Latin (1405) — tied to the UI language, not to
+  // this being the Persian calendar (see calendars.ts shouldUseFarsiDigits):
+  // an English-language user with the Shamsi calendar still reads 1405.
+  useFarsiDigits: boolean;
 }
 
 // This picker only renders for the Persian/Shamsi calendar, which is
@@ -47,7 +51,7 @@ const MONTH_META: { icon: string; bg: string }[] = [
 // by jalaali-js (exact, round-trip tested): month step chevrons flanking a
 // month dropdown + typeable year, above a tappable day grid — used for the
 // DATE portion only when calendar='persian'; time is picked separately.
-export function JalaliDatePicker({ value, onChange }: Props) {
+export function JalaliDatePicker({ value, onChange, useFarsiDigits }: Props) {
   const { colors, radius, spacing, typography } = useTheme();
   const { prefs } = usePreferences();
   const { jy, jm, jd } = toJalaali(value);
@@ -137,7 +141,7 @@ export function JalaliDatePicker({ value, onChange }: Props) {
 
         <View style={[styles.yearField, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, padding: spacing.xs }]}>
           <TextInput
-            value={toPersianDigits(yearDraft)}
+            value={useFarsiDigits ? toPersianDigits(yearDraft) : yearDraft}
             onChangeText={onYearChangeText}
             keyboardType="number-pad"
             maxLength={4}
@@ -173,7 +177,9 @@ export function JalaliDatePicker({ value, onChange }: Props) {
                     onPress={() => selectDay(day)}
                     style={[styles.dayButton, { borderRadius: radius.md }, isSelected && { backgroundColor: colors.primary }]}
                   >
-                    <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]}>{toPersianDigits(day)}</Text>
+                    <Text style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text }]}>
+                      {useFarsiDigits ? toPersianDigits(day) : day}
+                    </Text>
                     {isSelected && <View style={[styles.selectedDot, { backgroundColor: '#FFFFFF' }]} />}
                   </Pressable>
                 )}
@@ -188,7 +194,13 @@ export function JalaliDatePicker({ value, onChange }: Props) {
           <Pressable
             style={[
               styles.sheet,
-              { backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.md },
+              {
+                backgroundColor: colors.surface,
+                borderTopLeftRadius: radius.lg,
+                borderTopRightRadius: radius.lg,
+                padding: spacing.md,
+                paddingBottom: spacing.lg,
+              },
             ]}
           >
             <View style={[styles.sheetHandle, { backgroundColor: colors.outline }]} />
@@ -222,13 +234,6 @@ export function JalaliDatePicker({ value, onChange }: Props) {
                 );
               })}
             </View>
-
-            <Pressable
-              onPress={() => setMonthPickerOpen(false)}
-              style={[styles.doneButton, { backgroundColor: colors.primary, borderRadius: radius.lg, marginTop: spacing.md }]}
-            >
-              <Text style={[typography.bodyStrong, { color: '#FFFFFF' }]}>انجام شد</Text>
-            </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
@@ -253,5 +258,4 @@ const styles = StyleSheet.create({
   monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
   monthEmoji: { fontSize: 22 },
   checkBadge: { width: 22, height: 22, borderRadius: 11, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' },
-  doneButton: { paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
 });

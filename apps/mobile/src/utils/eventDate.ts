@@ -11,17 +11,22 @@ import { formatCivilDateFull, formatCivilDateMonthDay } from './calendars';
 // shown last as HH:mm. See UI feedback for the exact per-repeat rules.
 // The day/month/year themselves follow the user's chosen calendar system
 // (Gregorian/Persian/Islamic) — see src/utils/calendars.ts.
-export function formatEventDateLine(dateTimeISO: string, repeat: RepeatRule, calendar: CalendarSystem): string {
+export function formatEventDateLine(
+  dateTimeISO: string,
+  repeat: RepeatRule,
+  calendar: CalendarSystem,
+  useFarsiDigits: boolean,
+): string {
   const time = dayjs(dateTimeISO).format('HH:mm');
 
   switch (repeat) {
     case 'weekly':
-      return `${dayjs(dateTimeISO).format('ddd')}, ${formatCivilDateMonthDay(dateTimeISO, calendar)} · ${time}`;
+      return `${dayjs(dateTimeISO).format('ddd')}, ${formatCivilDateMonthDay(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
     case 'monthly':
     case 'yearly':
-      return `${formatCivilDateMonthDay(dateTimeISO, calendar)} · ${time}`;
+      return `${formatCivilDateMonthDay(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
     case 'none':
     default:
-      return `${formatCivilDateFull(dateTimeISO, calendar)} · ${time}`;
+      return `${formatCivilDateFull(dateTimeISO, calendar, useFarsiDigits)} · ${time}`;
   }
 }

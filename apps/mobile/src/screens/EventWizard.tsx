@@ -21,7 +21,7 @@ import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
 import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/event';
-import { formatCivilDateFull } from '../utils/calendars';
+import { formatCivilDateFull, shouldUseFarsiDigits } from '../utils/calendars';
 import { awaitPick } from '../utils/pickerBridge';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
@@ -61,7 +61,7 @@ interface Props {
 }
 
 export function EventWizard({ mode, eventId }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { colors, spacing, radius, typography } = useTheme();
   const insets = useSafeAreaInsets();
@@ -187,7 +187,8 @@ export function EventWizard({ mode, eventId }: Props) {
     router.back();
   }
 
-  const scheduleSummary = `${formatCivilDateFull(date.toISOString(), prefs.calendar)} • ${dayjs(date).format('h:mm A')}`;
+  const useFarsiDigits = shouldUseFarsiDigits(i18n.language);
+  const scheduleSummary = `${formatCivilDateFull(date.toISOString(), prefs.calendar, useFarsiDigits)} • ${dayjs(date).format('h:mm A')}`;
   const remindersSummary =
     reminders.length === 0 ? t('events.noReminders') : `${reminders.length} ${t('events.remindersLabel').toLowerCase()}`;
   const appearanceSummary = t(`events.cardTheme.${cardTheme}`);
@@ -283,7 +284,7 @@ export function EventWizard({ mode, eventId }: Props) {
                 // approved calendar mockup — since time is calendar-agnostic,
                 // it still opens the native time picker underneath.
                 <View style={{ gap: spacing.sm }}>
-                  <JalaliDatePicker value={date} onChange={setDate} />
+                  <JalaliDatePicker value={date} onChange={setDate} useFarsiDigits={useFarsiDigits} />
 
                   <Pressable
                     onPress={openTimePicker}

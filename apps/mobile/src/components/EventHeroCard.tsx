@@ -5,6 +5,7 @@ import { usePreferences } from '../theme/PreferencesContext';
 import { CARD_THEMES } from '../theme/cardThemes';
 import { accents } from '../theme/tokens';
 import type { PurEvent } from '../types/event';
+import { shouldUseFarsiDigits } from '../utils/calendars';
 import { formatEventDateLine } from '../utils/eventDate';
 import { getNextOccurrenceISO } from '../utils/recurrence';
 import { EventIcon } from './EventIcon';
@@ -21,7 +22,7 @@ interface Props {
 // independent of accent/category. MVP has no cover-photo picker yet — see
 // docs/PROJECT.md follow-ups.
 export function EventHeroCard({ event, height = 170 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { radius, spacing, prefs } = usePreferences();
   const preset = CARD_THEMES[event.cardTheme] ?? CARD_THEMES.color;
   const background = preset.background ?? accents[event.accentColor] ?? accents.violet;
@@ -58,7 +59,7 @@ export function EventHeroCard({ event, height = 170 }: Props) {
           {event.title}
         </Text>
         <Text style={[styles.dateLine, { color: preset.secondary }]} numberOfLines={1}>
-          {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar)}
+          {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar, shouldUseFarsiDigits(i18n.language))}
         </Text>
         <HeroCountdown targetISO={nextOccurrenceISO} textColor={preset.text} labelColor={preset.secondary} />
       </View>

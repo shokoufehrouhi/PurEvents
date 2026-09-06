@@ -12,7 +12,7 @@ import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { listEvents } from '../../src/storage/events';
 import { usePreferences, useTheme } from '../../src/theme/PreferencesContext';
 import type { PurEvent } from '../../src/types/event';
-import { formatCivilDateFull } from '../../src/utils/calendars';
+import { formatCivilDateFull, shouldUseFarsiDigits } from '../../src/utils/calendars';
 import { getNextOccurrence } from '../../src/utils/recurrence';
 
 function daysUntil(iso: string): number {
@@ -21,6 +21,7 @@ function daysUntil(iso: string): number {
 
 function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) {
   const { colors, spacing, radius, typography } = useTheme();
+  const { i18n } = useTranslation();
   const { prefs } = usePreferences();
   const nextOccurrence = getNextOccurrence(event.dateTimeISO, event.repeat);
   const days = daysUntil(nextOccurrence.toISOString());
@@ -39,7 +40,7 @@ function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) 
           {event.title}
         </Text>
         <Text style={[typography.caption, { color: colors.secondary }]}>
-          {formatCivilDateFull(nextOccurrence.toISOString(), prefs.calendar)}
+          {formatCivilDateFull(nextOccurrence.toISOString(), prefs.calendar, shouldUseFarsiDigits(i18n.language))}
         </Text>
       </View>
       <View style={styles.rowRight}>

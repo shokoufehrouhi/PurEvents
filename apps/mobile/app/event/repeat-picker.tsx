@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { usePreferences } from '../../src/theme/PreferencesContext';
 import { REPEAT_STYLES } from '../../src/theme/repeatStyles';
 import type { RepeatRule } from '../../src/types/event';
-import { civilDayOfMonth, formatCivilDateMonthDay } from '../../src/utils/calendars';
+import { civilDayOfMonth, formatCivilDateMonthDay, shouldUseFarsiDigits, toPersianDigits } from '../../src/utils/calendars';
 import { resolvePick } from '../../src/utils/pickerBridge';
 
 // English ordinal suffix — only meaningful for the Gregorian calendar (a
@@ -35,12 +35,13 @@ const REPEATS: RepeatRule[] = ['none', 'weekly', 'monthly', 'yearly'];
 // Wednesday"). Tapping a row selects it and closes immediately — same
 // interaction as the category picker, no separate Done step.
 export default function RepeatPickerScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { colors, spacing, radius, typography, prefs } = usePreferences();
   const { current, date: dateParam } = useLocalSearchParams<{ current?: string; date?: string }>();
 
   const dateISO = dayjs(dateParam).toISOString();
+  const useFarsiDigits = shouldUseFarsiDigits(i18n.language);
 
   function describeRepeat(key: RepeatRule): string {
     switch (key) {
@@ -48,10 +49,12 @@ export default function RepeatPickerScreen() {
         return t('events.repeatWeeklyDesc', { day: dayjs(dateISO).format('dddd') });
       case 'monthly': {
         const day = civilDayOfMonth(dateISO, prefs.calendar);
-        return t('events.repeatMonthlyDesc', { day: prefs.calendar === 'gregorian' ? ordinal(day) : day });
+        const dayLabel =
+          prefs.calendar === 'gregorian' ? ordinal(day) : prefs.calendar === 'persian' && useFarsiDigits ? toPersianDigits(day) : day;
+        return t('events.repeatMonthlyDesc', { day: dayLabel });
       }
       case 'yearly':
-        return t('events.repeatYearlyDesc', { date: formatCivilDateMonthDay(dateISO, prefs.calendar) });
+        return t('events.repeatYearlyDesc', { date: formatCivilDateMonthDay(dateISO, prefs.calendar, useFarsiDigits) });
       case 'none':
       default:
         return t('events.repeatNoneDesc');
