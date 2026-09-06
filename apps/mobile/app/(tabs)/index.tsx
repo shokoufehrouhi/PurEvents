@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,7 @@ import { listEvents } from '../../src/storage/events';
 import { usePreferences, useTheme } from '../../src/theme/PreferencesContext';
 import type { PurEvent } from '../../src/types/event';
 import { formatCivilDateFull, shouldUseFarsiDigits } from '../../src/utils/calendars';
+import { fetchLocationPhotoUrl } from '../../src/utils/locationPhoto';
 import { getNextOccurrence } from '../../src/utils/recurrence';
 
 function daysUntil(iso: string): number {
@@ -63,6 +64,7 @@ export default function EventListScreen() {
   const { colors, spacing, typography } = useTheme();
   const [events, setEvents] = useState<PurEvent[]>([]);
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
+  const [heroPhotoUri, setHeroPhotoUri] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -75,6 +77,21 @@ export default function EventListScreen() {
       };
     }, [])
   );
+
+  // Random photo of the device's current city/country — only for the top
+  // "next event" hero card, fetched once per screen mount (cached ~24h
+  // inside fetchLocationPhotoUrl, so this isn't a fresh network hit every
+  // focus). Failure (offline, no API key, no results) just leaves it null
+  // and the hero card falls back to its normal flat theme color.
+  useEffect(() => {
+    let cancelled = false;
+    fetchLocationPhotoUrl().then((url) => {
+      if (!cancelled) setHeroPhotoUri(url);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const { hero, rest, pastList } = useMemo(() => {
     const now = dayjs();
@@ -115,7 +132,7 @@ export default function EventListScreen() {
         ListHeaderComponent={
           tab === 'upcoming' && hero ? (
             <Pressable onPress={() => router.push(`/event/${hero.id}`)} style={{ marginBottom: spacing.sm }}>
-              <EventHeroCard event={hero} />
+              <EventHeroCard event={hero} photoUri={heroPhotoUri ?? undefined} />
             </Pressable>
           ) : null
         }
