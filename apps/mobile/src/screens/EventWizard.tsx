@@ -27,17 +27,6 @@ import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
 type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced';
 
-function timezoneAbbrev(tz: string): string {
-  try {
-    const part = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'short' })
-      .formatToParts(new Date())
-      .find((p) => p.type === 'timeZoneName');
-    return part?.value ?? tz;
-  } catch {
-    return tz;
-  }
-}
-
 interface AccordionRowProps {
   title: string;
   summary: string;
@@ -182,7 +171,7 @@ export function EventWizard({ mode, eventId }: Props) {
     router.back();
   }
 
-  const scheduleSummary = `${formatCivilDateFull(date.toISOString(), prefs.calendar)} • ${dayjs(date).format('h:mm A')} • ${timezoneAbbrev(timezone)}`;
+  const scheduleSummary = `${formatCivilDateFull(date.toISOString(), prefs.calendar)} • ${dayjs(date).format('h:mm A')}`;
   const remindersSummary =
     reminders.length === 0 ? t('events.noReminders') : `${reminders.length} ${t('events.remindersLabel').toLowerCase()}`;
   const appearanceSummary = t(`events.cardTheme.${cardTheme}`);
