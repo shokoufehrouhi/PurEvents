@@ -111,23 +111,27 @@ const ISLAMIC_MONTH_META: MonthMeta[] = [
   { image: require('../../assets/icons/islamic-months/dhu-al-hijjah.png'), bg: '#FFE0B2' }, // Hajj / Eid al-Adha
 ];
 
-// Icon + pastel chip background per Gregorian month (index 0 = January),
-// Northern-hemisphere seasonal/secular-holiday iconography — same spirit
-// as the Persian set, just for the calendar most of the app's other UI
-// already assumes.
+// Icon + pastel chip background per Gregorian month (index 0 = January) —
+// cropped straight from the approved mockup's reference panel, same as
+// Islamic's month icons: illustrated seasonal/secular icons (sparkle/
+// calendar for Jan, heart for Feb, sprout for Mar, rain for Apr, flower
+// for May, sun for Jun, wave for Jul, sun-burst for Aug, leaf/calendar for
+// Sep, moon/leaf for Oct, wind/leaf for Nov, sparkle for Dec) that no
+// emoji set reproduces faithfully. Cropped, chroma-keyed to transparent
+// PNGs at apps/mobile/assets/icons/gregorian-months/.
 const GREGORIAN_MONTH_META: MonthMeta[] = [
-  { icon: '❄️', bg: '#E1F5FE' }, // Jan
-  { icon: '❄️', bg: '#E3F2FD' }, // Feb
-  { icon: '🌱', bg: '#E8F5E9' }, // Mar
-  { icon: '🌸', bg: '#FCE4EC' }, // Apr
-  { icon: '🌷', bg: '#F3E5F5' }, // May
-  { icon: '☀️', bg: '#FFF8E1' }, // Jun
-  { icon: '☀️', bg: '#FFE0B2' }, // Jul
-  { icon: '🌻', bg: '#FFF3E0' }, // Aug
-  { icon: '🍂', bg: '#F1F8E9' }, // Sep
-  { icon: '🎃', bg: '#FFE0B2' }, // Oct
-  { icon: '🍁', bg: '#EFEBE9' }, // Nov
-  { icon: '🎄', bg: '#FFECB3' }, // Dec
+  { image: require('../../assets/icons/gregorian-months/january.png'), bg: '#EDE7F6' },
+  { image: require('../../assets/icons/gregorian-months/february.png'), bg: '#FCE4EC' },
+  { image: require('../../assets/icons/gregorian-months/march.png'), bg: '#E8F5E9' },
+  { image: require('../../assets/icons/gregorian-months/april.png'), bg: '#E3F2FD' },
+  { image: require('../../assets/icons/gregorian-months/may.png'), bg: '#FFEBEE' },
+  { image: require('../../assets/icons/gregorian-months/june.png'), bg: '#FFF8E1' },
+  { image: require('../../assets/icons/gregorian-months/july.png'), bg: '#E1F5FE' },
+  { image: require('../../assets/icons/gregorian-months/august.png'), bg: '#FFF3E0' },
+  { image: require('../../assets/icons/gregorian-months/september.png'), bg: '#FFECB3' },
+  { image: require('../../assets/icons/gregorian-months/october.png'), bg: '#E8EAF6' },
+  { image: require('../../assets/icons/gregorian-months/november.png'), bg: '#E0F2F1' },
+  { image: require('../../assets/icons/gregorian-months/december.png'), bg: '#EDE7F6' },
 ];
 
 function gregorianMonthLength(year: number, month1: number): number {
@@ -174,6 +178,7 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
       monthMeta: GREGORIAN_MONTH_META,
       weekdayLabels: GREGORIAN_WEEKDAYS_BY_LANGUAGE[i18n.language] ?? GREGORIAN_WEEKDAYS_BY_LANGUAGE.en,
       sheetTitle: t('events.chooseMonth'),
+      doneLabel: t('events.done'),
       rtl: false,
       toCivil: (date) => ({ year: date.getFullYear(), month: date.getMonth() + 1, day: date.getDate() }),
       toDate: (year, month, day, hour, minute, second) => new Date(year, month - 1, day, hour, minute, second),
