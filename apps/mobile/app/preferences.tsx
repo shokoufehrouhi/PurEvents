@@ -1,4 +1,5 @@
 import * as Localization from 'expo-localization';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -6,17 +7,18 @@ import { EventHeroCard } from '../src/components/EventHeroCard';
 import { Row } from '../src/components/ui/Row';
 import { Section } from '../src/components/ui/Section';
 import { SegmentedControl } from '../src/components/ui/SegmentedControl';
-import i18n, { SUPPORTED_LANGUAGES } from '../src/i18n';
+import i18n from '../src/i18n';
 import { usePreferences, useTheme } from '../src/theme/PreferencesContext';
 import type { PurEvent } from '../src/types/event';
 
-const LANGUAGE_NAMES: Record<string, string> = { en: 'English', fa: 'فارسی', ar: 'العربية', es: 'Español' };
-
-function cycleLanguage() {
-  const currentIndex = SUPPORTED_LANGUAGES.indexOf(i18n.language as (typeof SUPPORTED_LANGUAGES)[number]);
-  const next = SUPPORTED_LANGUAGES[(currentIndex + 1) % SUPPORTED_LANGUAGES.length];
-  i18n.changeLanguage(next);
-}
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  fa: 'فارسی',
+  ar: 'العربية',
+  es: 'Español',
+  de: 'Deutsch',
+  tr: 'Türkçe',
+};
 
 // Static sample used only to render the live "Preview" card at the bottom,
 // matching the mockup — it does not read/write real event data.
@@ -36,6 +38,7 @@ const PREVIEW_EVENT: PurEvent = {
 
 export default function PreferencesScreen() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { colors, spacing, typography } = useTheme();
   const { prefs, setPrefs } = usePreferences();
 
@@ -60,7 +63,7 @@ export default function PreferencesScreen() {
           icon="globe-outline"
           label={t('preferences.language')}
           value={LANGUAGE_NAMES[i18n.language] ?? i18n.language}
-          onPress={cycleLanguage}
+          onPress={() => router.push('/language-picker')}
         />
       </Section>
 
