@@ -8,6 +8,11 @@ interface BaseProps {
   icon?: keyof typeof Ionicons.glyphMap;
   label: string;
   iconColor?: string;
+  // Background for a solid colored square behind the icon ("color by
+  // function" — see Settings/Preferences mockup). Omit to fall back to a
+  // small plain icon (pre-existing look), e.g. for rows without a strong
+  // functional color.
+  badgeColor?: string;
 }
 
 interface NavRowProps extends BaseProps {
@@ -28,14 +33,20 @@ type Props = NavRowProps | SwitchRowProps;
 // (navigates) or a switch on the trailing edge. Matches the Settings /
 // Preferences mockups.
 export function Row(props: Props) {
-  const { colors, spacing, typography } = useTheme();
+  const { colors, radius, spacing, typography } = useTheme();
 
   const content = (
     <View style={[styles.row, { paddingVertical: spacing.sm + 4, paddingHorizontal: spacing.md }]}>
-      {props.icon ? (
+      {props.icon && props.badgeColor ? (
+        <View style={[styles.badge, { backgroundColor: props.badgeColor, borderRadius: radius.sm }]}>
+          <Ionicons name={props.icon} size={16} color="#FFFFFF" />
+        </View>
+      ) : props.icon ? (
         <Ionicons name={props.icon} size={20} color={props.iconColor ?? colors.secondary} style={styles.icon} />
       ) : null}
-      <Text style={[typography.body, { color: colors.text, flex: 1 }]}>{props.label}</Text>
+      <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: props.badgeColor ? spacing.sm + 2 : 0 }]}>
+        {props.label}
+      </Text>
       {props.type === 'switch' ? (
         <Switch value={props.value} onValueChange={props.onValueChange} trackColor={{ true: colors.primary }} />
       ) : (
@@ -64,4 +75,5 @@ export function Row(props: Props) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   icon: { width: 26 },
+  badge: { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
 });

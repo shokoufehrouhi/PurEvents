@@ -31,6 +31,18 @@ export const accents = {
 export type AccentKey = keyof typeof accents;
 export const ACCENT_KEYS = Object.keys(accents) as AccentKey[];
 
+// "Color by function" badge colors for Settings/Preferences rows (see UI
+// mockup) — each settings row gets a solid-colored square icon badge keyed
+// by what the row does, independent of light/dark theme.
+export const rowBadgeColors = {
+  pink: '#FF6B94',
+  blue: '#4C8DFF',
+  orange: accents.amber,
+  green: accents.mint,
+  red: '#E5484D',
+  purple: accents.violet,
+} as const;
+
 const shared = {
   primary: '#6558D9',
   onPrimary: '#FFFFFF',

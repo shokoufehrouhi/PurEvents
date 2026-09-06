@@ -9,6 +9,7 @@ import { Section } from '../src/components/ui/Section';
 import { SegmentedControl } from '../src/components/ui/SegmentedControl';
 import i18n from '../src/i18n';
 import { usePreferences, useTheme } from '../src/theme/PreferencesContext';
+import { rowBadgeColors } from '../src/theme/tokens';
 import type { PurEvent } from '../src/types/event';
 
 const LANGUAGE_NAMES: Record<string, string> = {
@@ -61,6 +62,7 @@ export default function PreferencesScreen() {
       <Section>
         <Row
           icon="globe-outline"
+          badgeColor={rowBadgeColors.blue}
           label={t('preferences.language')}
           value={LANGUAGE_NAMES[i18n.language] ?? i18n.language}
           onPress={() => router.push('/language-picker')}
