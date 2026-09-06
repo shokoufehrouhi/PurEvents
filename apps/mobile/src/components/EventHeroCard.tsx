@@ -140,5 +140,5 @@ const styles = StyleSheet.create({
   // 34 matches the mockup's own design-system "Semibold Title" token
   // (see gpt1.png's typography panel: 34/34 iOS/Android).
   title: { fontSize: 34, fontWeight: '800' },
-  dateLine: { fontSize: 18, fontWeight: '500', marginBottom: 2 },
+  dateLine: { fontSize: 21, fontWeight: '600', marginBottom: 2 },
 });
