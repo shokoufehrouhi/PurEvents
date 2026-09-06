@@ -158,7 +158,6 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
       monthMeta: ISLAMIC_MONTH_META,
       weekdayLabels: ARABIC_WEEKDAYS_BY_JS_DAY,
       sheetTitle: 'اختيار الشهر',
-      doneLabel: 'تم',
       rtl: true,
       toCivil: (date) => toHijri(date),
       toDate: (year, month, day, hour, minute, second) => hijriToDateObject(year, month, day, hour, minute, second),
