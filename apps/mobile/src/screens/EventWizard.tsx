@@ -9,6 +9,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EventHeroCard } from '../components/EventHeroCard';
 import { EventIcon } from '../components/EventIcon';
+import { JalaliDatePicker } from '../components/JalaliDatePicker';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Section } from '../components/ui/Section';
@@ -268,19 +269,31 @@ export function EventWizard({ mode, eventId }: Props) {
               expanded={expanded === 'schedule'}
               onPress={() => toggle('schedule')}
             >
-              <DateTimePicker
-                value={date}
-                mode="datetime"
-                display={Platform.OS === 'ios' ? 'compact' : 'default'}
-                locale={
-                  prefs.calendar === 'persian'
-                    ? 'fa_IR@calendar=persian'
-                    : prefs.calendar === 'islamic'
-                      ? 'ar_SA@calendar=islamic'
-                      : undefined
-                }
-                onChange={(_, selected) => selected && setDate(selected)}
-              />
+              {prefs.calendar === 'persian' ? (
+                // The native picker only understands the Gregorian calendar
+                // (its `locale` prop only swaps language/font, not the
+                // calendar system — confirmed on-device). So for Persian we
+                // show our own Jalali date stepper (exact, jalaali-js-backed)
+                // for the date, and keep the native picker for time only,
+                // since hours/minutes don't depend on the calendar.
+                <View style={{ gap: spacing.sm }}>
+                  <JalaliDatePicker value={date} onChange={setDate} />
+                  <DateTimePicker
+                    value={date}
+                    mode="time"
+                    display={Platform.OS === 'ios' ? 'compact' : 'default'}
+                    onChange={(_, selected) => selected && setDate(selected)}
+                  />
+                </View>
+              ) : (
+                <DateTimePicker
+                  value={date}
+                  mode="datetime"
+                  display={Platform.OS === 'ios' ? 'compact' : 'default'}
+                  locale={prefs.calendar === 'islamic' ? 'ar_SA@calendar=islamic' : undefined}
+                  onChange={(_, selected) => selected && setDate(selected)}
+                />
+              )}
             </AccordionRow>
 
             <AccordionRow
