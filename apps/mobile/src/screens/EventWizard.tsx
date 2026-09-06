@@ -20,6 +20,7 @@ import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, type AccentKey } from '../theme/tokens';
 import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/event';
+import { formatCivilDateFull } from '../utils/calendars';
 import { awaitPick } from '../utils/pickerBridge';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
@@ -180,7 +181,7 @@ export function EventWizard({ mode, eventId }: Props) {
     router.back();
   }
 
-  const scheduleSummary = `${dayjs(date).format('MMM D, YYYY • h:mm A')} • ${timezoneAbbrev(timezone)}`;
+  const scheduleSummary = `${formatCivilDateFull(date.toISOString(), prefs.calendar)} • ${dayjs(date).format('h:mm A')} • ${timezoneAbbrev(timezone)}`;
   const remindersSummary =
     reminders.length === 0 ? t('events.noReminders') : `${reminders.length} ${t('events.remindersLabel').toLowerCase()}`;
   const appearanceSummary = t(`events.cardTheme.${cardTheme}`);

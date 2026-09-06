@@ -11,10 +11,11 @@ import { Button } from '../../../src/components/ui/Button';
 import { Section } from '../../../src/components/ui/Section';
 import { cancelRemindersForEvent } from '../../../src/notifications';
 import { deleteEvent, getEvent } from '../../../src/storage/events';
-import { useTheme } from '../../../src/theme/PreferencesContext';
+import { usePreferences, useTheme } from '../../../src/theme/PreferencesContext';
 import { accents } from '../../../src/theme/tokens';
 import { EventIcon } from '../../../src/components/EventIcon';
 import type { PurEvent } from '../../../src/types/event';
+import { formatCivilDateFull } from '../../../src/utils/calendars';
 import { darken } from '../../../src/utils/color';
 import { getNextOccurrence } from '../../../src/utils/recurrence';
 import { reminderLabel } from '../../../src/utils/reminders';
@@ -23,6 +24,7 @@ export default function EventDetailScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const { colors, spacing, typography } = useTheme();
+  const { prefs } = usePreferences();
   const { id } = useLocalSearchParams<{ id: string }>();
   const [event, setEvent] = useState<PurEvent | null>(null);
 
@@ -88,7 +90,7 @@ export default function EventDetailScreen() {
           <View style={[styles.infoRow, { padding: spacing.md }]}>
             <Ionicons name="calendar-outline" size={18} color={colors.secondary} />
             <Text style={[typography.body, { color: colors.text, marginLeft: 10 }]}>
-              {nextOccurrence.format('MMM D, YYYY (ddd)')}
+              {formatCivilDateFull(nextOccurrence.toISOString(), prefs.calendar)} ({nextOccurrence.format('ddd')})
             </Text>
           </View>
           <View style={[styles.infoRow, { padding: spacing.md }]}>

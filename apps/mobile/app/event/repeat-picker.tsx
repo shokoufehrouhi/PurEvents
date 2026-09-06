@@ -5,11 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../src/theme/PreferencesContext';
+import { usePreferences } from '../../src/theme/PreferencesContext';
 import { REPEAT_STYLES } from '../../src/theme/repeatStyles';
 import type { RepeatRule } from '../../src/types/event';
+import { civilDayOfMonth, formatCivilDateMonthDay } from '../../src/utils/calendars';
 import { resolvePick } from '../../src/utils/pickerBridge';
 
+// English ordinal suffix — only meaningful for the Gregorian calendar (a
+// bare day number reads fine in Persian/Islamic contexts without one).
 function ordinal(n: number): string {
   const rem100 = n % 100;
   if (rem100 >= 11 && rem100 <= 13) return `${n}th`;
@@ -34,19 +37,21 @@ const REPEATS: RepeatRule[] = ['none', 'weekly', 'monthly', 'yearly'];
 export default function RepeatPickerScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { colors, spacing, radius, typography } = useTheme();
+  const { colors, spacing, radius, typography, prefs } = usePreferences();
   const { current, date: dateParam } = useLocalSearchParams<{ current?: string; date?: string }>();
 
-  const date = dayjs(dateParam);
+  const dateISO = dayjs(dateParam).toISOString();
 
   function describeRepeat(key: RepeatRule): string {
     switch (key) {
       case 'weekly':
-        return t('events.repeatWeeklyDesc', { day: date.format('dddd') });
-      case 'monthly':
-        return t('events.repeatMonthlyDesc', { day: ordinal(date.date()) });
+        return t('events.repeatWeeklyDesc', { day: dayjs(dateISO).format('dddd') });
+      case 'monthly': {
+        const day = civilDayOfMonth(dateISO, prefs.calendar);
+        return t('events.repeatMonthlyDesc', { day: prefs.calendar === 'gregorian' ? ordinal(day) : day });
+      }
       case 'yearly':
-        return t('events.repeatYearlyDesc', { date: date.format('MMMM D') });
+        return t('events.repeatYearlyDesc', { date: formatCivilDateMonthDay(dateISO, prefs.calendar) });
       case 'none':
       default:
         return t('events.repeatNoneDesc');

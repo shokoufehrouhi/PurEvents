@@ -10,8 +10,9 @@ import { EventHeroCard } from '../../src/components/EventHeroCard';
 import { EventIcon } from '../../src/components/EventIcon';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { listEvents } from '../../src/storage/events';
-import { useTheme } from '../../src/theme/PreferencesContext';
+import { usePreferences, useTheme } from '../../src/theme/PreferencesContext';
 import type { PurEvent } from '../../src/types/event';
+import { formatCivilDateFull } from '../../src/utils/calendars';
 import { getNextOccurrence } from '../../src/utils/recurrence';
 
 function daysUntil(iso: string): number {
@@ -20,6 +21,7 @@ function daysUntil(iso: string): number {
 
 function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) {
   const { colors, spacing, radius, typography } = useTheme();
+  const { prefs } = usePreferences();
   const nextOccurrence = getNextOccurrence(event.dateTimeISO, event.repeat);
   const days = daysUntil(nextOccurrence.toISOString());
 
@@ -36,7 +38,9 @@ function EventRow({ event, onPress }: { event: PurEvent; onPress: () => void }) 
         <Text style={[typography.bodyStrong, { color: colors.text }]} numberOfLines={1}>
           {event.title}
         </Text>
-        <Text style={[typography.caption, { color: colors.secondary }]}>{nextOccurrence.format('MMM D, YYYY')}</Text>
+        <Text style={[typography.caption, { color: colors.secondary }]}>
+          {formatCivilDateFull(nextOccurrence.toISOString(), prefs.calendar)}
+        </Text>
       </View>
       <View style={styles.rowRight}>
         <View style={styles.rowIcons}>

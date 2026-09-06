@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '../theme/PreferencesContext';
+import { usePreferences } from '../theme/PreferencesContext';
 import { CARD_THEMES } from '../theme/cardThemes';
 import { accents } from '../theme/tokens';
 import type { PurEvent } from '../types/event';
@@ -22,7 +22,7 @@ interface Props {
 // docs/PROJECT.md follow-ups.
 export function EventHeroCard({ event, height = 170 }: Props) {
   const { t } = useTranslation();
-  const { radius, spacing } = useTheme();
+  const { radius, spacing, prefs } = usePreferences();
   const preset = CARD_THEMES[event.cardTheme] ?? CARD_THEMES.color;
   const background = preset.background ?? accents[event.accentColor] ?? accents.violet;
   const nextOccurrenceISO = getNextOccurrenceISO(event.dateTimeISO, event.repeat);
@@ -58,7 +58,7 @@ export function EventHeroCard({ event, height = 170 }: Props) {
           {event.title}
         </Text>
         <Text style={[styles.dateLine, { color: preset.secondary }]} numberOfLines={1}>
-          {formatEventDateLine(nextOccurrenceISO, event.repeat)}
+          {formatEventDateLine(nextOccurrenceISO, event.repeat, prefs.calendar)}
         </Text>
         <HeroCountdown targetISO={nextOccurrenceISO} textColor={preset.text} labelColor={preset.secondary} />
       </View>
