@@ -61,7 +61,13 @@
       "clean": "Clean",
       "color": "Color",
       "dark": "Dark"
-    }
+    },
+    "repeatSubtitle": "Choose how often this event repeats",
+    "repeatNoneDesc": "One-time event",
+    "repeatWeeklyDesc": "Every week on {{day}}",
+    "repeatMonthlyDesc": "Every month on the {{day}}",
+    "repeatYearlyDesc": "Every year on {{date}}",
+    "done": "Done"
   },
   "countdown": {
     "days": "{{count}}d",

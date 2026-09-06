@@ -61,7 +61,13 @@
       "clean": "ساده",
       "color": "رنگی",
       "dark": "تیره"
-    }
+    },
+    "repeatSubtitle": "انتخاب کن این رویداد چقدر یک‌بار تکرار می‌شود",
+    "repeatNoneDesc": "رویداد یک‌باره",
+    "repeatWeeklyDesc": "هر هفته، روز {{day}}",
+    "repeatMonthlyDesc": "هر ماه، روز {{day}}",
+    "repeatYearlyDesc": "هر سال، تاریخ {{date}}",
+    "done": "تمام"
   },
   "countdown": {
     "days": "{{count}} روز",

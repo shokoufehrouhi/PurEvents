@@ -132,7 +132,7 @@ export function EventWizard({ mode, eventId }: Props) {
   }
 
   async function openRepeatPicker() {
-    router.push({ pathname: '/event/repeat-picker', params: { current: repeat } });
+    router.push({ pathname: '/event/repeat-picker', params: { current: repeat, date: date.toISOString() } });
     const picked = await awaitPick();
     setRepeat(picked as RepeatRule);
   }

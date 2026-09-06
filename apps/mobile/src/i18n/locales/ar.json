@@ -61,7 +61,13 @@
       "clean": "بسيط",
       "color": "ملوّن",
       "dark": "داكن"
-    }
+    },
+    "repeatSubtitle": "اختر عدد مرات تكرار هذا الحدث",
+    "repeatNoneDesc": "حدث لمرة واحدة",
+    "repeatWeeklyDesc": "كل أسبوع يوم {{day}}",
+    "repeatMonthlyDesc": "كل شهر في يوم {{day}}",
+    "repeatYearlyDesc": "كل سنة في {{date}}",
+    "done": "تم"
   },
   "countdown": {
     "days": "{{count}} يوم",
