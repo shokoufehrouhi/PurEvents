@@ -22,7 +22,6 @@ import type { CardTheme, EventCategory, PurEvent, RepeatRule } from '../types/ev
 import { awaitPick } from '../utils/pickerBridge';
 import { PRESET_REMINDER_OFFSETS, reminderLabel } from '../utils/reminders';
 
-const STEPS = ['stepBasics', 'stepSchedule', 'stepReminders', 'stepAppearance'] as const;
 type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced';
 
 function timezoneAbbrev(tz: string): string {
@@ -196,24 +195,6 @@ export function EventWizard({ mode, eventId }: Props) {
           {mode === 'create' ? t('events.newEventTitle') : t('events.editEventTitle')}
         </Text>
         <View style={{ width: 24 }} />
-      </View>
-
-      <View style={[styles.stepper, { paddingHorizontal: spacing.md, marginBottom: spacing.sm }]}>
-        <View style={[styles.stepperLine, { backgroundColor: colors.outline }]} />
-        {STEPS.map((key, i) => {
-          const sectionKey = (['schedule', 'reminders', 'appearance'][i - 1] ?? null) as SectionKey | null;
-          const active = i === 0 ? expanded === null : expanded === sectionKey;
-          return (
-            <Pressable key={key} style={styles.stepItem} onPress={() => sectionKey && setExpanded(sectionKey)}>
-              <View style={[styles.stepCircle, { backgroundColor: active ? colors.primary : colors.surfaceAlt, borderRadius: 999 }]}>
-                <Text style={{ color: active ? colors.onPrimary : colors.secondary, fontSize: 12, fontWeight: '600' }}>{i + 1}</Text>
-              </View>
-              <Text style={[typography.caption, { color: active ? colors.text : colors.secondary, marginTop: 4 }]}>
-                {t(`events.${key}`)}
-              </Text>
-            </Pressable>
-          );
-        })}
       </View>
 
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: spacing.md, paddingBottom: 48 }} keyboardShouldPersistTaps="handled">
@@ -415,10 +396,6 @@ export function EventWizard({ mode, eventId }: Props) {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  stepper: { flexDirection: 'row', justifyContent: 'space-between', position: 'relative' },
-  stepperLine: { position: 'absolute', top: 13, left: '12.5%', right: '12.5%', height: 2, zIndex: -1 },
-  stepItem: { alignItems: 'center', flex: 1 },
-  stepCircle: { width: 26, height: 26, alignItems: 'center', justifyContent: 'center' },
   input: { borderWidth: 1, paddingHorizontal: 12, paddingVertical: 10, fontSize: 16 },
   multiline: { minHeight: 80, textAlignVertical: 'top' },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
