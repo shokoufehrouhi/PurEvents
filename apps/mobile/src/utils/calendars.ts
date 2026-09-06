@@ -99,9 +99,12 @@ function toCivilDate(iso: string, calendar: CalendarSystem): CivilDate {
 // numbers too.
 const RLI = '⁧';
 const PDI = '⁩';
-function isolateRTL(s: string): string {
+export function isolateRTL(s: string): string {
   return `${RLI}${s}${PDI}`;
 }
+
+/** Persian weekday initials, indexed by JS `Date#getDay()` (0=Sun .. 6=Sat). */
+export const PERSIAN_WEEKDAYS_BY_JS_DAY = ['ی', 'د', 'س', 'چ', 'پ', 'ج', 'ش'];
 
 /** "10 Sep 2026" / "19 شهریور 1405" / "27 صفر 1448" */
 export function formatCivilDateFull(iso: string, calendar: CalendarSystem): string {
