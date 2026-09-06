@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   card: { justifyContent: 'space-between', overflow: 'hidden' },
   photoScrim: { flex: 1, justifyContent: 'space-between', backgroundColor: 'rgba(0,0,0,0.32)' },
   heroCaption: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: '700',
     letterSpacing: 1,
     color: 'rgba(255,255,255,0.85)',
