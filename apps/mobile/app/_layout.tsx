@@ -44,11 +44,26 @@ function Navigation() {
         <Stack.Screen name="event/repeat-picker" />
         <Stack.Screen name="event/[id]/index" />
         <Stack.Screen name="event/[id]/edit" options={{ presentation: 'fullScreenModal' }} />
-        <Stack.Screen name="preferences" options={{ ...headerOptions, title: t('preferences.title') }} />
-        <Stack.Screen name="language-picker" options={{ ...headerOptions, title: t('preferences.language') }} />
-        <Stack.Screen name="upgrade" options={{ ...headerOptions, title: t('compare.title') }} />
-        <Stack.Screen name="privacy" options={{ ...headerOptions, title: t('settings.privacy') }} />
-        <Stack.Screen name="about" options={{ ...headerOptions, title: t('settings.about') }} />
+        <Stack.Screen
+          name="preferences"
+          options={{ ...headerOptions, title: t('preferences.title'), headerBackTitle: t('settings.title') }}
+        />
+        <Stack.Screen
+          name="language-picker"
+          options={{ ...headerOptions, title: t('preferences.language'), headerBackTitle: t('preferences.title') }}
+        />
+        <Stack.Screen
+          name="upgrade"
+          options={{ ...headerOptions, title: t('compare.title'), headerBackTitle: t('settings.title') }}
+        />
+        <Stack.Screen
+          name="privacy"
+          options={{ ...headerOptions, title: t('settings.privacy'), headerBackTitle: t('settings.title') }}
+        />
+        <Stack.Screen
+          name="about"
+          options={{ ...headerOptions, title: t('settings.about'), headerBackTitle: t('settings.title') }}
+        />
         <Stack.Screen name="paywall" options={{ presentation: 'fullScreenModal' }} />
       </Stack>
     </>
