@@ -11,14 +11,16 @@ interface Props {
   onChange: (date: Date) => void;
 }
 
-// A calendar's day/month order is a fixed chronological sequence, not
-// something that should mirror with the UI language — Persian readers still
-// expect Saturday-through-Friday left-to-right, same as a Gregorian
-// calendar reads Sunday-through-Saturday left-to-right in an English app.
-// React Native auto-mirrors `flexDirection: 'row'` when I18nManager.isRTL
-// is on (Farsi/Arabic), so every row here has to counter-mirror back to a
-// true left-to-right order.
-const ROW = I18nManager.isRTL ? 'row-reverse' : 'row';
+// This picker only renders for the Persian/Shamsi calendar, which is
+// conventionally read right-to-left regardless of the device's system
+// language: Farvardin (month 1) belongs at the right of the month grid,
+// Shanbe (the first weekday) at the right of the calendar — so these rows
+// must render RTL *unconditionally*. React Native auto-mirrors
+// `flexDirection: 'row'` into right-to-left only when I18nManager.isRTL is
+// already on, so on an LTR system (isRTL false) we have to flip to
+// 'row-reverse' ourselves to get that same right-to-left order; on an RTL
+// system 'row' already renders right-to-left, so leave it alone there.
+const ROW = I18nManager.isRTL ? 'row' : 'row-reverse';
 
 // The native DateTimePicker only knows the Gregorian calendar (see UI
 // feedback — locale='...@calendar=persian' changes the picker's language
