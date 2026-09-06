@@ -47,11 +47,11 @@ export default function CategoryPickerScreen() {
                 onPress={() => pick(c)}
                 style={({ pressed }) => [
                   styles.row,
-                  { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.md, opacity: pressed ? 0.8 : 1 },
+                  { backgroundColor: selected ? colors.primary : `${color}1F`, borderRadius: radius.lg, opacity: pressed ? 0.8 : 1 },
                 ]}
               >
-                <EventIcon category={c} size={56} />
-                <Text style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 14, fontSize: 18 }]}>
+                <EventIcon category={c} size={44} />
+                <Text style={[typography.bodyStrong, { color: selected ? colors.onPrimary : colors.text, flex: 1, marginLeft: 14, fontSize: 17 }]}>
                   {t(`events.category.${c}`)}
                 </Text>
                 {selected ? <Ionicons name="checkmark-circle" size={24} color={colors.onPrimary} /> : null}
