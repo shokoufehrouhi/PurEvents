@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   photoScrim: { flex: 1, justifyContent: 'space-between', backgroundColor: 'rgba(0,0,0,0.32)' },
   heroCaption: {
     fontSize: 19,
-    fontWeight: '700',
+    fontWeight: '900',
     letterSpacing: 1,
     color: 'rgba(255,255,255,0.85)',
     textTransform: 'uppercase',
@@ -134,11 +134,14 @@ const styles = StyleSheet.create({
   },
   metaRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   categoryRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 },
-  categoryText: { fontSize: 16, fontWeight: '600' },
-  repeatText: { fontSize: 15, fontWeight: '500' },
+  categoryText: { fontSize: 16, fontWeight: '800' },
+  repeatText: { fontSize: 15, fontWeight: '700' },
   bottom: { gap: 8, marginTop: 12 },
   // 34 matches the mockup's own design-system "Semibold Title" token
-  // (see gpt1.png's typography panel: 34/34 iOS/Android).
-  title: { fontSize: 34, fontWeight: '800' },
-  dateLine: { fontSize: 21, fontWeight: '600', marginBottom: 2 },
+  // (see gpt1.png's typography panel: 34/34 iOS/Android) — weight bumped
+  // to '900' (heaviest system weight) per explicit request for a
+  // thicker/chunkier look, using the system font rather than a new
+  // font family.
+  title: { fontSize: 34, fontWeight: '900' },
+  dateLine: { fontSize: 21, fontWeight: '800', marginBottom: 2 },
 });
