@@ -32,6 +32,11 @@ interface Props {
 
 interface MonthMeta {
   icon: string;
+  // Small badge layered on the icon's top-right corner (e.g. a crescent
+  // moon base with a leaf/star/sparkle accent) — omit for months that get
+  // one fully custom icon on its own instead (see Islamic's Ramadan/
+  // Dhu al-Qi'dah/Dhu al-Hijjah).
+  accent?: string;
   bg: string;
 }
 
@@ -75,24 +80,25 @@ const PERSIAN_MONTH_META: MonthMeta[] = [
   { icon: '🐟', bg: '#E0F7FA' },
 ];
 
-// Icon + pastel chip background per Hijri month (index 0 = Muharram) —
-// tied to what each month is culturally/religiously known for rather than
-// season (a lunar calendar drifts through all seasons over ~33 years, so
-// seasonal icons wouldn't stay meaningful): Mawlid, Isra & Mi'raj, Ramadan,
-// the two Eids, and Hajj each get their own icon; the rest get a distinct
-// accent (star/sparkle/leaf/gem) so all twelve read apart at a glance,
-// per the approved month-picker mockup.
+// Icon + pastel chip background per Hijri month (index 0 = Muharram), per
+// the approved month-picker mockup: a shared crescent-moon base with a
+// small accent badge (star/sparkle/leaf/gem) distinguishing most months,
+// swapped for one fully custom icon on its own for the three months with a
+// well-known occasion — Ramadan (lantern), Dhu al-Qi'dah (a plain
+// coin/token — pre-Hajj, no major event of its own), Dhu al-Hijjah (Kaaba,
+// Hajj/Eid al-Adha). No seasonal icons, since a lunar calendar drifts
+// through all seasons over ~33 years.
 const ISLAMIC_MONTH_META: MonthMeta[] = [
-  { icon: '🌟', bg: '#EDE7F6' }, // Muharram — Islamic New Year
-  { icon: '🔷', bg: '#E0F2F1' }, // Safar
-  { icon: '🌱', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
-  { icon: '🍃', bg: '#F1F8E9' }, // Rabi' al-Thani
-  { icon: '✨', bg: '#FFF8E1' }, // Jumada al-Awwal
-  { icon: '✳️', bg: '#E3F2FD' }, // Jumada al-Thani
-  { icon: '🌌', bg: '#FCE4EC' }, // Rajab — Isra & Mi'raj
-  { icon: '🔮', bg: '#F3E5F5' }, // Sha'ban
+  { icon: '🌙', accent: '⭐', bg: '#EDE7F6' }, // Muharram — Islamic New Year
+  { icon: '🌙', accent: '⚛️', bg: '#E0F2F1' }, // Safar
+  { icon: '🌙', accent: '🌱', bg: '#E8F5E9' }, // Rabi' al-Awwal — Mawlid
+  { icon: '🌙', accent: '🍃', bg: '#F1F8E9' }, // Rabi' al-Thani
+  { icon: '🌙', accent: '✨', bg: '#FFF8E1' }, // Jumada al-Awwal
+  { icon: '🌙', accent: '✳️', bg: '#E3F2FD' }, // Jumada al-Thani
+  { icon: '🌙', accent: '✴️', bg: '#FCE4EC' }, // Rajab — Isra & Mi'raj
+  { icon: '🌙', accent: '🔹', bg: '#F3E5F5' }, // Sha'ban
   { icon: '🏮', bg: '#FFECB3' }, // Ramadan
-  { icon: '🎉', bg: '#FCE4EC' }, // Shawwal — Eid al-Fitr
+  { icon: '🌙', accent: '💫', bg: '#FCE4EC' }, // Shawwal — Eid al-Fitr
   { icon: '🪙', bg: '#EFEBE9' }, // Dhu al-Qi'dah
   { icon: '🕋', bg: '#FFE0B2' }, // Dhu al-Hijjah — Hajj / Eid al-Adha
 ];
@@ -358,7 +364,10 @@ export function CivilCalendarPicker({ calendar, value, onChange, useFarsiDigits 
                     onPress={() => selectMonth(monthIndex1)}
                     style={[styles.monthCell, { borderRadius: radius.lg, backgroundColor: isSelected ? colors.primary : meta.bg }]}
                   >
-                    <Text style={styles.monthEmoji}>{meta.icon}</Text>
+                    <View style={styles.iconWrap}>
+                      <Text style={styles.monthEmoji}>{meta.icon}</Text>
+                      {meta.accent && <Text style={styles.iconAccent}>{meta.accent}</Text>}
+                    </View>
                     <Text
                       style={[typography.body, { color: isSelected ? '#FFFFFF' : colors.text, marginTop: 6 }]}
                       numberOfLines={1}
@@ -406,7 +415,9 @@ const styles = StyleSheet.create({
   sheetHandle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 14 },
   monthGrid: { flexWrap: 'wrap', gap: 10 },
   monthCell: { width: '31%', paddingVertical: 16, alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  iconWrap: { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   monthEmoji: { fontSize: 22 },
+  iconAccent: { position: 'absolute', top: -4, right: -10, fontSize: 12 },
   checkBadge: {
     position: 'absolute',
     top: 8,
