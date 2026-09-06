@@ -164,7 +164,7 @@ export function JalaliDatePicker({ value, onChange }: Props) {
 
 const styles = StyleSheet.create({
   header: { flexDirection: ROW, gap: 8, marginBottom: 10 },
-  monthField: { flex: 2, flexDirection: ROW, alignItems: 'center', justifyContent: 'center', gap: 6 },
+  monthField: { flex: 1, flexDirection: ROW, alignItems: 'center', justifyContent: 'center', gap: 6 },
   yearField: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   weekdayRow: { flexDirection: ROW, marginBottom: 4 },
   weekRow: { flexDirection: ROW },
