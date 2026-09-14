@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
+import { listEvents } from '../storage/events';
 import { logNotificationFired, markNotificationSeen } from '../storage/notificationLog';
 import type { NotificationSoundKey, PurEvent } from '../types/event';
 import { getActiveReminders } from '../utils/reminders';
@@ -143,11 +144,21 @@ export async function cancelRemindersForEvent(eventId: string): Promise<void> {
 // freeReminderOffset ("1 day before") actually gets scheduled, same offsets
 // the detail screen shows as active (see getActiveReminders); the rest stay
 // in event.reminders untouched so they come back the moment Pro does.
+//
+// notificationsEnabled mirrors the Settings > Notifications toggle
+// (prefs.notificationsEnabled) — passed explicitly by the caller (which
+// already has it via usePreferences) rather than read from storage in
+// here, so there's no race against a setPrefs() that hasn't finished its
+// own (unawaited) save yet. Always cancels this event's existing reminders
+// first regardless, so flipping the toggle off and saving/reopening an
+// event actually clears them instead of leaving stale ones scheduled.
 export async function scheduleRemindersForEvent(
   event: Pick<PurEvent, 'id' | 'title' | 'dateTimeISO' | 'reminders' | 'note' | 'notificationSound'>,
-  isPro: boolean
+  isPro: boolean,
+  notificationsEnabled: boolean
 ): Promise<void> {
   await cancelRemindersForEvent(event.id);
+  if (!notificationsEnabled) return;
 
   const eventTime = new Date(event.dateTimeISO).getTime();
   const now = Date.now();
@@ -187,6 +198,25 @@ export async function scheduleRemindersForEvent(
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: new Date(fireAt), channelId },
     });
   }
+}
+
+// Called from notification-settings.tsx's own toggle — scheduleRemindersForEvent
+// above only touches one event's reminders, and only the next time it's
+// saved/reopened, so flipping the global switch needs its own immediate
+// sweep instead of waiting for that to happen naturally:
+//  - turning it off cancels every reminder scheduled by this app outright
+//    (nothing else schedules local notifications here, so a blanket
+//    cancelAllScheduledNotificationsAsync is safe, not just "this app's
+//    puraevents:-prefixed ones").
+//  - turning it back on re-schedules every event's reminders from
+//    scratch, same as a fresh save would.
+export async function applyNotificationsEnabledChange(enabled: boolean, isPro: boolean): Promise<void> {
+  if (!enabled) {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    return;
+  }
+  const events = await listEvents();
+  await Promise.all(events.map((event) => scheduleRemindersForEvent(event, isPro, true)));
 }
 
 // Also used by app/_layout.tsx's tap popup, to show how much is left until

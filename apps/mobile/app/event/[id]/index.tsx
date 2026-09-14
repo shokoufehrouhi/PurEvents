@@ -90,13 +90,13 @@ export default function EventDetailScreen() {
   // live to the OS schedule too, not only the UI: reminders.tsx never gets
   // rewritten on Pro lapse, so without this a stale, no-longer-visible
   // "1 hour before" would still silently fire. Re-runs whenever isPro
-  // flips (usePro polls every 15s) or a fresh event loads, so a lapsed
-  // plan gets reconciled down to just the free offset without needing to
-  // re-save the event, and a renewed plan restores the rest just as fast.
+  // flips (usePro polls every 15s), the Settings notifications toggle
+  // changes, or a fresh event loads, so a lapsed plan (or a flipped
+  // toggle) gets reconciled without needing to re-save the event.
   useEffect(() => {
     if (!event) return;
-    scheduleRemindersForEvent(event, isPro);
-  }, [event, isPro]);
+    scheduleRemindersForEvent(event, isPro, prefs.notificationsEnabled);
+  }, [event, isPro, prefs.notificationsEnabled]);
 
   if (!event) return null;
 

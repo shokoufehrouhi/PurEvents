@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { Row } from '../src/components/ui/Row';
 import { Section } from '../src/components/ui/Section';
+import { applyNotificationsEnabledChange } from '../src/notifications';
 import { unseenNotificationCount } from '../src/storage/notificationLog';
+import { usePro } from '../src/subscription';
 import { usePreferences, useTheme } from '../src/theme/PreferencesContext';
 import { rowBadgeColors } from '../src/theme/tokens';
 import { reminderLabel } from '../src/utils/reminders';
@@ -19,6 +21,7 @@ export default function NotificationSettingsScreen() {
   const router = useRouter();
   const { colors, spacing } = useTheme();
   const { prefs, setPrefs } = usePreferences();
+  const { isPro } = usePro();
   const [unseenCount, setUnseenCount] = useState(0);
 
   // Re-read every time this screen regains focus — coming back from
@@ -45,7 +48,15 @@ export default function NotificationSettingsScreen() {
           badgeColor={rowBadgeColors.red}
           label={t('settings.notifications')}
           value={prefs.notificationsEnabled}
-          onValueChange={(v) => setPrefs({ notificationsEnabled: v })}
+          onValueChange={(v) => {
+            setPrefs({ notificationsEnabled: v });
+            // Immediate, not waiting for the next event save/open —
+            // cancels (or reschedules) every reminder right away. Passed
+            // explicitly rather than read back from storage since
+            // setPrefs's own save isn't awaited (see
+            // scheduleRemindersForEvent's own comment on this).
+            applyNotificationsEnabledChange(v, isPro);
+          }}
         />
         <Row
           icon="alarm-outline"

@@ -300,7 +300,7 @@ export function EventWizard({ mode, eventId }: Props) {
     };
 
     const saved = mode === 'edit' && eventId ? await updateEvent(eventId, input) : await createEvent(input);
-    if (saved) await scheduleRemindersForEvent(saved, isPro);
+    if (saved) await scheduleRemindersForEvent(saved, isPro, prefs.notificationsEnabled);
     router.back();
   }
 
