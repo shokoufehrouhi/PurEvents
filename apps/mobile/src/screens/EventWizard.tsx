@@ -38,7 +38,7 @@ import { formatCivilDateFull, shouldUseFarsiDigits } from '../utils/calendars';
 import { resolvePhotoUri } from '../utils/persistImage';
 import { awaitPick } from '../utils/pickerBridge';
 
-type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced';
+type SectionKey = 'schedule' | 'reminders' | 'appearance' | 'advanced' | 'share';
 
 interface AccordionRowProps {
   title: string;
@@ -314,6 +314,7 @@ export function EventWizard({ mode, eventId }: Props) {
     reminders.length === 0 ? t('events.noReminders') : `${reminders.length} ${t('events.remindersLabel').toLowerCase()}`;
   const appearanceSummary = t(`events.cardTheme.${cardTheme}`);
   const advancedSummary = note.trim() ? `${t(`events.repeat.${repeat}`)}, note added` : t(`events.repeat.${repeat}`);
+  const shareSummary = shareMessage.trim() || sender.trim() ? t('events.shareSummaryCustom') : t('events.shareSummaryAuto');
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -605,8 +606,8 @@ export function EventWizard({ mode, eventId }: Props) {
               </Pressable>
 
               {/* What actually shows/plays in the reminder notification —
-                  independent of shareMessage/sender below, which are only
-                  for the Share card graphic. */}
+                  independent of the Share step's own message/sender (see
+                  below), which are only for the Share card graphic. */}
               <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 4 }]}>
                 {t('events.notificationMessageLabel')}
               </Text>
@@ -645,13 +646,20 @@ export function EventWizard({ mode, eventId }: Props) {
                 onChangeText={setNote}
                 multiline
               />
+            </AccordionRow>
 
+            {/* Own step, separate from Advanced — everything here feeds the
+                Share card graphic (see ShareCard.tsx / event/[id]/index.tsx's
+                Share button), nothing else. */}
+            <AccordionRow
+              title={t('events.stepShare')}
+              summary={shareSummary}
+              expanded={expanded === 'share'}
+              onPress={() => toggle('share')}
+            >
               {/* Optional — falls back to an auto title+date line on the
-                  Share card (see ShareCard.tsx) when left empty, so this
-                  never blocks sharing. */}
-              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 4 }]}>
-                {t('events.shareMessageLabel')}
-              </Text>
+                  Share card when left empty, so this never blocks sharing. */}
+              <Text style={[typography.label, { color: colors.secondary, marginBottom: 4 }]}>{t('events.shareMessageLabel')}</Text>
               <Text style={[typography.caption, { color: colors.secondary, marginBottom: 8 }]}>{t('events.shareMessageHint')}</Text>
               <TextInput
                 style={[styles.input, styles.multiline, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
@@ -666,8 +674,8 @@ export function EventWizard({ mode, eventId }: Props) {
                 {shareMessage.length}/{SHARE_MESSAGE_MAX_LENGTH}
               </Text>
 
-              {/* Shown bottom-right of the Share card (see ShareCard.tsx) —
-                  a single short "from" line, independent of shareMessage. */}
+              {/* Shown bottom-right of the Share card — a single short
+                  "from" line, independent of shareMessage. */}
               <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>
                 {t('events.senderLabel')}
               </Text>

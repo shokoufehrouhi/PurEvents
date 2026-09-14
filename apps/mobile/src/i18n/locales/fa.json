@@ -66,6 +66,9 @@
     "stepReminders": "یادآورها",
     "stepAppearance": "ظاهر",
     "stepAdvanced": "تنظیمات بیشتر",
+    "stepShare": "اشتراک‌گذاری",
+    "shareSummaryCustom": "پیام سفارشی",
+    "shareSummaryAuto": "خودکار",
     "category": {
       "personal": "شخصی",
       "work": "کاری",

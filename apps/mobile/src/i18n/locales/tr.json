@@ -66,6 +66,9 @@
     "stepReminders": "Hatırlatıcılar",
     "stepAppearance": "Görünüm",
     "stepAdvanced": "Gelişmiş",
+    "stepShare": "Paylaş",
+    "shareSummaryCustom": "Özel mesaj",
+    "shareSummaryAuto": "Otomatik",
     "category": {
       "personal": "Kişisel",
       "work": "İş",

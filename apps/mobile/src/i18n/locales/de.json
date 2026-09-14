@@ -66,6 +66,9 @@
     "stepReminders": "Erinnerungen",
     "stepAppearance": "Erscheinungsbild",
     "stepAdvanced": "Erweitert",
+    "stepShare": "Teilen",
+    "shareSummaryCustom": "Eigene Nachricht",
+    "shareSummaryAuto": "Automatisch",
     "category": {
       "personal": "Persönlich",
       "work": "Arbeit",

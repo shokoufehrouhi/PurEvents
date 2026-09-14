@@ -66,6 +66,9 @@
     "stepReminders": "التذكيرات",
     "stepAppearance": "المظهر",
     "stepAdvanced": "إعدادات متقدمة",
+    "stepShare": "المشاركة",
+    "shareSummaryCustom": "رسالة مخصصة",
+    "shareSummaryAuto": "تلقائي",
     "category": {
       "personal": "شخصي",
       "work": "عمل",

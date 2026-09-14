@@ -66,6 +66,9 @@
     "stepReminders": "Reminders",
     "stepAppearance": "Appearance",
     "stepAdvanced": "Advanced",
+    "stepShare": "Share",
+    "shareSummaryCustom": "Custom message",
+    "shareSummaryAuto": "Auto-generated",
     "category": {
       "personal": "Personal",
       "work": "Work",
