@@ -157,6 +157,13 @@
     "emptyTitle": "هنوز نوتیفیکیشنی نیست",
     "emptySubtitle": "یادآورهایی که دریافت کرده‌ای اینجا نمایش داده می‌شن."
   },
+  "notificationPopup": {
+    "eventIdLabel": "شناسه رویداد",
+    "notificationIdLabel": "شناسه نوتیفیکیشن",
+    "sentLabel": "زمان ارسال",
+    "viewEvent": "مشاهده رویداد",
+    "close": "بستن"
+  },
   "preferences": {
     "title": "ترجیحات",
     "general": "عمومی",

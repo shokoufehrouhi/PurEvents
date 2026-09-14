@@ -157,6 +157,13 @@
     "emptyTitle": "Aún no hay notificaciones",
     "emptySubtitle": "Los recordatorios que recibas aparecerán aquí."
   },
+  "notificationPopup": {
+    "eventIdLabel": "ID del evento",
+    "notificationIdLabel": "ID de la notificación",
+    "sentLabel": "Enviado",
+    "viewEvent": "Ver evento",
+    "close": "Cerrar"
+  },
   "preferences": {
     "title": "Preferencias",
     "general": "General",

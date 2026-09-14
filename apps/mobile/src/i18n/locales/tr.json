@@ -157,6 +157,13 @@
     "emptyTitle": "Henüz bildirim yok",
     "emptySubtitle": "Aldığın hatırlatmalar burada görünecek."
   },
+  "notificationPopup": {
+    "eventIdLabel": "Etkinlik Kimliği",
+    "notificationIdLabel": "Bildirim Kimliği",
+    "sentLabel": "Gönderildi",
+    "viewEvent": "Etkinliği Görüntüle",
+    "close": "Kapat"
+  },
   "preferences": {
     "title": "Tercihler",
     "general": "Genel",

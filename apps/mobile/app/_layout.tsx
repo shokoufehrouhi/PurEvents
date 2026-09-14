@@ -1,13 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
+import dayjs from 'dayjs';
 import { Stack, useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import * as Notifications from 'expo-notifications';
+import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, Text } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useTranslation } from 'react-i18next';
 
-import { initNotificationLogListeners, requestNotificationPermissions } from '../src/notifications';
+import { Button } from '../src/components/ui/Button';
+import { extractNotificationInfo, initNotificationLogListeners, requestNotificationPermissions, type NotificationInfo } from '../src/notifications';
 import { usePro } from '../src/subscription';
 import { PreferencesProvider, useTheme } from '../src/theme/PreferencesContext';
 
@@ -20,12 +23,33 @@ import '../src/i18n';
 function Navigation() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { colors, scheme } = useTheme();
+  const { colors, radius, spacing, scheme, typography } = useTheme();
   const { isPro } = usePro();
+  // The notification the user just tapped — shown as a popup with its full
+  // data (title/body/event/sent time) regardless of which screen the app
+  // happens to be on, since a tap can arrive from a background or fully
+  // killed state just as easily as while already inside the app.
+  const [tappedNotification, setTappedNotification] = useState<NotificationInfo | null>(null);
 
   useEffect(() => {
     requestNotificationPermissions();
-    return initNotificationLogListeners();
+    const cleanupLog = initNotificationLogListeners();
+
+    const responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
+      setTappedNotification(extractNotificationInfo(response.notification));
+    });
+    // Cold start (app was fully closed, launched *by* tapping the
+    // notification) — the listener above only catches taps received while
+    // it's already subscribed, so also check for one that was already
+    // waiting.
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (response) setTappedNotification(extractNotificationInfo(response.notification));
+    });
+
+    return () => {
+      cleanupLog();
+      responseSub.remove();
+    };
   }, []);
 
   const headerOptions = {
@@ -189,6 +213,63 @@ function Navigation() {
           options={{ ...headerOptions, title: t('settings.about'), headerBackTitle: t('settings.title') }}
         />
       </Stack>
+
+      {/* Tap-a-notification popup — global (rendered above the whole Stack,
+          not any one screen) since a tap can arrive while the app is on
+          any screen, or launch the app fresh from a killed state (see the
+          getLastNotificationResponseAsync check above). Shows every field
+          the notification actually carried, not just its own title/body
+          banner. */}
+      <Modal visible={!!tappedNotification} transparent animationType="fade" onRequestClose={() => setTappedNotification(null)}>
+        <Pressable
+          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}
+          onPress={() => setTappedNotification(null)}
+        >
+          {/* Inner Pressable with no-op onPress so tapping the card itself
+              doesn't bubble to the backdrop's dismiss handler. */}
+          <Pressable
+            onPress={() => {}}
+            style={{ width: '100%', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md }}
+          >
+            <Text style={[typography.headline, { color: colors.text }]}>{tappedNotification?.title}</Text>
+            <Text style={[typography.body, { color: colors.secondary, marginTop: 6 }]}>{tappedNotification?.body}</Text>
+
+            <View style={{ marginTop: spacing.md, gap: 4 }}>
+              {tappedNotification?.eventId ? (
+                <Text style={[typography.caption, { color: colors.secondary }]}>
+                  {t('notificationPopup.eventIdLabel')}: {tappedNotification.eventId}
+                </Text>
+              ) : null}
+              <Text style={[typography.caption, { color: colors.secondary }]}>
+                {t('notificationPopup.notificationIdLabel')}: {tappedNotification?.id}
+              </Text>
+              <Text style={[typography.caption, { color: colors.secondary }]}>
+                {t('notificationPopup.sentLabel')}: {tappedNotification ? dayjs(tappedNotification.firedAt).format('MMM D, YYYY · h:mm A') : ''}
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: 'row', marginTop: spacing.md }}>
+              {tappedNotification?.eventId ? (
+                <Button
+                  label={t('notificationPopup.viewEvent')}
+                  onPress={() => {
+                    const eventId = tappedNotification.eventId;
+                    setTappedNotification(null);
+                    router.push(`/event/${eventId}`);
+                  }}
+                  style={{ flex: 1, marginRight: 8 }}
+                />
+              ) : null}
+              <Button
+                label={t('notificationPopup.close')}
+                variant="secondary"
+                onPress={() => setTappedNotification(null)}
+                style={{ flex: 1 }}
+              />
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </>
   );
 }

@@ -157,6 +157,13 @@
     "emptyTitle": "No notifications yet",
     "emptySubtitle": "Reminders you've received will show up here."
   },
+  "notificationPopup": {
+    "eventIdLabel": "Event ID",
+    "notificationIdLabel": "Notification ID",
+    "sentLabel": "Sent",
+    "viewEvent": "View Event",
+    "close": "Close"
+  },
   "preferences": {
     "title": "Preferences",
     "general": "General",

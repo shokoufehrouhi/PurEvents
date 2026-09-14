@@ -157,6 +157,13 @@
     "emptyTitle": "لا توجد إشعارات بعد",
     "emptySubtitle": "التذكيرات التي تلقيتها ستظهر هنا."
   },
+  "notificationPopup": {
+    "eventIdLabel": "معرّف الحدث",
+    "notificationIdLabel": "معرّف الإشعار",
+    "sentLabel": "وقت الإرسال",
+    "viewEvent": "عرض الحدث",
+    "close": "إغلاق"
+  },
   "preferences": {
     "title": "التفضيلات",
     "general": "عام",

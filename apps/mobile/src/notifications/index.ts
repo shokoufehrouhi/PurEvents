@@ -62,7 +62,17 @@ export async function requestNotificationPermissions(): Promise<boolean> {
   return requested.granted;
 }
 
-function logFromNotification(notification: Notifications.Notification): void {
+// Shared by the log (below) and app/_layout.tsx's own tap popup — both
+// need the same fields off the same raw Notification shape.
+export interface NotificationInfo {
+  id: string;
+  eventId: string;
+  title: string;
+  body: string;
+  firedAt: string;
+}
+
+export function extractNotificationInfo(notification: Notifications.Notification): NotificationInfo {
   const data = notification.request.content.data as { eventId?: string } | undefined;
   // notification.date isn't consistently epoch milliseconds — a remote/
   // simulated push (iOS's own NSDate is seconds-based) comes through as
@@ -72,13 +82,17 @@ function logFromNotification(notification: Notifications.Notification): void {
   // so treat anything smaller as seconds and scale it up.
   const rawDate = notification.date;
   const firedAtMs = rawDate < 1e12 ? rawDate * 1000 : rawDate;
-  logNotificationFired({
+  return {
     id: notification.request.identifier,
     eventId: data?.eventId ?? '',
     title: notification.request.content.title ?? '',
     body: notification.request.content.body ?? '',
     firedAt: new Date(firedAtMs).toISOString(),
-  });
+  };
+}
+
+function logFromNotification(notification: Notifications.Notification): void {
+  logNotificationFired(extractNotificationInfo(notification));
 }
 
 // Called once from app/_layout.tsx — expo-notifications keeps no history of

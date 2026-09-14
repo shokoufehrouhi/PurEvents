@@ -157,6 +157,13 @@
     "emptyTitle": "Noch keine Benachrichtigungen",
     "emptySubtitle": "Erinnerungen, die du erhalten hast, erscheinen hier."
   },
+  "notificationPopup": {
+    "eventIdLabel": "Ereignis-ID",
+    "notificationIdLabel": "Benachrichtigungs-ID",
+    "sentLabel": "Gesendet",
+    "viewEvent": "Ereignis ansehen",
+    "close": "Schließen"
+  },
   "preferences": {
     "title": "Einstellungen",
     "general": "Allgemein",
