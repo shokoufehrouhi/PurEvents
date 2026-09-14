@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Image, Linking, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Alert, Image, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HeroCountdown } from '../src/components/HeroCountdown';
@@ -236,7 +236,7 @@ export default function UpgradeScreen() {
           {t('paywall.restorePurchases')}
         </Text>
         <Text style={{ color: colors.secondary }}>|</Text>
-        <Text style={[styles.linkText, { color: colors.primary }]} onPress={() => Linking.openURL('https://example.com/terms')}>
+        <Text style={[styles.linkText, { color: colors.primary }]} onPress={() => router.push('/terms')}>
           {t('paywall.terms')}
         </Text>
         <Text style={{ color: colors.secondary }}>|</Text>

@@ -170,6 +170,10 @@ function Navigation() {
           options={{ ...headerOptions, title: t('settings.privacy'), headerBackTitle: t('settings.title') }}
         />
         <Stack.Screen
+          name="terms"
+          options={{ ...headerOptions, title: t('settings.termsOfUse'), headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
           name="about"
           options={{ ...headerOptions, title: t('settings.about'), headerBackTitle: t('settings.title') }}
         />
