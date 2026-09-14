@@ -81,7 +81,7 @@ const SECTIONS: { heading: string; body: string }[] = [
   },
   {
     heading: '11. Contact',
-    body: 'Questions about these Terms? Email support@puraevents.app.',
+    body: 'Questions about these Terms? Email shookiapps@gmail.com.',
   },
 ];
 
