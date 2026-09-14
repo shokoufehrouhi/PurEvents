@@ -140,6 +140,7 @@
     "off": "معطّل",
     "defaultReminders": "التذكير الافتراضي",
     "soundsHaptics": "الأصوات والاهتزاز",
+    "notificationHistory": "سجل الإشعارات",
     "dataPrivacy": "البيانات والخصوصية",
     "backupSync": "النسخ الاحتياطي والمزامنة",
     "onThisDevice": "على هذا الجهاز",
@@ -150,6 +151,11 @@
     "helpFeedback": "المساعدة والملاحظات",
     "rateApp": "تقييم بيورا إيفنتس",
     "version": "الإصدار"
+  },
+  "notificationHistory": {
+    "newCount": "{{count}} جديد",
+    "emptyTitle": "لا توجد إشعارات بعد",
+    "emptySubtitle": "التذكيرات التي تلقيتها ستظهر هنا."
   },
   "preferences": {
     "title": "التفضيلات",

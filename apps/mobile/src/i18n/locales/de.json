@@ -140,6 +140,7 @@
     "off": "Aus",
     "defaultReminders": "Standarderinnerung",
     "soundsHaptics": "Klänge & Vibration",
+    "notificationHistory": "Benachrichtigungsverlauf",
     "dataPrivacy": "Daten & Datenschutz",
     "backupSync": "Sicherung & Synchronisierung",
     "onThisDevice": "Auf diesem Gerät",
@@ -150,6 +151,11 @@
     "helpFeedback": "Hilfe & Feedback",
     "rateApp": "PuraEvents bewerten",
     "version": "Version"
+  },
+  "notificationHistory": {
+    "newCount": "{{count}} neu",
+    "emptyTitle": "Noch keine Benachrichtigungen",
+    "emptySubtitle": "Erinnerungen, die du erhalten hast, erscheinen hier."
   },
   "preferences": {
     "title": "Einstellungen",

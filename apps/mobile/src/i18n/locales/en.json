@@ -140,6 +140,7 @@
     "off": "Off",
     "defaultReminders": "Default reminders",
     "soundsHaptics": "Sounds & haptics",
+    "notificationHistory": "Notification History",
     "dataPrivacy": "Data & Privacy",
     "backupSync": "Backup & sync",
     "onThisDevice": "On this device",
@@ -150,6 +151,11 @@
     "helpFeedback": "Help & feedback",
     "rateApp": "Rate PuraEvents",
     "version": "Version"
+  },
+  "notificationHistory": {
+    "newCount": "{{count}} new",
+    "emptyTitle": "No notifications yet",
+    "emptySubtitle": "Reminders you've received will show up here."
   },
   "preferences": {
     "title": "Preferences",

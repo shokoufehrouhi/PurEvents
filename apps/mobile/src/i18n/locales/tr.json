@@ -140,6 +140,7 @@
     "off": "Kapalı",
     "defaultReminders": "Varsayılan hatırlatıcı",
     "soundsHaptics": "Sesler ve titreşim",
+    "notificationHistory": "Bildirim Geçmişi",
     "dataPrivacy": "Veri ve Gizlilik",
     "backupSync": "Yedekleme ve senkronizasyon",
     "onThisDevice": "Bu cihazda",
@@ -150,6 +151,11 @@
     "helpFeedback": "Yardım ve geri bildirim",
     "rateApp": "PuraEvents'i değerlendir",
     "version": "Sürüm"
+  },
+  "notificationHistory": {
+    "newCount": "{{count}} yeni",
+    "emptyTitle": "Henüz bildirim yok",
+    "emptySubtitle": "Aldığın hatırlatmalar burada görünecek."
   },
   "preferences": {
     "title": "Tercihler",

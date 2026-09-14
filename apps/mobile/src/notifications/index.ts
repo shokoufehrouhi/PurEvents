@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 
+import { logNotificationFired, markNotificationSeen } from '../storage/notificationLog';
 import type { NotificationSoundKey, PurEvent } from '../types/event';
 import { getActiveReminders } from '../utils/reminders';
 
@@ -59,6 +60,44 @@ export async function requestNotificationPermissions(): Promise<boolean> {
   if (current.granted) return true;
   const requested = await Notifications.requestPermissionsAsync();
   return requested.granted;
+}
+
+function logFromNotification(notification: Notifications.Notification): void {
+  const data = notification.request.content.data as { eventId?: string } | undefined;
+  logNotificationFired({
+    id: notification.request.identifier,
+    eventId: data?.eventId ?? '',
+    title: notification.request.content.title ?? '',
+    body: notification.request.content.body ?? '',
+    firedAt: new Date(notification.date).toISOString(),
+  });
+}
+
+// Called once from app/_layout.tsx — expo-notifications keeps no history of
+// its own once a notification leaves the OS tray, so this is what actually
+// builds the log app/notification-history.tsx reads:
+//  - a live "received" event (app process alive when it fires) gets logged
+//    immediately, unseen.
+//  - opening/tapping the notification marks that same entry seen.
+//  - on top of both, a one-time reconciliation pass against whatever's
+//    still sitting in the OS tray right now catches anything that fired
+//    while the app was fully closed and neither listener could run —
+//    logNotificationFired's own id-dedupe means this never double-logs
+//    one the received-listener already caught.
+export function initNotificationLogListeners(): () => void {
+  const receivedSub = Notifications.addNotificationReceivedListener(logFromNotification);
+  const responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
+    markNotificationSeen(response.notification.request.identifier);
+  });
+
+  Notifications.getPresentedNotificationsAsync().then((presented) => {
+    presented.forEach(logFromNotification);
+  });
+
+  return () => {
+    receivedSub.remove();
+    responseSub.remove();
+  };
 }
 
 // Pre-rename (PurEvents -> PuraEvents) identifiers still floating around in

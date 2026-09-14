@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useTranslation } from 'react-i18next';
 
-import { requestNotificationPermissions } from '../src/notifications';
+import { initNotificationLogListeners, requestNotificationPermissions } from '../src/notifications';
 import { usePro } from '../src/subscription';
 import { PreferencesProvider, useTheme } from '../src/theme/PreferencesContext';
 
@@ -25,6 +25,7 @@ function Navigation() {
 
   useEffect(() => {
     requestNotificationPermissions();
+    return initNotificationLogListeners();
   }, []);
 
   const headerOptions = {
@@ -166,6 +167,10 @@ function Navigation() {
         <Stack.Screen
           name="notification-settings"
           options={{ ...headerOptions, title: t('settings.notifications'), headerBackTitle: t('settings.title') }}
+        />
+        <Stack.Screen
+          name="notification-history"
+          options={{ ...headerOptions, title: t('settings.notificationHistory'), headerBackTitle: t('settings.notifications') }}
         />
         <Stack.Screen
           name="data-privacy"

@@ -140,6 +140,7 @@
     "off": "Desactivado",
     "defaultReminders": "Recordatorio predeterminado",
     "soundsHaptics": "Sonidos y vibración",
+    "notificationHistory": "Historial de notificaciones",
     "dataPrivacy": "Datos y privacidad",
     "backupSync": "Copia de seguridad y sincronización",
     "onThisDevice": "En este dispositivo",
@@ -150,6 +151,11 @@
     "helpFeedback": "Ayuda y comentarios",
     "rateApp": "Calificar PuraEvents",
     "version": "Versión"
+  },
+  "notificationHistory": {
+    "newCount": "{{count}} nuevas",
+    "emptyTitle": "Aún no hay notificaciones",
+    "emptySubtitle": "Los recordatorios que recibas aparecerán aquí."
   },
   "preferences": {
     "title": "Preferencias",

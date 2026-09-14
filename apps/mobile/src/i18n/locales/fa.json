@@ -140,6 +140,7 @@
     "off": "خاموش",
     "defaultReminders": "یادآور پیش‌فرض",
     "soundsHaptics": "صدا و لرزش",
+    "notificationHistory": "تاریخچه نوتیفیکیشن",
     "dataPrivacy": "داده و حریم خصوصی",
     "backupSync": "پشتیبان‌گیری و همگام‌سازی",
     "onThisDevice": "روی همین دستگاه",
@@ -150,6 +151,11 @@
     "helpFeedback": "راهنما و بازخورد",
     "rateApp": "امتیاز به پیوراویدنتس",
     "version": "نسخه"
+  },
+  "notificationHistory": {
+    "newCount": "{{count}} جدید",
+    "emptyTitle": "هنوز نوتیفیکیشنی نیست",
+    "emptySubtitle": "یادآورهایی که دریافت کرده‌ای اینجا نمایش داده می‌شن."
   },
   "preferences": {
     "title": "ترجیحات",
