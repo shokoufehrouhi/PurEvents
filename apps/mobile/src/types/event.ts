@@ -1,5 +1,14 @@
 import type { AccentKey } from '../theme/tokens';
 
+/** Character cap for PurEvent.shareMessage — enforced in EventWizard's own
+ *  TextInput (maxLength) and mirrored here so ShareCard.tsx doesn't need
+ *  its own copy of the number. */
+export const SHARE_MESSAGE_MAX_LENGTH = 256;
+
+/** Character cap for PurEvent.sender — a name/short signoff, not a message,
+ *  so a single short line is enough (see SHARE_MESSAGE_MAX_LENGTH above). */
+export const SENDER_MAX_LENGTH = 40;
+
 export type EventCategory = 'personal' | 'work' | 'travel' | 'finance' | 'health' | 'other';
 
 export type RepeatRule = 'none' | 'yearly' | 'monthly' | 'weekly';
@@ -65,6 +74,14 @@ export interface PurEvent {
    *  WidgetSize. Defaults to 'medium' when unset. */
   widgetSize?: WidgetSize;
   note?: string;
+  /** Optional custom message for the Share card (see components/ShareCard
+   *  and event/[id]/index.tsx's own Share button) — up to 256 chars,
+   *  multi-line. Falls back to an auto-generated line (title + countdown)
+   *  when unset, so sharing still works for an event that never set one. */
+  shareMessage?: string;
+  /** Optional "from" name shown bottom-right of the Share card (see
+   *  components/ShareCard) — a single short line, unlike shareMessage. */
+  sender?: string;
   repeat: RepeatRule;
   /** Minutes-before-event offsets; [0] = "at time of event". */
   reminders: number[];

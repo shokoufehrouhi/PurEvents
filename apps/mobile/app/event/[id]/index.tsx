@@ -11,6 +11,7 @@ import ViewShot, { type ViewShotRef } from 'react-native-view-shot';
 
 import { HeroCountdown } from '../../../src/components/HeroCountdown';
 import { MiniWidget } from '../../../src/components/MiniWidget';
+import { ShareCard } from '../../../src/components/ShareCard';
 import { Button } from '../../../src/components/ui/Button';
 import { Section } from '../../../src/components/ui/Section';
 import { cancelRemindersForEvent, scheduleRemindersForEvent } from '../../../src/notifications';
@@ -73,9 +74,8 @@ export default function EventDetailScreen() {
   // "only 3 editable at once" rotation below — see getActiveEventIds.
   const [allEvents, setAllEvents] = useState<PurEvent[]>([]);
   // Off-screen capture target for the Share button (see handleShare below)
-  // — always rendered at 'large', independent of the visible preview's own
-  // event.widgetSize, since what gets shared should read like a real
-  // large-size widget regardless of what size the user actually placed.
+  // — the ShareCard graphic, independent of the visible preview's own
+  // event.widgetSize (see ShareCard.tsx's own fixed gift-card dimensions).
   const shareCaptureRef = useRef<ViewShotRef>(null);
 
   useFocusEffect(
@@ -115,11 +115,12 @@ export default function EventDetailScreen() {
     ]);
   }
 
-  // Captures the hidden 'large' MiniWidget below (see shareCaptureRef) as a
-  // PNG and hands it to the native Share Sheet — same "no fixed destination,
-  // works with whatever's installed" approach as §3.5 in docs/PROJECT.md,
-  // just image-only for now rather than the full text+card+auto-send
-  // version described there.
+  // Captures the hidden ShareCard below (see shareCaptureRef) as a PNG and
+  // hands it to the native Share Sheet — same "no fixed destination, works
+  // with whatever's installed" approach as §3.5 in docs/PROJECT.md, just
+  // manually-triggered rather than the auto-prompt-at-event-time version
+  // described there (explicitly out of scope — the client shares it
+  // manually themselves).
   async function handleShare() {
     try {
       const uri = await shareCaptureRef.current?.capture?.();
@@ -267,11 +268,12 @@ export default function EventDetailScreen() {
         {/* Rendered off-screen, never visible — ViewShot needs a real
             mounted/laid-out tree to capture from, so this can't be
             conditionally skipped or display:none'd, just moved out of the
-            viewport. Always 'large' regardless of event.widgetSize (see
-            shareCaptureRef's own comment). */}
+            viewport. A standalone "gift card"-shaped graphic (event's own
+            widget look + its shareMessage/auto-fallback line), not the
+            MiniWidget home-screen mockup — see ShareCard.tsx. */}
         <View style={styles.shareCaptureHost} collapsable={false} pointerEvents="none">
           <ViewShot ref={shareCaptureRef} options={{ format: 'png', quality: 1 }}>
-            <MiniWidget event={event} size="large" />
+            <ShareCard event={event} />
           </ViewShot>
         </View>
 

@@ -20,7 +20,18 @@ import { CARD_THEME_KEYS, CARD_THEMES } from '../theme/cardThemes';
 import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, responsiveContent, type AccentKey } from '../theme/tokens';
-import type { CardTheme, EventCategory, PurEvent, RepeatRule, WidgetCornerStyle, WidgetSelection, WidgetSize, WidgetTextStyle } from '../types/event';
+import {
+  SENDER_MAX_LENGTH,
+  SHARE_MESSAGE_MAX_LENGTH,
+  type CardTheme,
+  type EventCategory,
+  type PurEvent,
+  type RepeatRule,
+  type WidgetCornerStyle,
+  type WidgetSelection,
+  type WidgetSize,
+  type WidgetTextStyle,
+} from '../types/event';
 import { formatCivilDateFull, shouldUseFarsiDigits } from '../utils/calendars';
 import { resolvePhotoUri } from '../utils/persistImage';
 import { awaitPick } from '../utils/pickerBridge';
@@ -100,6 +111,13 @@ export function EventWizard({ mode, eventId }: Props) {
   const [repeat, setRepeat] = useState<RepeatRule>('none');
   const [reminders, setReminders] = useState<number[]>(prefs.defaultReminderOffsets);
   const [note, setNote] = useState('');
+  // See shareMessage on PurEvent — optional, up to SHARE_MESSAGE_MAX_LENGTH
+  // chars, shown on the Share card (see components/ShareCard.tsx) instead
+  // of the auto-generated title+date fallback used when this is empty.
+  const [shareMessage, setShareMessage] = useState('');
+  // See sender on PurEvent — optional "from" line, bottom-right of the
+  // Share card, independent of shareMessage.
+  const [sender, setSender] = useState('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -121,6 +139,8 @@ export function EventWizard({ mode, eventId }: Props) {
         setRepeat(e.repeat);
         setReminders(e.reminders);
         setNote(e.note ?? '');
+        setShareMessage(e.shareMessage ?? '');
+        setSender(e.sender ?? '');
       });
     }
   }, [mode, eventId]);
@@ -150,6 +170,8 @@ export function EventWizard({ mode, eventId }: Props) {
     repeat: isDraftEmpty ? 'none' : repeat,
     reminders,
     note: isDraftEmpty ? "Don't forget your passport" : note.trim() || undefined,
+    shareMessage: shareMessage.trim() || undefined,
+    sender: sender.trim() || undefined,
     createdAt: '',
     updatedAt: '',
   };
@@ -258,6 +280,8 @@ export function EventWizard({ mode, eventId }: Props) {
       repeat,
       reminders,
       note: note.trim() || undefined,
+      shareMessage: shareMessage.trim() || undefined,
+      sender: sender.trim() || undefined,
     };
 
     const saved = mode === 'edit' && eventId ? await updateEvent(eventId, input) : await createEvent(input);
@@ -569,6 +593,40 @@ export function EventWizard({ mode, eventId }: Props) {
                 value={note}
                 onChangeText={setNote}
                 multiline
+              />
+
+              {/* Optional — falls back to an auto title+date line on the
+                  Share card (see ShareCard.tsx) when left empty, so this
+                  never blocks sharing. */}
+              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 4 }]}>
+                {t('events.shareMessageLabel')}
+              </Text>
+              <Text style={[typography.caption, { color: colors.secondary, marginBottom: 8 }]}>{t('events.shareMessageHint')}</Text>
+              <TextInput
+                style={[styles.input, styles.multiline, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
+                placeholder={t('events.shareMessageLabel')}
+                placeholderTextColor={colors.secondary}
+                value={shareMessage}
+                onChangeText={(text) => setShareMessage(text.slice(0, SHARE_MESSAGE_MAX_LENGTH))}
+                maxLength={SHARE_MESSAGE_MAX_LENGTH}
+                multiline
+              />
+              <Text style={[typography.caption, { color: colors.secondary, marginTop: 4, textAlign: 'right' }]}>
+                {shareMessage.length}/{SHARE_MESSAGE_MAX_LENGTH}
+              </Text>
+
+              {/* Shown bottom-right of the Share card (see ShareCard.tsx) —
+                  a single short "from" line, independent of shareMessage. */}
+              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>
+                {t('events.senderLabel')}
+              </Text>
+              <TextInput
+                style={[styles.input, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
+                placeholder={t('events.senderLabel')}
+                placeholderTextColor={colors.secondary}
+                value={sender}
+                onChangeText={(text) => setSender(text.slice(0, SENDER_MAX_LENGTH))}
+                maxLength={SENDER_MAX_LENGTH}
               />
             </AccordionRow>
           </Section>
