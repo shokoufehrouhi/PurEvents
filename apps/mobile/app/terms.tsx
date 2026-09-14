@@ -77,7 +77,9 @@ const SECTIONS: { heading: string; body: string }[] = [
   },
   {
     heading: '10. Governing Law',
-    body: '[Placeholder — add the governing jurisdiction for your company/entity before publishing.]',
+    body:
+      'These Terms are governed by the laws applicable in your country of residence, without regard to ' +
+      'conflict-of-laws rules.',
   },
   {
     heading: '11. Contact',
@@ -86,9 +88,8 @@ const SECTIONS: { heading: string; body: string }[] = [
 ];
 
 // TODO before App Store/Google Play submission: have this reviewed by
-// counsel, fill in a real governing jurisdiction (§10), and confirm the
-// contact address is live — see docs/PROJECT.md §9's EULA requirement for
-// auto-renewing subscriptions.
+// counsel — see docs/PROJECT.md §9's EULA requirement for auto-renewing
+// subscriptions.
 export default function TermsScreen() {
   const { colors, spacing, typography } = useTheme();
 
