@@ -1,26 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
-import dayjs from 'dayjs';
 import { Stack, useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useTranslation } from 'react-i18next';
 
-import { Button } from '../src/components/ui/Button';
-import {
-  describeOffset,
-  extractNotificationInfo,
-  initNotificationLogListeners,
-  requestNotificationPermissions,
-  type NotificationInfo,
-} from '../src/notifications';
-import { getEvent } from '../src/storage/events';
+import { NotificationDetailModal } from '../src/components/NotificationDetailModal';
+import { extractNotificationInfo, initNotificationLogListeners, requestNotificationPermissions, type NotificationInfo } from '../src/notifications';
 import { usePro } from '../src/subscription';
 import { PreferencesProvider, useTheme } from '../src/theme/PreferencesContext';
-import { getNextOccurrence } from '../src/utils/recurrence';
 
 // Side-effect import: initializes i18next before any screen renders.
 // NOTE: RTL languages (fa, ar — see src/i18n) only fully mirror the layout
@@ -31,41 +22,14 @@ import '../src/i18n';
 function Navigation() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { colors, radius, spacing, scheme, typography } = useTheme();
+  const { colors, scheme } = useTheme();
   const { isPro } = usePro();
   // The notification the user just tapped — shown as a popup with its full
   // data (title/body/event/sent time) regardless of which screen the app
   // happens to be on, since a tap can arrive from a background or fully
-  // killed state just as easily as while already inside the app.
+  // killed state just as easily as while already inside the app. See
+  // NotificationDetailModal for the popup itself.
   const [tappedNotification, setTappedNotification] = useState<NotificationInfo | null>(null);
-  // How long until the event's *next* occurrence, computed fresh from now
-  // (not the offset the reminder itself fired for) — null while looking it
-  // up, or if the notification has no linked event at all.
-  const [timeUntilEvent, setTimeUntilEvent] = useState<string | null>(null);
-  // Reset synchronously during render (the "adjusting state while
-  // rendering" pattern, see MiniWidget.tsx's own photoFailed reset) rather
-  // than as a setState call in the effect body below, which a *new*
-  // tappedNotification needs cleared before its own lookup resolves —
-  // otherwise the previous notification's stale value would flash first.
-  const [checkedNotificationId, setCheckedNotificationId] = useState<string | null>(null);
-  if ((tappedNotification?.id ?? null) !== checkedNotificationId) {
-    setCheckedNotificationId(tappedNotification?.id ?? null);
-    setTimeUntilEvent(null);
-  }
-
-  useEffect(() => {
-    if (!tappedNotification?.eventId) return;
-    let cancelled = false;
-    getEvent(tappedNotification.eventId).then((event) => {
-      if (cancelled || !event) return;
-      const next = getNextOccurrence(event.dateTimeISO, event.repeat);
-      const minutesLeft = next.diff(dayjs(), 'minute');
-      setTimeUntilEvent(minutesLeft <= 0 ? null : describeOffset(minutesLeft));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [tappedNotification]);
 
   useEffect(() => {
     requestNotificationPermissions();
@@ -250,68 +214,12 @@ function Navigation() {
         />
       </Stack>
 
-      {/* Tap-a-notification popup — global (rendered above the whole Stack,
-          not any one screen) since a tap can arrive while the app is on
-          any screen, or launch the app fresh from a killed state (see the
-          getLastNotificationResponseAsync check above). Shows every field
-          the notification actually carried, not just its own title/body
-          banner. */}
-      <Modal visible={!!tappedNotification} transparent animationType="fade" onRequestClose={() => setTappedNotification(null)}>
-        <Pressable
-          style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center', padding: spacing.lg }}
-          onPress={() => setTappedNotification(null)}
-        >
-          {/* Inner Pressable with no-op onPress so tapping the card itself
-              doesn't bubble to the backdrop's dismiss handler. */}
-          <Pressable
-            onPress={() => {}}
-            style={{ width: '100%', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md }}
-          >
-            <Text style={[typography.headline, { color: colors.text }]}>{tappedNotification?.title}</Text>
-            <Text style={[typography.body, { color: colors.secondary, marginTop: 6 }]}>{tappedNotification?.body}</Text>
-
-            <View style={{ marginTop: spacing.md, gap: 4 }}>
-              {tappedNotification?.eventId ? (
-                <Text style={[typography.caption, { color: colors.secondary }]}>
-                  {t('notificationPopup.eventIdLabel')}: {tappedNotification.eventId}
-                </Text>
-              ) : null}
-              <Text style={[typography.caption, { color: colors.secondary }]}>
-                {t('notificationPopup.sentLabel')}: {tappedNotification ? dayjs(tappedNotification.firedAt).format('MMM D, YYYY · h:mm A') : ''}
-              </Text>
-              {/* Recomputed from now, not the offset this reminder actually
-                  fired for — a repeating event's *next* cycle in
-                  particular can be a completely different distance away
-                  than whatever this specific notification was about. */}
-              {timeUntilEvent ? (
-                <Text style={[typography.caption, { color: colors.secondary }]}>
-                  {t('notificationPopup.timeUntilLabel')}: {timeUntilEvent}
-                </Text>
-              ) : null}
-            </View>
-
-            <View style={{ flexDirection: 'row', marginTop: spacing.md }}>
-              {tappedNotification?.eventId ? (
-                <Button
-                  label={t('notificationPopup.viewEvent')}
-                  onPress={() => {
-                    const eventId = tappedNotification.eventId;
-                    setTappedNotification(null);
-                    router.push(`/event/${eventId}`);
-                  }}
-                  style={{ flex: 1, marginRight: 8 }}
-                />
-              ) : null}
-              <Button
-                label={t('notificationPopup.close')}
-                variant="secondary"
-                onPress={() => setTappedNotification(null)}
-                style={{ flex: 1 }}
-              />
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      {/* Global (rendered above the whole Stack, not any one screen) since a
+          tap can arrive while the app is on any screen, or launch the app
+          fresh from a killed state (see the getLastNotificationResponseAsync
+          check above). Same popup notification-history.tsx's own row tap
+          opens. */}
+      <NotificationDetailModal notification={tappedNotification} onClose={() => setTappedNotification(null)} />
     </>
   );
 }

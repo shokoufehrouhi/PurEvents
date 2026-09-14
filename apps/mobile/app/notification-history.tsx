@@ -2,30 +2,39 @@ import dayjs from 'dayjs';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, Pressable, Text, View } from 'react-native';
 
+import { NotificationDetailModal } from '../src/components/NotificationDetailModal';
 import { EmptyState } from '../src/components/ui/EmptyState';
-import { markAllNotificationsSeen, listNotificationLog, type NotificationLogEntry } from '../src/storage/notificationLog';
+import {
+  listNotificationLog,
+  markAllNotificationsSeen,
+  markNotificationSeen,
+  type NotificationLogEntry,
+} from '../src/storage/notificationLog';
 import { usePreferences, useTheme } from '../src/theme/PreferencesContext';
 import { accents } from '../src/theme/tokens';
 
-function NotificationRow({ entry }: { entry: NotificationLogEntry }) {
+function NotificationRow({ entry, onPress }: { entry: NotificationLogEntry; onPress: () => void }) {
   const { colors, spacing, radius, typography } = useTheme();
   const { prefs } = usePreferences();
   const timeLabel = dayjs(entry.firedAt).format(prefs.timeFormat === '12h' ? 'MMM D, h:mm A' : 'MMM D, HH:mm');
 
   return (
-    <View
-      style={{
-        flexDirection: 'row',
-        backgroundColor: colors.surface,
-        borderRadius: radius.lg,
-        padding: spacing.sm + 4,
-      }}
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        {
+          flexDirection: 'row',
+          backgroundColor: colors.surface,
+          borderRadius: radius.lg,
+          padding: spacing.sm + 4,
+          opacity: pressed ? 0.7 : 1,
+        },
+      ]}
     >
-      {/* Unseen dot — same idea as an unread-mail indicator, cleared for
-          good the next time this screen is opened (see markAllNotificationsSeen
-          below), not per-row. */}
+      {/* Unseen dot — cleared the moment this row is tapped (see onPress
+          below), not just the next time the screen is opened. */}
       <View style={{ width: 8, alignItems: 'center', marginTop: 6 }}>
         {!entry.seen ? <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary }} /> : null}
       </View>
@@ -38,7 +47,7 @@ function NotificationRow({ entry }: { entry: NotificationLogEntry }) {
         </Text>
         <Text style={[typography.caption, { color: colors.secondary, marginTop: 4 }]}>{timeLabel}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -52,6 +61,10 @@ export default function NotificationHistoryScreen() {
   const { t } = useTranslation();
   const { colors, spacing } = useTheme();
   const [entries, setEntries] = useState<NotificationLogEntry[]>([]);
+  // Tapping a row opens the same full-data popup a real notification tap
+  // does (see NotificationDetailModal) — a past entry reads the same
+  // whether you're looking at it here or you just tapped it live.
+  const [selected, setSelected] = useState<NotificationLogEntry | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -70,22 +83,37 @@ export default function NotificationHistoryScreen() {
     }, [])
   );
 
+  function handlePress(entry: NotificationLogEntry) {
+    setSelected(entry);
+    // Clears this row's own dot immediately, not just on the next visit —
+    // markAllNotificationsSeen above already persisted every row as seen
+    // by the time any tap can happen, this only updates what's on screen
+    // *right now* to match.
+    if (!entry.seen) {
+      setEntries((prev) => prev.map((e) => (e.id === entry.id ? { ...e, seen: true } : e)));
+      markNotificationSeen(entry.id);
+    }
+  }
+
   return (
-    <FlatList
-      style={{ flex: 1, backgroundColor: colors.background }}
-      contentContainerStyle={{ padding: spacing.md, gap: spacing.sm, flexGrow: 1 }}
-      data={entries}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <NotificationRow entry={item} />}
-      ListEmptyComponent={
-        <EmptyState
-          icon="notifications-outline"
-          badgeIcon="checkmark"
-          badgeColor={accents.mint}
-          title={t('notificationHistory.emptyTitle')}
-          subtitle={t('notificationHistory.emptySubtitle')}
-        />
-      }
-    />
+    <>
+      <FlatList
+        style={{ flex: 1, backgroundColor: colors.background }}
+        contentContainerStyle={{ padding: spacing.md, gap: spacing.sm, flexGrow: 1 }}
+        data={entries}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <NotificationRow entry={item} onPress={() => handlePress(item)} />}
+        ListEmptyComponent={
+          <EmptyState
+            icon="notifications-outline"
+            badgeIcon="checkmark"
+            badgeColor={accents.mint}
+            title={t('notificationHistory.emptyTitle')}
+            subtitle={t('notificationHistory.emptySubtitle')}
+          />
+        }
+      />
+      <NotificationDetailModal notification={selected} onClose={() => setSelected(null)} />
+    </>
   );
 }
