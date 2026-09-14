@@ -12,6 +12,7 @@ import { HeroCountdown } from '../../src/components/HeroCountdown';
 import { EmptyState } from '../../src/components/ui/EmptyState';
 import { SegmentedControl } from '../../src/components/ui/SegmentedControl';
 import { listEvents } from '../../src/storage/events';
+import { unseenNotificationCount } from '../../src/storage/notificationLog';
 import { FREE_LIMITS, usePro } from '../../src/subscription';
 import { getCategoryIcon } from '../../src/theme/icons';
 import { usePreferences, useTheme } from '../../src/theme/PreferencesContext';
@@ -125,6 +126,11 @@ export default function EventListScreen() {
   const [pastFilter, setPastFilter] = useState<PastFilter>('all');
   const [pastFilterMenuOpen, setPastFilterMenuOpen] = useState(false);
   const [heroPhotoUri, setHeroPhotoUri] = useState<string | null>(null);
+  // Bell badge on the hero photo (see ListHeaderComponent below) — re-read
+  // on every focus so coming back from Notification History (which marks
+  // everything seen on open) clears it without needing to leave this tab
+  // entirely.
+  const [unseenCount, setUnseenCount] = useState(0);
   // Ticks the Upcoming/Past split live (see the useMemo below) so an event
   // moves to Past on its own once its time passes, without the user having
   // to leave and come back to this screen — same cadence as HeroCountdown's
@@ -141,6 +147,9 @@ export default function EventListScreen() {
       let cancelled = false;
       listEvents().then((loaded) => {
         if (!cancelled) setEvents(loaded);
+      });
+      unseenNotificationCount().then((count) => {
+        if (!cancelled) setUnseenCount(count);
       });
       return () => {
         cancelled = true;
@@ -298,9 +307,50 @@ export default function EventListScreen() {
                 defaulting to today, listing whatever events fall on the
                 selected date. */}
             {tab === 'upcoming' ? (
-              <Pressable onPress={() => router.push('/day')} style={{ marginBottom: spacing.sm }}>
-                <EventHeroCard photoUri={heroPhotoUri ?? undefined} />
-              </Pressable>
+              <View style={{ marginBottom: spacing.sm }}>
+                <Pressable onPress={() => router.push('/day')}>
+                  <EventHeroCard photoUri={heroPhotoUri ?? undefined} />
+                </Pressable>
+                {/* Top-right of the hero photo, not the header — an
+                    overlay button here (same posture as a real widget's
+                    own corner controls) rather than competing for space
+                    in the already-busy title row above. A separate
+                    Pressable stacked on top, not a prop on EventHeroCard
+                    itself (that component is shared by screens that have
+                    nothing to do with notifications). */}
+                <Pressable
+                  onPress={() => router.push('/notification-history')}
+                  hitSlop={8}
+                  style={{
+                    position: 'absolute',
+                    top: 12,
+                    right: 12,
+                    width: 34,
+                    height: 34,
+                    borderRadius: 17,
+                    backgroundColor: 'rgba(0,0,0,0.35)',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Ionicons name="notifications-outline" size={18} color="#fff" />
+                  {unseenCount > 0 ? (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        top: -2,
+                        right: -2,
+                        width: 10,
+                        height: 10,
+                        borderRadius: 5,
+                        backgroundColor: colors.danger,
+                        borderWidth: 1.5,
+                        borderColor: colors.background,
+                      }}
+                    />
+                  ) : null}
+                </Pressable>
+              </View>
             ) : null}
           </>
         }
