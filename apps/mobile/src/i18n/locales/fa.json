@@ -80,6 +80,16 @@
       "monthly": "ماهانه",
       "weekly": "هفتگی"
     },
+    "notificationMessageLabel": "متن نوتیفیکیشن (اختیاری)",
+    "notificationMessageHint": "به‌جای متن پیش‌فرض، در نوتیفیکیشن یادآور نمایش داده می‌شود.",
+    "notificationSoundLabel": "صدای نوتیفیکیشن",
+    "notificationSound": {
+      "default": "پیش‌فرض",
+      "chime": "زنگوله",
+      "bell": "ناقوس",
+      "ping": "پینگ",
+      "pulse": "ضربان"
+    },
     "newEventTitle": "رویداد جدید",
     "editEventTitle": "ویرایش رویداد",
     "basicsHeading": "اطلاعات پایه",

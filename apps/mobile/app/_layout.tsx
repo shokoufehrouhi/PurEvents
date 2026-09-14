@@ -120,6 +120,12 @@ function Navigation() {
           name="widget-text-style-picker"
           options={{ ...headerOptions, title: t('widgets.textStyle'), headerBackTitle: t('widgets.customWidgetTitle') }}
         />
+        {/* Opened from the New/Edit Event wizard's own Advanced section —
+            same no-shared-back-title reasoning as reminder-picker above. */}
+        <Stack.Screen
+          name="notification-sound-picker"
+          options={{ ...headerOptions, title: t('events.notificationSoundLabel'), headerBackButtonDisplayMode: 'minimal' }}
+        />
         <Stack.Screen
           name="category-themes"
           options={{ ...headerOptions, title: t('widgets.categoryThemes'), headerBackTitle: t('widgets.title') }}

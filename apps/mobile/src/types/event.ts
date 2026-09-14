@@ -9,6 +9,18 @@ export const SHARE_MESSAGE_MAX_LENGTH = 256;
  *  so a single short line is enough (see SHARE_MESSAGE_MAX_LENGTH above). */
 export const SENDER_MAX_LENGTH = 40;
 
+/** Character cap for PurEvent.notificationMessage — a notification body,
+ *  not a share message, so kept well under what a lock screen actually
+ *  has room to show (see SHARE_MESSAGE_MAX_LENGTH above for the longer,
+ *  multi-line Share card equivalent). */
+export const NOTIFICATION_MESSAGE_MAX_LENGTH = 120;
+
+/** Bundled alert sounds a reminder can play — see NOTIFICATION_SOUND_FILES
+ *  in notifications/index.ts for the actual filenames (bundled via the
+ *  expo-notifications config plugin's own `sounds` list in app.json).
+ *  'default' (or unset) just uses the OS's own default notification sound. */
+export type NotificationSoundKey = 'default' | 'chime' | 'bell' | 'ping' | 'pulse';
+
 export type EventCategory = 'personal' | 'work' | 'travel' | 'finance' | 'health' | 'other';
 
 export type RepeatRule = 'none' | 'yearly' | 'monthly' | 'weekly';
@@ -82,6 +94,13 @@ export interface PurEvent {
   /** Optional "from" name shown bottom-right of the Share card (see
    *  components/ShareCard) — a single short line, unlike shareMessage. */
   sender?: string;
+  /** Optional custom notification body — falls back to the auto-generated
+   *  "Coming up in X"/"It's happening now!" line (see notifications/
+   *  index.ts) when unset. Up to NOTIFICATION_MESSAGE_MAX_LENGTH chars. */
+  notificationMessage?: string;
+  /** Which bundled alert sound plays for this event's reminders — see
+   *  NotificationSoundKey. */
+  notificationSound?: NotificationSoundKey;
   repeat: RepeatRule;
   /** Minutes-before-event offsets; [0] = "at time of event". */
   reminders: number[];

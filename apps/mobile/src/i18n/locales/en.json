@@ -80,6 +80,16 @@
       "monthly": "Monthly",
       "weekly": "Weekly"
     },
+    "notificationMessageLabel": "Notification message (optional)",
+    "notificationMessageHint": "Shown in the reminder notification instead of the default text.",
+    "notificationSoundLabel": "Notification sound",
+    "notificationSound": {
+      "default": "Default",
+      "chime": "Chime",
+      "bell": "Bell",
+      "ping": "Ping",
+      "pulse": "Pulse"
+    },
     "newEventTitle": "New Event",
     "editEventTitle": "Edit Event",
     "basicsHeading": "Basics",

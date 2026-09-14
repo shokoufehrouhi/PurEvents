@@ -21,10 +21,12 @@ import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, responsiveContent, type AccentKey } from '../theme/tokens';
 import {
+  NOTIFICATION_MESSAGE_MAX_LENGTH,
   SENDER_MAX_LENGTH,
   SHARE_MESSAGE_MAX_LENGTH,
   type CardTheme,
   type EventCategory,
+  type NotificationSoundKey,
   type PurEvent,
   type RepeatRule,
   type WidgetCornerStyle,
@@ -118,6 +120,11 @@ export function EventWizard({ mode, eventId }: Props) {
   // See sender on PurEvent — optional "from" line, bottom-right of the
   // Share card, independent of shareMessage.
   const [sender, setSender] = useState('');
+  // See notificationMessage/notificationSound on PurEvent — independent of
+  // shareMessage (that's for the Share card graphic, this is what actually
+  // shows/plays in the reminder notification itself).
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationSound, setNotificationSound] = useState<NotificationSoundKey>('default');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -141,6 +148,8 @@ export function EventWizard({ mode, eventId }: Props) {
         setNote(e.note ?? '');
         setShareMessage(e.shareMessage ?? '');
         setSender(e.sender ?? '');
+        setNotificationMessage(e.notificationMessage ?? '');
+        setNotificationSound(e.notificationSound ?? 'default');
       });
     }
   }, [mode, eventId]);
@@ -172,6 +181,8 @@ export function EventWizard({ mode, eventId }: Props) {
     note: isDraftEmpty ? "Don't forget your passport" : note.trim() || undefined,
     shareMessage: shareMessage.trim() || undefined,
     sender: sender.trim() || undefined,
+    notificationMessage: notificationMessage.trim() || undefined,
+    notificationSound,
     createdAt: '',
     updatedAt: '',
   };
@@ -206,6 +217,12 @@ export function EventWizard({ mode, eventId }: Props) {
     router.push({ pathname: '/event/repeat-picker', params: { current: repeat, date: date.toISOString() } });
     const picked = await awaitPick();
     setRepeat(picked as RepeatRule);
+  }
+
+  async function pickNotificationSound() {
+    router.push({ pathname: '/notification-sound-picker', params: { current: notificationSound } });
+    const picked = await awaitPick();
+    setNotificationSound(picked as NotificationSoundKey);
   }
 
   // Full-screen gallery (Built-in / My Widgets / Categories, search, "+ New
@@ -282,6 +299,8 @@ export function EventWizard({ mode, eventId }: Props) {
       note: note.trim() || undefined,
       shareMessage: shareMessage.trim() || undefined,
       sender: sender.trim() || undefined,
+      notificationMessage: notificationMessage.trim() || undefined,
+      notificationSound,
     };
 
     const saved = mode === 'edit' && eventId ? await updateEvent(eventId, input) : await createEvent(input);
@@ -582,6 +601,38 @@ export function EventWizard({ mode, eventId }: Props) {
               >
                 <Ionicons name={REPEAT_STYLES[repeat].icon} size={18} color={REPEAT_STYLES[repeat].color} />
                 <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: 10 }]}>{t(`events.repeat.${repeat}`)}</Text>
+                <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
+              </Pressable>
+
+              {/* What actually shows/plays in the reminder notification —
+                  independent of shareMessage/sender below, which are only
+                  for the Share card graphic. */}
+              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 4 }]}>
+                {t('events.notificationMessageLabel')}
+              </Text>
+              <Text style={[typography.caption, { color: colors.secondary, marginBottom: 8 }]}>
+                {t('events.notificationMessageHint')}
+              </Text>
+              <TextInput
+                style={[styles.input, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
+                placeholder={t('events.notificationMessageLabel')}
+                placeholderTextColor={colors.secondary}
+                value={notificationMessage}
+                onChangeText={(text) => setNotificationMessage(text.slice(0, NOTIFICATION_MESSAGE_MAX_LENGTH))}
+                maxLength={NOTIFICATION_MESSAGE_MAX_LENGTH}
+              />
+
+              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>
+                {t('events.notificationSoundLabel')}
+              </Text>
+              <Pressable
+                onPress={pickNotificationSound}
+                style={[styles.dropdownField, { borderColor: colors.outline, borderRadius: radius.md }]}
+              >
+                <Ionicons name="musical-notes-outline" size={18} color={colors.secondary} />
+                <Text style={[typography.body, { color: colors.text, flex: 1, marginLeft: 10 }]}>
+                  {t(`events.notificationSound.${notificationSound}`)}
+                </Text>
                 <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
               </Pressable>
 

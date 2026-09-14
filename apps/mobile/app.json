@@ -27,7 +27,17 @@
       "expo-router",
       "expo-status-bar",
       "expo-localization",
-      "expo-notifications",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/sounds/chime.wav",
+            "./assets/sounds/bell.wav",
+            "./assets/sounds/ping.wav",
+            "./assets/sounds/pulse.wav"
+          ]
+        }
+      ],
       "@react-native-community/datetimepicker",
       [
         "expo-image-picker",

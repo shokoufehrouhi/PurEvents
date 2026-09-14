@@ -80,6 +80,16 @@
       "monthly": "Monatlich",
       "weekly": "Wöchentlich"
     },
+    "notificationMessageLabel": "Benachrichtigungstext (optional)",
+    "notificationMessageHint": "Wird in der Erinnerungsbenachrichtigung anstelle des Standardtexts angezeigt.",
+    "notificationSoundLabel": "Benachrichtigungston",
+    "notificationSound": {
+      "default": "Standard",
+      "chime": "Glockenspiel",
+      "bell": "Glocke",
+      "ping": "Ping",
+      "pulse": "Puls"
+    },
     "newEventTitle": "Neues Ereignis",
     "editEventTitle": "Ereignis bearbeiten",
     "basicsHeading": "Basis",

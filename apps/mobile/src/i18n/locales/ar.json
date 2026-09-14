@@ -80,6 +80,16 @@
       "monthly": "شهريًا",
       "weekly": "أسبوعيًا"
     },
+    "notificationMessageLabel": "رسالة الإشعار (اختياري)",
+    "notificationMessageHint": "تظهر في إشعار التذكير بدلاً من النص الافتراضي.",
+    "notificationSoundLabel": "صوت الإشعار",
+    "notificationSound": {
+      "default": "افتراضي",
+      "chime": "جرس",
+      "bell": "ناقوس",
+      "ping": "بينغ",
+      "pulse": "نبضة"
+    },
     "newEventTitle": "حدث جديد",
     "editEventTitle": "تعديل الحدث",
     "basicsHeading": "الأساسيات",
