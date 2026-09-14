@@ -159,8 +159,8 @@
   },
   "notificationPopup": {
     "eventIdLabel": "معرّف الحدث",
-    "notificationIdLabel": "معرّف الإشعار",
     "sentLabel": "وقت الإرسال",
+    "timeUntilLabel": "الوقت المتبقي للحدث",
     "viewEvent": "عرض الحدث",
     "close": "إغلاق"
   },

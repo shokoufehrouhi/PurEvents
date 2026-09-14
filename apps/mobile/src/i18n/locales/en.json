@@ -159,8 +159,8 @@
   },
   "notificationPopup": {
     "eventIdLabel": "Event ID",
-    "notificationIdLabel": "Notification ID",
     "sentLabel": "Sent",
+    "timeUntilLabel": "Time until event",
     "viewEvent": "View Event",
     "close": "Close"
   },

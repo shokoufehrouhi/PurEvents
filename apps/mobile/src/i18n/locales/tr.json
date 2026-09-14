@@ -159,8 +159,8 @@
   },
   "notificationPopup": {
     "eventIdLabel": "Etkinlik Kimliği",
-    "notificationIdLabel": "Bildirim Kimliği",
     "sentLabel": "Gönderildi",
+    "timeUntilLabel": "Etkinliğe kalan süre",
     "viewEvent": "Etkinliği Görüntüle",
     "close": "Kapat"
   },

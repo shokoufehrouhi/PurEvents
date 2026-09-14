@@ -159,8 +159,8 @@
   },
   "notificationPopup": {
     "eventIdLabel": "Ereignis-ID",
-    "notificationIdLabel": "Benachrichtigungs-ID",
     "sentLabel": "Gesendet",
+    "timeUntilLabel": "Zeit bis zum Ereignis",
     "viewEvent": "Ereignis ansehen",
     "close": "Schließen"
   },

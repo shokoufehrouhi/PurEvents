@@ -10,9 +10,17 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '../src/components/ui/Button';
-import { extractNotificationInfo, initNotificationLogListeners, requestNotificationPermissions, type NotificationInfo } from '../src/notifications';
+import {
+  describeOffset,
+  extractNotificationInfo,
+  initNotificationLogListeners,
+  requestNotificationPermissions,
+  type NotificationInfo,
+} from '../src/notifications';
+import { getEvent } from '../src/storage/events';
 import { usePro } from '../src/subscription';
 import { PreferencesProvider, useTheme } from '../src/theme/PreferencesContext';
+import { getNextOccurrence } from '../src/utils/recurrence';
 
 // Side-effect import: initializes i18next before any screen renders.
 // NOTE: RTL languages (fa, ar — see src/i18n) only fully mirror the layout
@@ -30,6 +38,34 @@ function Navigation() {
   // happens to be on, since a tap can arrive from a background or fully
   // killed state just as easily as while already inside the app.
   const [tappedNotification, setTappedNotification] = useState<NotificationInfo | null>(null);
+  // How long until the event's *next* occurrence, computed fresh from now
+  // (not the offset the reminder itself fired for) — null while looking it
+  // up, or if the notification has no linked event at all.
+  const [timeUntilEvent, setTimeUntilEvent] = useState<string | null>(null);
+  // Reset synchronously during render (the "adjusting state while
+  // rendering" pattern, see MiniWidget.tsx's own photoFailed reset) rather
+  // than as a setState call in the effect body below, which a *new*
+  // tappedNotification needs cleared before its own lookup resolves —
+  // otherwise the previous notification's stale value would flash first.
+  const [checkedNotificationId, setCheckedNotificationId] = useState<string | null>(null);
+  if ((tappedNotification?.id ?? null) !== checkedNotificationId) {
+    setCheckedNotificationId(tappedNotification?.id ?? null);
+    setTimeUntilEvent(null);
+  }
+
+  useEffect(() => {
+    if (!tappedNotification?.eventId) return;
+    let cancelled = false;
+    getEvent(tappedNotification.eventId).then((event) => {
+      if (cancelled || !event) return;
+      const next = getNextOccurrence(event.dateTimeISO, event.repeat);
+      const minutesLeft = next.diff(dayjs(), 'minute');
+      setTimeUntilEvent(minutesLeft <= 0 ? null : describeOffset(minutesLeft));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [tappedNotification]);
 
   useEffect(() => {
     requestNotificationPermissions();
@@ -241,11 +277,17 @@ function Navigation() {
                 </Text>
               ) : null}
               <Text style={[typography.caption, { color: colors.secondary }]}>
-                {t('notificationPopup.notificationIdLabel')}: {tappedNotification?.id}
-              </Text>
-              <Text style={[typography.caption, { color: colors.secondary }]}>
                 {t('notificationPopup.sentLabel')}: {tappedNotification ? dayjs(tappedNotification.firedAt).format('MMM D, YYYY · h:mm A') : ''}
               </Text>
+              {/* Recomputed from now, not the offset this reminder actually
+                  fired for — a repeating event's *next* cycle in
+                  particular can be a completely different distance away
+                  than whatever this specific notification was about. */}
+              {timeUntilEvent ? (
+                <Text style={[typography.caption, { color: colors.secondary }]}>
+                  {t('notificationPopup.timeUntilLabel')}: {timeUntilEvent}
+                </Text>
+              ) : null}
             </View>
 
             <View style={{ flexDirection: 'row', marginTop: spacing.md }}>

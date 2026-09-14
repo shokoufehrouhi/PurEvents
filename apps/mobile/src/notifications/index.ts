@@ -189,7 +189,10 @@ export async function scheduleRemindersForEvent(
   }
 }
 
-function describeOffset(minutes: number): string {
+// Also used by app/_layout.tsx's tap popup, to show how much is left until
+// the event *now* (not the offset the reminder itself fired for) in the
+// same terse "2h"/"3d" shape the notification body already uses.
+export function describeOffset(minutes: number): string {
   if (minutes < 60) return `${minutes}m`;
   if (minutes < 1440) return `${Math.round(minutes / 60)}h`;
   return `${Math.round(minutes / 1440)}d`;

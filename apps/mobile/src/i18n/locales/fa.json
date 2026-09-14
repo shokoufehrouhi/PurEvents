@@ -159,8 +159,8 @@
   },
   "notificationPopup": {
     "eventIdLabel": "شناسه رویداد",
-    "notificationIdLabel": "شناسه نوتیفیکیشن",
     "sentLabel": "زمان ارسال",
+    "timeUntilLabel": "زمان باقی‌مانده تا رویداد",
     "viewEvent": "مشاهده رویداد",
     "close": "بستن"
   },
