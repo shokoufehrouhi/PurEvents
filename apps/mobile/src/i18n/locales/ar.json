@@ -83,8 +83,6 @@
       "monthly": "شهريًا",
       "weekly": "أسبوعيًا"
     },
-    "notificationMessageLabel": "رسالة الإشعار (اختياري)",
-    "notificationMessageHint": "تظهر في إشعار التذكير بدلاً من النص الافتراضي.",
     "notificationSoundLabel": "صوت الإشعار",
     "notificationSound": {
       "default": "افتراضي",

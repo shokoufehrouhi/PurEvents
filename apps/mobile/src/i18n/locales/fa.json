@@ -83,8 +83,6 @@
       "monthly": "ماهانه",
       "weekly": "هفتگی"
     },
-    "notificationMessageLabel": "متن نوتیفیکیشن (اختیاری)",
-    "notificationMessageHint": "به‌جای متن پیش‌فرض، در نوتیفیکیشن یادآور نمایش داده می‌شود.",
     "notificationSoundLabel": "صدای نوتیفیکیشن",
     "notificationSound": {
       "default": "پیش‌فرض",

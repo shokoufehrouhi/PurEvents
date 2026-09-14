@@ -83,8 +83,6 @@
       "monthly": "Mensual",
       "weekly": "Semanal"
     },
-    "notificationMessageLabel": "Mensaje de notificación (opcional)",
-    "notificationMessageHint": "Se muestra en la notificación del recordatorio en lugar del texto predeterminado.",
     "notificationSoundLabel": "Sonido de notificación",
     "notificationSound": {
       "default": "Predeterminado",

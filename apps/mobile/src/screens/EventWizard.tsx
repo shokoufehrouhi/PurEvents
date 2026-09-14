@@ -21,7 +21,6 @@ import { REPEAT_STYLES } from '../theme/repeatStyles';
 import { usePreferences, useTheme } from '../theme/PreferencesContext';
 import { ACCENT_KEYS, accents, elevation, responsiveContent, type AccentKey } from '../theme/tokens';
 import {
-  NOTIFICATION_MESSAGE_MAX_LENGTH,
   SENDER_MAX_LENGTH,
   SHARE_MESSAGE_MAX_LENGTH,
   type CardTheme,
@@ -120,10 +119,10 @@ export function EventWizard({ mode, eventId }: Props) {
   // See sender on PurEvent — optional "from" line, bottom-right of the
   // Share card, independent of shareMessage.
   const [sender, setSender] = useState('');
-  // See notificationMessage/notificationSound on PurEvent — independent of
-  // shareMessage (that's for the Share card graphic, this is what actually
-  // shows/plays in the reminder notification itself).
-  const [notificationMessage, setNotificationMessage] = useState('');
+  // See notificationSound on PurEvent — the reminder notification's title/
+  // body are always auto-generated (title/note/time-remaining, see
+  // notifications/index.ts), never manually typed; only which sound plays
+  // is a real choice.
   const [notificationSound, setNotificationSound] = useState<NotificationSoundKey>('default');
   const [saving, setSaving] = useState(false);
 
@@ -148,7 +147,6 @@ export function EventWizard({ mode, eventId }: Props) {
         setNote(e.note ?? '');
         setShareMessage(e.shareMessage ?? '');
         setSender(e.sender ?? '');
-        setNotificationMessage(e.notificationMessage ?? '');
         setNotificationSound(e.notificationSound ?? 'default');
       });
     }
@@ -181,7 +179,6 @@ export function EventWizard({ mode, eventId }: Props) {
     note: isDraftEmpty ? "Don't forget your passport" : note.trim() || undefined,
     shareMessage: shareMessage.trim() || undefined,
     sender: sender.trim() || undefined,
-    notificationMessage: notificationMessage.trim() || undefined,
     notificationSound,
     createdAt: '',
     updatedAt: '',
@@ -299,7 +296,6 @@ export function EventWizard({ mode, eventId }: Props) {
       note: note.trim() || undefined,
       shareMessage: shareMessage.trim() || undefined,
       sender: sender.trim() || undefined,
-      notificationMessage: notificationMessage.trim() || undefined,
       notificationSound,
     };
 
@@ -605,24 +601,10 @@ export function EventWizard({ mode, eventId }: Props) {
                 <Ionicons name="chevron-forward" size={18} color={colors.secondary} />
               </Pressable>
 
-              {/* What actually shows/plays in the reminder notification —
-                  independent of the Share step's own message/sender (see
-                  below), which are only for the Share card graphic. */}
-              <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 4 }]}>
-                {t('events.notificationMessageLabel')}
-              </Text>
-              <Text style={[typography.caption, { color: colors.secondary, marginBottom: 8 }]}>
-                {t('events.notificationMessageHint')}
-              </Text>
-              <TextInput
-                style={[styles.input, { borderColor: colors.outline, color: colors.text, borderRadius: radius.md }]}
-                placeholder={t('events.notificationMessageLabel')}
-                placeholderTextColor={colors.secondary}
-                value={notificationMessage}
-                onChangeText={(text) => setNotificationMessage(text.slice(0, NOTIFICATION_MESSAGE_MAX_LENGTH))}
-                maxLength={NOTIFICATION_MESSAGE_MAX_LENGTH}
-              />
-
+              {/* No manual title/body field — the reminder notification is
+                  always auto-generated (event title + note, if any + how
+                  much time is left, see notifications/index.ts). Sound is
+                  the only real per-event choice here. */}
               <Text style={[typography.label, { color: colors.secondary, marginTop: 16, marginBottom: 8 }]}>
                 {t('events.notificationSoundLabel')}
               </Text>

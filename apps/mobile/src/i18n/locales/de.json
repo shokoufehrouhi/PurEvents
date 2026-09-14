@@ -83,8 +83,6 @@
       "monthly": "Monatlich",
       "weekly": "Wöchentlich"
     },
-    "notificationMessageLabel": "Benachrichtigungstext (optional)",
-    "notificationMessageHint": "Wird in der Erinnerungsbenachrichtigung anstelle des Standardtexts angezeigt.",
     "notificationSoundLabel": "Benachrichtigungston",
     "notificationSound": {
       "default": "Standard",

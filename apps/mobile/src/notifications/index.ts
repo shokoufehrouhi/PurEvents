@@ -83,7 +83,7 @@ export async function cancelRemindersForEvent(eventId: string): Promise<void> {
 // the detail screen shows as active (see getActiveReminders); the rest stay
 // in event.reminders untouched so they come back the moment Pro does.
 export async function scheduleRemindersForEvent(
-  event: Pick<PurEvent, 'id' | 'title' | 'dateTimeISO' | 'reminders' | 'notificationMessage' | 'notificationSound'>,
+  event: Pick<PurEvent, 'id' | 'title' | 'dateTimeISO' | 'reminders' | 'note' | 'notificationSound'>,
   isPro: boolean
 ): Promise<void> {
   await cancelRemindersForEvent(event.id);
@@ -104,13 +104,19 @@ export async function scheduleRemindersForEvent(
     const fireAt = eventTime - offsetMin * 60_000;
     if (fireAt <= now) continue; // don't schedule reminders in the past
 
+    // Always auto-generated, never manually typed — title is just the
+    // event's own name, and the body leads with the note (when there is
+    // one) followed by how much time is actually left, so a reminder
+    // reads like "Don't forget the passport — coming up in 2h" instead of
+    // needing the user to retype that same info as a separate message.
+    const timeLine = offsetMin === 0 ? "It's happening now!" : `Coming up in ${describeOffset(offsetMin)}`;
+    const body = event.note?.trim() ? `${event.note.trim()} — ${timeLine}` : timeLine;
+
     await Notifications.scheduleNotificationAsync({
       identifier: identifierFor(event.id, offsetMin),
       content: {
         title: event.title,
-        body:
-          event.notificationMessage?.trim() ||
-          (offsetMin === 0 ? "It's happening now!" : `Coming up in ${describeOffset(offsetMin)}`),
+        body,
         data: { eventId: event.id },
         // Filename (with extension) on iOS / pre-8 Android; the fixed
         // channel above is what actually controls it on Android 8+ (see

@@ -83,8 +83,6 @@
       "monthly": "Aylık",
       "weekly": "Haftalık"
     },
-    "notificationMessageLabel": "Bildirim mesajı (isteğe bağlı)",
-    "notificationMessageHint": "Hatırlatma bildiriminde varsayılan metin yerine gösterilir.",
     "notificationSoundLabel": "Bildirim sesi",
     "notificationSound": {
       "default": "Varsayılan",

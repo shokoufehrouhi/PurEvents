@@ -83,8 +83,6 @@
       "monthly": "Monthly",
       "weekly": "Weekly"
     },
-    "notificationMessageLabel": "Notification message (optional)",
-    "notificationMessageHint": "Shown in the reminder notification instead of the default text.",
     "notificationSoundLabel": "Notification sound",
     "notificationSound": {
       "default": "Default",
