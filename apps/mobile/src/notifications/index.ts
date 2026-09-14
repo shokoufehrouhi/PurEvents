@@ -64,12 +64,20 @@ export async function requestNotificationPermissions(): Promise<boolean> {
 
 function logFromNotification(notification: Notifications.Notification): void {
   const data = notification.request.content.data as { eventId?: string } | undefined;
+  // notification.date isn't consistently epoch milliseconds — a remote/
+  // simulated push (iOS's own NSDate is seconds-based) comes through as
+  // epoch *seconds*, while a locally-scheduled one comes through as epoch
+  // milliseconds, and there's no field saying which. Below ~1e12 can't be
+  // a real millisecond timestamp (that threshold is itself the year 2001),
+  // so treat anything smaller as seconds and scale it up.
+  const rawDate = notification.date;
+  const firedAtMs = rawDate < 1e12 ? rawDate * 1000 : rawDate;
   logNotificationFired({
     id: notification.request.identifier,
     eventId: data?.eventId ?? '',
     title: notification.request.content.title ?? '',
     body: notification.request.content.body ?? '',
-    firedAt: new Date(notification.date).toISOString(),
+    firedAt: new Date(firedAtMs).toISOString(),
   });
 }
 
