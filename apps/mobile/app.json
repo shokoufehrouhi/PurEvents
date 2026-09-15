@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.puraevents"
+      "bundleIdentifier": "com.anonymous.puraevents",
+      "entitlements": {
+        "com.apple.security.application-groups": ["group.com.anonymous.puraevents.widget"]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -56,7 +59,26 @@
           }
         }
       ],
-      "expo-sharing"
+      "expo-sharing",
+      "@bacons/apple-targets",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "CountdownWidget",
+              "label": "PuraEvents Countdown",
+              "description": "Shows your nearest upcoming event and how many days are left.",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { NewEventInput, PurEvent } from '../types/event';
 import { getNextOccurrenceISO } from '../utils/recurrence';
+import { syncHomeScreenWidget } from '../widgets/syncHomeScreenWidget';
 
 // MVP is offline-first: everything lives on-device. Cloud sync (Pro) comes in
 // a later phase and will layer on top of this same read/write API rather
@@ -36,6 +37,13 @@ async function readAll(): Promise<PurEvent[]> {
 
 async function writeAll(events: PurEvent[]): Promise<void> {
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+  // Fire-and-forget — the single choke point every create/update/delete
+  // already funnels through, so the home-screen widget (see
+  // widgets/syncHomeScreenWidget.ts) stays current without each call site
+  // remembering to do it itself. Not awaited: a native widget-refresh call
+  // failing (or just being unavailable, e.g. simulator/no widget added)
+  // should never block or fail an otherwise-successful event save.
+  syncHomeScreenWidget().catch(() => {});
 }
 
 export async function listEvents(): Promise<PurEvent[]> {

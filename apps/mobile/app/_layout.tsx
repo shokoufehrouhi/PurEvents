@@ -3,7 +3,7 @@ import { Stack, useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Pressable, Text } from 'react-native';
+import { Platform, Pressable, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useTranslation } from 'react-i18next';
@@ -12,12 +12,21 @@ import { NotificationDetailModal } from '../src/components/NotificationDetailMod
 import { extractNotificationInfo, initNotificationLogListeners, requestNotificationPermissions, type NotificationInfo } from '../src/notifications';
 import { usePro } from '../src/subscription';
 import { PreferencesProvider, useTheme } from '../src/theme/PreferencesContext';
+import { initAndroidWidgetTaskHandler } from '../src/widgets/androidWidgetTask';
+import { syncHomeScreenWidget } from '../src/widgets/syncHomeScreenWidget';
 
 // Side-effect import: initializes i18next before any screen renders.
 // NOTE: RTL languages (fa, ar — see src/i18n) only fully mirror the layout
 // after I18nManager.forceRTL() + an app restart, which isn't wired up yet.
 // Track as a follow-up before shipping fa/ar as selectable languages.
 import '../src/i18n';
+
+// Module scope, not inside the component — AppRegistry.registerHeadlessTask
+// (what this actually calls) needs to run once, as early as possible,
+// same reasoning as the i18n side-effect import above. A no-op on iOS.
+if (Platform.OS === 'android') {
+  initAndroidWidgetTaskHandler();
+}
 
 function Navigation() {
   const { t } = useTranslation();
@@ -33,6 +42,10 @@ function Navigation() {
 
   useEffect(() => {
     requestNotificationPermissions();
+    // Covers cases where nothing changed since the last write but the
+    // widget should anyway — e.g. a fresh install, or the day rolling
+    // over so "3 days left" should now read "2".
+    syncHomeScreenWidget().catch(() => {});
     const cleanupLog = initNotificationLogListeners();
 
     const responseSub = Notifications.addNotificationResponseReceivedListener((response) => {
