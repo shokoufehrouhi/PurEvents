@@ -674,7 +674,7 @@ export function EventWizard({ mode, eventId }: Props) {
         </View>
       </ScrollView>
 
-      <View style={{ padding: spacing.md }}>
+      <View style={{ padding: spacing.md, paddingBottom: insets.bottom + spacing.md }}>
         <Button label={mode === 'create' ? t('events.createEvent') : t('events.save')} onPress={handleSave} disabled={!canSave} />
       </View>
     </View>

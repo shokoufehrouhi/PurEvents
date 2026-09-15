@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MiniWidget } from '../src/components/MiniWidget';
 import { Row } from '../src/components/ui/Row';
@@ -79,6 +80,7 @@ export default function CustomWidgetScreen() {
     }>();
   const isDraft = draft === '1';
   const { colors, spacing, radius, typography } = useTheme();
+  const insets = useSafeAreaInsets();
   const { isPro } = usePro();
   // Draft mode seeds straight from the wizard's own current draft values
   // (via a lazy initializer, not a setState-in-effect — these route params
@@ -284,7 +286,10 @@ export default function CustomWidgetScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ padding: spacing.md }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentContainerStyle={{ padding: spacing.md, paddingBottom: insets.bottom + spacing.md }}
+    >
       <View style={[styles.nameCard, { backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.md, marginBottom: spacing.md }]}>
         <Text style={[typography.label, { color: colors.secondary, marginBottom: 8 }]}>{t('widgets.widgetName')}</Text>
         <TextInput
