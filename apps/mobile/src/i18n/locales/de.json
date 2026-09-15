@@ -164,6 +164,23 @@
     "viewEvent": "Ereignis ansehen",
     "close": "Schließen"
   },
+  "addWidgetHome": {
+    "title": "Zum Home-Bildschirm hinzufügen",
+    "subtitle": "Dies fügt ein echtes Widget zum Home-Bildschirm deines Geräts hinzu — zeigt immer dein nächstes bevorstehendes Ereignis, automatisch aktualisiert.",
+    "pinButton": "Zum Home-Bildschirm anheften",
+    "androidFallbackHint": "Falls dein Launcher dies nicht unterstützt, nutze stattdessen die Schritte unten.",
+    "unsupportedTitle": "Widget-Auswahl konnte nicht geöffnet werden",
+    "unsupportedMessage": "Dein Launcher unterstützt das Hinzufügen von Widgets auf diese Weise nicht. Bitte füge es manuell hinzu — siehe Schritte unten.",
+    "manualStepsTitle": "Oder manuell hinzufügen",
+    "iosNote": "iOS erlaubt Apps nicht, Widgets automatisch hinzuzufügen — das gilt für alle Apps, nicht nur diese.",
+    "iosStep1": "Einen leeren Bereich deines Home-Bildschirms lange drücken",
+    "iosStep2": "Auf die \"+\"-Schaltfläche oben tippen",
+    "iosStep3": "Nach \"PuraEvents\" suchen",
+    "iosStep4": "Eine Größe wählen und auf \"Add Widget\" tippen",
+    "androidStep1": "Einen leeren Bereich deines Home-Bildschirms lange drücken",
+    "androidStep2": "Auf \"Widgets\" tippen",
+    "androidStep3": "PuraEvents finden und auf den Home-Bildschirm ziehen"
+  },
   "preferences": {
     "title": "Einstellungen",
     "general": "Allgemein",
@@ -282,6 +299,8 @@
     "myWidgets": "Meine Widgets",
     "categoriesTab": "Kategorien",
     "searchWidgets": "Widgets suchen",
+    "addToHomeScreenTitle": "Zum Home-Bildschirm hinzufügen",
+    "addToHomeScreenSubtitle": "Platziere das Live-Countdown-Widget auf dem Home-Bildschirm deines Geräts",
     "useSelectedWidget": "Ausgewähltes Widget verwenden",
     "newCustom": "Neues individuelles Widget",
     "daysShort": "TAGE",

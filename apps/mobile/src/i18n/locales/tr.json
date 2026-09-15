@@ -164,6 +164,23 @@
     "viewEvent": "Etkinliği Görüntüle",
     "close": "Kapat"
   },
+  "addWidgetHome": {
+    "title": "Ana Ekrana Ekle",
+    "subtitle": "Bu, cihazının ana ekranına gerçek bir widget ekler — her zaman en yakın etkinliğini gösterir, otomatik olarak güncellenir.",
+    "pinButton": "Ana Ekrana Sabitle",
+    "androidFallbackHint": "Başlatıcın bunu desteklemiyorsa, aşağıdaki adımları kullan.",
+    "unsupportedTitle": "Widget seçici açılamadı",
+    "unsupportedMessage": "Başlatıcın widget eklemeyi bu şekilde desteklemiyor. Lütfen manuel olarak ekle — aşağıdaki adımlara bak.",
+    "manualStepsTitle": "Ya da manuel olarak ekle",
+    "iosNote": "iOS, uygulamaların widget'ları otomatik eklemesine izin vermez — bu tüm uygulamalar için geçerlidir, sadece bu uygulama için değil.",
+    "iosStep1": "Ana ekranında boş bir alana uzun bas",
+    "iosStep2": "Üst köşedeki \"+\" düğmesine dokun",
+    "iosStep3": "\"PuraEvents\" ara",
+    "iosStep4": "Bir boyut seç ve \"Add Widget\"e dokun",
+    "androidStep1": "Ana ekranında boş bir alana uzun bas",
+    "androidStep2": "\"Widgets\"e dokun",
+    "androidStep3": "PuraEvents'i bul ve ana ekranına sürükle"
+  },
   "preferences": {
     "title": "Tercihler",
     "general": "Genel",
@@ -282,6 +299,8 @@
     "myWidgets": "Widget'larım",
     "categoriesTab": "Kategoriler",
     "searchWidgets": "Widget ara",
+    "addToHomeScreenTitle": "Ana Ekrana Ekle",
+    "addToHomeScreenSubtitle": "Canlı geri sayım widget'ını cihazının ana ekranına yerleştir",
     "useSelectedWidget": "Seçili widget'ı kullan",
     "newCustom": "Yeni Özel widget",
     "daysShort": "GÜN",

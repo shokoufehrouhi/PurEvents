@@ -164,6 +164,23 @@
     "viewEvent": "View Event",
     "close": "Close"
   },
+  "addWidgetHome": {
+    "title": "Add to Home Screen",
+    "subtitle": "This adds a real widget to your device's home screen — always showing your nearest upcoming event, updated automatically.",
+    "pinButton": "Pin to Home Screen",
+    "androidFallbackHint": "If your launcher doesn't support this, use the steps below instead.",
+    "unsupportedTitle": "Couldn't open widget picker",
+    "unsupportedMessage": "Your launcher doesn't support adding widgets this way. Please add it manually — see the steps below.",
+    "manualStepsTitle": "Or add it manually",
+    "iosNote": "iOS doesn't let apps add widgets automatically — this is the same for every app, not just this one.",
+    "iosStep1": "Long-press an empty area of your Home Screen",
+    "iosStep2": "Tap the \"+\" button in the top corner",
+    "iosStep3": "Search for \"PuraEvents\"",
+    "iosStep4": "Choose a size and tap \"Add Widget\"",
+    "androidStep1": "Long-press an empty area of your Home Screen",
+    "androidStep2": "Tap \"Widgets\"",
+    "androidStep3": "Find PuraEvents and drag it to your Home Screen"
+  },
   "preferences": {
     "title": "Preferences",
     "general": "General",
@@ -282,6 +299,8 @@
     "myWidgets": "My Widgets",
     "categoriesTab": "Categories",
     "searchWidgets": "Search widgets",
+    "addToHomeScreenTitle": "Add to Home Screen",
+    "addToHomeScreenSubtitle": "Place the live countdown widget on your device's home screen",
     "useSelectedWidget": "Use selected widget",
     "newCustom": "New Custom widget",
     "daysShort": "DAYS",

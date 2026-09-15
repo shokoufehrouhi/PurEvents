@@ -164,6 +164,23 @@
     "viewEvent": "Ver evento",
     "close": "Cerrar"
   },
+  "addWidgetHome": {
+    "title": "Añadir a la pantalla de inicio",
+    "subtitle": "Esto añade un widget real a la pantalla de inicio de tu dispositivo — siempre muestra tu próximo evento más cercano, actualizado automáticamente.",
+    "pinButton": "Fijar en la pantalla de inicio",
+    "androidFallbackHint": "Si tu launcher no admite esto, usa los pasos de abajo en su lugar.",
+    "unsupportedTitle": "No se pudo abrir el selector de widgets",
+    "unsupportedMessage": "Tu launcher no admite añadir widgets de esta forma. Añádelo manualmente — consulta los pasos de abajo.",
+    "manualStepsTitle": "O añádelo manualmente",
+    "iosNote": "iOS no permite que las apps añadan widgets automáticamente — esto aplica a todas las apps, no solo a esta.",
+    "iosStep1": "Mantén pulsada un área vacía de tu pantalla de inicio",
+    "iosStep2": "Toca el botón \"+\" en la esquina superior",
+    "iosStep3": "Busca \"PuraEvents\"",
+    "iosStep4": "Elige un tamaño y toca \"Add Widget\"",
+    "androidStep1": "Mantén pulsada un área vacía de tu pantalla de inicio",
+    "androidStep2": "Toca \"Widgets\"",
+    "androidStep3": "Busca PuraEvents y arrástralo a tu pantalla de inicio"
+  },
   "preferences": {
     "title": "Preferencias",
     "general": "General",
@@ -282,6 +299,8 @@
     "myWidgets": "Mis widgets",
     "categoriesTab": "Categorías",
     "searchWidgets": "Buscar widgets",
+    "addToHomeScreenTitle": "Añadir a la pantalla de inicio",
+    "addToHomeScreenSubtitle": "Coloca el widget de cuenta regresiva en vivo en la pantalla de inicio de tu dispositivo",
     "useSelectedWidget": "Usar widget seleccionado",
     "newCustom": "Nuevo widget personalizado",
     "daysShort": "DÍAS",

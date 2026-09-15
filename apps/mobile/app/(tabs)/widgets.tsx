@@ -255,6 +255,30 @@ export default function WidgetsScreen() {
           )}
         </View>
 
+        {/* The real home-screen widget (WidgetKit/AppWidget — see
+            targets/widget/widget.swift and src/widgets/androidWidgetTask.tsx),
+            not the in-app MiniWidget mockup everything below this banner is
+            about. Its own screen since placing it works completely
+            differently per platform (a real system prompt on Android, a
+            walkthrough of manual Home Screen steps on iOS — see
+            add-widget-to-home.tsx). */}
+        <Pressable
+          onPress={() => router.push('/add-widget-to-home')}
+          style={[
+            styles.homeScreenBanner,
+            { backgroundColor: `${colors.primary}14`, borderColor: `${colors.primary}33`, borderRadius: radius.lg, marginTop: spacing.lg },
+          ]}
+        >
+          <View style={[styles.homeScreenBannerIcon, { backgroundColor: `${colors.primary}22`, borderRadius: 999 }]}>
+            <Ionicons name="add-circle" size={20} color={colors.primary} />
+          </View>
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Text style={[typography.bodyStrong, { color: colors.text }]}>{t('widgets.addToHomeScreenTitle')}</Text>
+            <Text style={[typography.caption, { color: colors.secondary, marginTop: 2 }]}>{t('widgets.addToHomeScreenSubtitle')}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.primary} />
+        </Pressable>
+
         <View style={[styles.searchBar, { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, marginTop: spacing.lg }]}>
           <Ionicons name="search" size={16} color={colors.secondary} />
           <TextInput
@@ -493,6 +517,8 @@ export default function WidgetsScreen() {
 const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   planBadge: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 6 },
+  homeScreenBanner: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, padding: 14 },
+  homeScreenBannerIcon: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
   searchBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, height: 44 },
   searchInput: { flex: 1, marginLeft: 8, fontSize: 16, height: '100%' },
   // One full-width MiniWidget card per row — see "My Widgets"/Categories

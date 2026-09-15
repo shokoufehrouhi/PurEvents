@@ -202,6 +202,10 @@ function Navigation() {
           }}
         />
         <Stack.Screen
+          name="add-widget-to-home"
+          options={{ ...headerOptions, title: t('addWidgetHome.title'), headerBackTitle: t('widgets.title') }}
+        />
+        <Stack.Screen
           name="notification-settings"
           options={{ ...headerOptions, title: t('settings.notifications'), headerBackTitle: t('settings.title') }}
         />
