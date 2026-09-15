@@ -57,6 +57,7 @@
     "deleteConfirmMessage": "Möchtest du \"{{title}}\" wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
     "cancel": "Abbrechen",
     "addWidget": "Widget hinzufügen",
+    "addToHomeScreen": "Zum Home-Bildschirm hinzufügen",
     "next": "Weiter",
     "back": "Zurück",
     "stepBasics": "Basis",
@@ -166,7 +167,7 @@
   },
   "addWidgetHome": {
     "title": "Zum Home-Bildschirm hinzufügen",
-    "subtitle": "Dies fügt ein echtes Widget zum Home-Bildschirm deines Geräts hinzu — zeigt immer dein nächstes bevorstehendes Ereignis, automatisch aktualisiert.",
+    "subtitle": "Dies fügt ein echtes Widget zum Home-Bildschirm deines Geräts hinzu. Du wählst selbst, welches Ereignis jedes Widget zeigt, und kannst mehrere hinzufügen — jedes mit einem anderen Ereignis.",
     "pinButton": "Zum Home-Bildschirm anheften",
     "androidFallbackHint": "Falls dein Launcher dies nicht unterstützt, nutze stattdessen die Schritte unten.",
     "unsupportedTitle": "Widget-Auswahl konnte nicht geöffnet werden",
@@ -177,6 +178,7 @@
     "iosStep2": "Auf die \"+\"-Schaltfläche oben tippen",
     "iosStep3": "Nach \"PuraEvents\" suchen",
     "iosStep4": "Eine Größe wählen und auf \"Add Widget\" tippen",
+    "iosStep5": "Das Widget lange drücken und auf \"Edit Widget\" tippen, um das Ereignis zu wählen — wiederholen, um weitere mit jeweils einem anderen Ereignis hinzuzufügen",
     "androidStep1": "Einen leeren Bereich deines Home-Bildschirms lange drücken",
     "androidStep2": "Auf \"Widgets\" tippen",
     "androidStep3": "PuraEvents finden und auf den Home-Bildschirm ziehen"

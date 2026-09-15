@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, Platform, ScrollView, Text, View } from 'react-native';
 import { requestPinWidget } from 'react-native-android-widget';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { MiniWidget } from '../src/components/MiniWidget';
 import { Button } from '../src/components/ui/Button';
@@ -58,6 +59,7 @@ function Step({ number, text }: { number: number; text: string }) {
 export default function AddWidgetToHomeScreen() {
   const { t } = useTranslation();
   const { colors, spacing, typography } = useTheme();
+  const insets = useSafeAreaInsets();
   const [requesting, setRequesting] = useState(false);
   const isAndroid = Platform.OS === 'android';
 
@@ -81,7 +83,10 @@ export default function AddWidgetToHomeScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }} contentContainerStyle={{ padding: spacing.md }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentContainerStyle={{ padding: spacing.md, paddingBottom: insets.bottom + spacing.md }}
+    >
       <Text style={[typography.body, { color: colors.secondary, marginBottom: spacing.lg }]}>{t('addWidgetHome.subtitle')}</Text>
 
       <View style={{ alignItems: 'center', marginBottom: spacing.xl }}>
@@ -117,6 +122,7 @@ export default function AddWidgetToHomeScreen() {
           <Step number={2} text={t('addWidgetHome.iosStep2')} />
           <Step number={3} text={t('addWidgetHome.iosStep3')} />
           <Step number={4} text={t('addWidgetHome.iosStep4')} />
+          <Step number={5} text={t('addWidgetHome.iosStep5')} />
         </>
       )}
     </ScrollView>

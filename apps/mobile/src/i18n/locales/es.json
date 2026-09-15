@@ -57,6 +57,7 @@
     "deleteConfirmMessage": "¿Seguro que quieres eliminar \"{{title}}\"? Esta acción no se puede deshacer.",
     "cancel": "Cancelar",
     "addWidget": "Agregar widget",
+    "addToHomeScreen": "Añadir a la pantalla de inicio",
     "next": "Siguiente",
     "back": "Atrás",
     "stepBasics": "Datos básicos",
@@ -166,7 +167,7 @@
   },
   "addWidgetHome": {
     "title": "Añadir a la pantalla de inicio",
-    "subtitle": "Esto añade un widget real a la pantalla de inicio de tu dispositivo — siempre muestra tu próximo evento más cercano, actualizado automáticamente.",
+    "subtitle": "Esto añade un widget real a la pantalla de inicio de tu dispositivo. Tú eliges qué evento muestra cada uno, y puedes añadir más de uno — cada uno con un evento distinto.",
     "pinButton": "Fijar en la pantalla de inicio",
     "androidFallbackHint": "Si tu launcher no admite esto, usa los pasos de abajo en su lugar.",
     "unsupportedTitle": "No se pudo abrir el selector de widgets",
@@ -177,6 +178,7 @@
     "iosStep2": "Toca el botón \"+\" en la esquina superior",
     "iosStep3": "Busca \"PuraEvents\"",
     "iosStep4": "Elige un tamaño y toca \"Add Widget\"",
+    "iosStep5": "Mantén pulsado el widget y toca \"Edit Widget\" para elegir qué evento muestra — repite para añadir más, cada uno con un evento distinto",
     "androidStep1": "Mantén pulsada un área vacía de tu pantalla de inicio",
     "androidStep2": "Toca \"Widgets\"",
     "androidStep3": "Busca PuraEvents y arrástralo a tu pantalla de inicio"

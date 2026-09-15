@@ -11,7 +11,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.puraevents",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.com.anonymous.puraevents.widget"]
+        "com.apple.security.application-groups": [
+          "group.com.anonymous.puraevents.widget"
+        ]
       }
     },
     "android": {
@@ -21,7 +23,11 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.anonymous.puraevents"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -68,13 +74,14 @@
             {
               "name": "CountdownWidget",
               "label": "PuraEvents Countdown",
-              "description": "Shows your nearest upcoming event and how many days are left.",
+              "description": "Pick an event and see how many days are left, right on your home screen.",
               "minWidth": "110dp",
               "minHeight": "110dp",
               "targetCellWidth": 2,
               "targetCellHeight": 2,
               "resizeMode": "horizontal|vertical",
-              "updatePeriodMillis": 1800000
+              "updatePeriodMillis": 1800000,
+              "widgetFeatures": "reconfigurable"
             }
           ]
         }

@@ -57,6 +57,7 @@
     "deleteConfirmMessage": "Are you sure you want to delete \"{{title}}\"? This can't be undone.",
     "cancel": "Cancel",
     "addWidget": "Add Widget",
+    "addToHomeScreen": "Add to Home Screen",
     "next": "Next",
     "back": "Back",
     "stepBasics": "Basics",
@@ -166,7 +167,7 @@
   },
   "addWidgetHome": {
     "title": "Add to Home Screen",
-    "subtitle": "This adds a real widget to your device's home screen — always showing your nearest upcoming event, updated automatically.",
+    "subtitle": "This adds a real widget to your device's home screen. You choose which event each one shows, and you can add more than one — a different event on each.",
     "pinButton": "Pin to Home Screen",
     "androidFallbackHint": "If your launcher doesn't support this, use the steps below instead.",
     "unsupportedTitle": "Couldn't open widget picker",
@@ -177,6 +178,7 @@
     "iosStep2": "Tap the \"+\" button in the top corner",
     "iosStep3": "Search for \"PuraEvents\"",
     "iosStep4": "Choose a size and tap \"Add Widget\"",
+    "iosStep5": "Long-press the widget and tap \"Edit Widget\" to choose which event it shows — repeat to add more, each with a different event",
     "androidStep1": "Long-press an empty area of your Home Screen",
     "androidStep2": "Tap \"Widgets\"",
     "androidStep3": "Find PuraEvents and drag it to your Home Screen"

@@ -10,8 +10,15 @@ module.exports = (config) => ({
   colors: {
     $accent: '#6558D9',
   },
-  frameworks: ['SwiftUI', 'WidgetKit'],
-  deploymentTarget: '16.4',
+  frameworks: ['SwiftUI', 'WidgetKit', 'AppIntents'],
+  // Higher than the main app's own 16.4 (docs/PROJECT.md §5.2) —
+  // AppIntentConfiguration (the "user picks which event this widget
+  // shows" API, see widget.swift) requires iOS 17+. This is a normal,
+  // well-understood tradeoff for a configurable widget: an extension's
+  // deployment target may exceed its host app's, it just means the
+  // widget itself won't be offered to a user on iOS 16.x — the main app
+  // stays fully usable there regardless.
+  deploymentTarget: '17.0',
   entitlements: {
     // Same App Group as app.json's ios.entitlements and
     // src/widgets/iosWidgetSync.ts's WIDGET_APP_GROUP — all three must

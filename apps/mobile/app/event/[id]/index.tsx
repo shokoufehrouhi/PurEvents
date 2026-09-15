@@ -5,7 +5,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import ViewShot, { type ViewShotRef } from 'react-native-view-shot';
 
@@ -27,6 +27,7 @@ import { getActiveEventIds, isEventFrozen } from '../../../src/utils/eventAccess
 import { awaitPick } from '../../../src/utils/pickerBridge';
 import { getNextOccurrence } from '../../../src/utils/recurrence';
 import { getActiveReminders, reminderLabel } from '../../../src/utils/reminders';
+import { requestPinWidgetForEvent } from '../../../src/widgets/androidWidgetTask';
 
 // A single "EVENT DETAILS"/"REMINDER"/"NOTE"/"APPEARANCE" row: icon badge +
 // two-line text. Purely informational, not tappable — editing any of this
@@ -77,6 +78,9 @@ export default function EventDetailScreen() {
   // — the ShareCard graphic, independent of the visible preview's own
   // event.widgetSize (see ShareCard.tsx's own fixed gift-card dimensions).
   const shareCaptureRef = useRef<ViewShotRef>(null);
+  // Android-only (see handleAddToHomeScreen) — no iOS equivalent exists,
+  // since Apple gives apps no API to place a widget themselves at all.
+  const [requestingHomeScreenWidget, setRequestingHomeScreenWidget] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -157,6 +161,23 @@ export default function EventDetailScreen() {
       ...(result.accentColor ? { accentColor: result.accentColor } : {}),
     });
     setEvent(await getEvent(event!.id) ?? null);
+  }
+
+  // Pins a real, honest-to-god CountdownWidget on the Home Screen already
+  // configured to show *this* event — not the in-app style mockup
+  // handleAddWidget above deals with. See requestPinWidgetForEvent's own
+  // comment for why the eventId has to be stashed ahead of the OS prompt
+  // rather than passed through it directly.
+  async function handleAddToHomeScreen() {
+    setRequestingHomeScreenWidget(true);
+    try {
+      const accepted = await requestPinWidgetForEvent(event!.id);
+      if (!accepted) {
+        Alert.alert(t('addWidgetHome.unsupportedTitle'), t('addWidgetHome.unsupportedMessage'));
+      }
+    } finally {
+      setRequestingHomeScreenWidget(false);
+    }
   }
 
   // Over the free-plan "3 editable at once" limit — see getActiveEventIds.
@@ -355,6 +376,15 @@ export default function EventDetailScreen() {
             {t('widgets.widgetPreview')}
           </Text>
           <MiniWidget event={event} size={event.widgetSize ?? 'medium'} />
+          {Platform.OS === 'android' && (
+            <Button
+              label={t('events.addToHomeScreen')}
+              variant="secondary"
+              onPress={handleAddToHomeScreen}
+              disabled={requestingHomeScreenWidget}
+              style={{ marginTop: spacing.md, alignSelf: 'stretch' }}
+            />
+          )}
         </View>
       </ScrollView>
 

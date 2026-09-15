@@ -57,6 +57,7 @@
     "deleteConfirmMessage": "\"{{title}}\" etkinliğini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
     "cancel": "İptal",
     "addWidget": "Widget Ekle",
+    "addToHomeScreen": "Ana Ekrana Ekle",
     "next": "İleri",
     "back": "Geri",
     "stepBasics": "Temel Bilgiler",
@@ -166,7 +167,7 @@
   },
   "addWidgetHome": {
     "title": "Ana Ekrana Ekle",
-    "subtitle": "Bu, cihazının ana ekranına gerçek bir widget ekler — her zaman en yakın etkinliğini gösterir, otomatik olarak güncellenir.",
+    "subtitle": "Bu, cihazının ana ekranına gerçek bir widget ekler. Her birinin hangi etkinliği göstereceğini sen seçersin ve birden fazla ekleyebilirsin — her biri farklı bir etkinlikle.",
     "pinButton": "Ana Ekrana Sabitle",
     "androidFallbackHint": "Başlatıcın bunu desteklemiyorsa, aşağıdaki adımları kullan.",
     "unsupportedTitle": "Widget seçici açılamadı",
@@ -177,6 +178,7 @@
     "iosStep2": "Üst köşedeki \"+\" düğmesine dokun",
     "iosStep3": "\"PuraEvents\" ara",
     "iosStep4": "Bir boyut seç ve \"Add Widget\"e dokun",
+    "iosStep5": "Widget'a uzun bas ve hangi etkinliği göstereceğini seçmek için \"Edit Widget\"e dokun — farklı etkinliklerle daha fazla eklemek için tekrarla",
     "androidStep1": "Ana ekranında boş bir alana uzun bas",
     "androidStep2": "\"Widgets\"e dokun",
     "androidStep3": "PuraEvents'i bul ve ana ekranına sürükle"
